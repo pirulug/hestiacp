@@ -54,6 +54,11 @@ if [ -e "/etc/os-release" ] && [ ! -e "/etc/redhat-release" ]; then
 		fi
 	elif [ "$type" = "debian" ]; then
 		release=$(cat /etc/debian_version | grep -o "[0-9]\{1,2\}" | head -n1)
+		if [ -z "$release" ] || [ "$release" = "" ]; then
+			if grep -qi "trixie" /etc/os-release /etc/debian_version 2> /dev/null; then
+				release="13"
+			fi
+		fi
 		VERSION='debian'
 	else
 		type="NoSupport"
@@ -103,7 +108,7 @@ ensure_utf8_locale
 check_wget_curl() {
 	# Check wget
 	if [ -e '/usr/bin/wget' ]; then
-		wget -q https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install-$type.sh -O hst-install-$type.sh
+		wget -q https://raw.githubusercontent.com/pirulug/hestiacp/main/install/hst-install-$type.sh -O hst-install-$type.sh
 		if [ "$?" -eq '0' ]; then
 			bash hst-install-$type.sh "$@"
 			exit
@@ -116,7 +121,7 @@ check_wget_curl() {
 
 	# Check curl
 	if [ -e '/usr/bin/curl' ]; then
-		curl -s -O https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install-$type.sh
+		curl -s -O https://raw.githubusercontent.com/pirulug/hestiacp/main/install/hst-install-$type.sh
 		if [ "$?" -eq '0' ]; then
 			bash hst-install-$type.sh "$@"
 			exit

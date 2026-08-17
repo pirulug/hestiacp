@@ -23,8 +23,13 @@ memory=$(grep 'MemTotal' /proc/meminfo | tr ' ' '\n' | grep [0-9])
 hst_backups="/root/hst_install_backups/$(date +%d%m%Y%H%M)"
 spinner="/-\|"
 os='debian'
-release="$(cat /etc/debian_version | tr "." "\n" | head -n1)"
-codename="$(cat /etc/os-release | grep VERSION= | cut -f 2 -d \( | cut -f 1 -d \))"
+release="$(cat /etc/debian_version 2> /dev/null | tr "." "\n" | head -n1)"
+codename="$(grep VERSION_CODENAME /etc/os-release 2> /dev/null | cut -d= -f2 | tr -d '"')"
+[ -z "$codename" ] && codename="$(cat /etc/os-release 2> /dev/null | grep VERSION= | cut -f 2 -d \( | cut -f 1 -d \))"
+if [ "$codename" = "trixie" ] || [[ "$release" == *"trixie"* ]] || [ "$release" = "13" ]; then
+	release="13"
+	codename="trixie"
+fi
 architecture="$(arch)"
 HESTIA_INSTALL_DIR="$HESTIA/install/deb"
 HESTIA_COMMON_DIR="$HESTIA/install/common"
@@ -568,18 +573,19 @@ fi
 
 # Validate whether installation script matches release version before continuing with install
 if [ -z "$withdebs" ] || [ ! -d "$withdebs" ]; then
-	release_branch_ver=$(curl -s https://raw.githubusercontent.com/hestiacp/hestiacp/release/src/deb/hestia/control | grep "Version:" | awk '{print $2}')
+	release_branch_ver=$(curl -s https://raw.githubusercontent.com/pirulug/hestiacp/main/src/deb/hestia/control | grep "Version:" | awk '{print $2}')
+	[ -z "$release_branch_ver" ] && release_branch_ver="$HESTIA_INSTALL_VER"
 	if [ "$HESTIA_INSTALL_VER" != "$release_branch_ver" ]; then
 		echo
 		echo -e "\e[91mInstallation aborted\e[0m"
 		echo "===================================================================="
 		echo -e "\e[33mERROR: Install script version does not match package version!\e[0m"
-		echo -e "\e[33mPlease download the installer from the release branch in order to continue:\e[0m"
+		echo -e "\e[33mPlease download the installer from the repository in order to continue:\e[0m"
 		echo ""
-		echo -e "\e[33mhttps://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install.sh\e[0m"
+		echo -e "\e[33mhttps://raw.githubusercontent.com/pirulug/hestiacp/main/install/hst-install.sh\e[0m"
 		echo ""
-		echo -e "\e[33mTo test pre-release versions, build the .deb packages and re-run the installer:\e[0m"
-		echo -e "  \e[33m./hst_autocompile.sh \e[1m--hestia branchname no\e[21m\e[0m"
+		echo -e "\e[33mTo test custom builds, build the .deb packages and re-run the installer:\e[0m"
+		echo -e "  \e[33m./hst_autocompile.sh \e[1m--hestia main no\e[21m\e[0m"
 		echo -e "  \e[33m./hst-install.sh .. \e[1m--with-debs /tmp/hestiacp-src/debs\e[21m\e[0m"
 		echo ""
 		check_result 1 "Installation aborted"
