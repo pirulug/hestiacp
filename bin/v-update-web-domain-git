@@ -1,0 +1,116 @@
+#!/bin/bash
+# info: update / pull latest Git changes for web domain
+# options: USER DOMAIN [BRANCH]
+#
+# example: v-update-web-domain-git admin example.com
+#
+# This function pulls the latest Git changes for a web domain and runs optional post-deploy hooks.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+branch_arg=$3
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source $HESTIA/func/main.sh
+# shellcheck source=/usr/local/hestia/func/domain.sh
+source $HESTIA/func/domain.sh
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [BRANCH]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+
+# Perform verification if read-only mode is enabled
+check_hestia_demo_mode
+
+user_git_conf="$USER_DATA/git.conf"
+if [ ! -f "$user_git_conf" ] || ! grep -q "DOMAIN='$domain'" "$user_git_conf"; then
+	check_result "$E_NOTEXIST" "Git repository is not configured for domain $domain"
+fi
+
+# Load current git configuration
+git_str=$(grep "DOMAIN='$domain'" "$user_git_conf")
+parse_object_kv_list "$git_str"
+
+branch="${branch_arg:-$BRANCH}"
+deploy_dir="${DEPLOY_DIR:-public_html}"
+auth_type="${AUTH_TYPE:-none}"
+post_deploy="$POST_DEPLOY"
+
+target_path="$HOMEDIR/$user/web/$domain/$deploy_dir"
+clean_domain=$(echo "$domain" | tr '.' '_')
+ssh_key_file="$HOMEDIR/$user/.ssh/id_git_${clean_domain}"
+
+if [ ! -d "$target_path/.git" ]; then
+	check_result "$E_NOTEXIST" "Target directory $target_path does not contain a Git repository"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+git_ssh_cmd=""
+if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
+	git_ssh_cmd="GIT_SSH_COMMAND=\"ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new\""
+fi
+
+# Fetch and pull / reset hard to origin/branch
+if [ -n "$git_ssh_cmd" ]; then
+	user_exec eval "$git_ssh_cmd git -C \"$target_path\" fetch origin \"$branch\""
+	user_exec eval "$git_ssh_cmd git -C \"$target_path\" checkout \"$branch\""
+	user_exec eval "$git_ssh_cmd git -C \"$target_path\" reset --hard origin/\"$branch\""
+else
+	user_exec git -C "$target_path" fetch origin "$branch"
+	user_exec git -C "$target_path" checkout "$branch"
+	user_exec git -C "$target_path" reset --hard origin/"$branch"
+fi
+
+if [ $? -ne 0 ]; then
+	check_result "$E_INVALID" "Failed to pull latest changes from Git repository"
+fi
+
+chown -R "$user:$user" "$target_path"
+
+# Retrieve latest commit info
+last_commit_hash=$(git -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
+last_commit_msg=$(git -C "$target_path" log -1 --format="%s" 2> /dev/null | tr "'" '"' || echo "$LAST_COMMIT_MSG")
+last_commit_author=$(git -C "$target_path" log -1 --format="%an" 2> /dev/null | tr "'" '"' || echo "$LAST_COMMIT_AUTHOR")
+last_deploy_time=$(date +%s)
+date_str=$(date +'%F')
+time_str=$(date +'%T')
+
+# Update git.conf record
+sed -i "/DOMAIN='$domain'/d" "$user_git_conf"
+echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY='$post_deploy' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
+
+# Execute post deploy commands if specified
+if [ -n "$post_deploy" ]; then
+	cd "$target_path" || exit 1
+	user_exec eval "$post_deploy" > /dev/null 2>&1
+fi
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+# Logging
+$BIN/v-log-action "$user" "Info" "Web" "Deployed Git update for $domain ($branch - $last_commit_hash)."
+log_event "$OK" "$ARGUMENTS"
+
+exit 0

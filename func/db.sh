@@ -397,6 +397,9 @@ add_pgsql_database() {
 }
 
 add_mysql_database_temp_user() {
+	if [ -z "$host" ]; then
+		host="${HOST:-localhost}"
+	fi
 	mysql_connect $host
 
 	mysql_ver_sub=$(echo $mysql_ver | cut -d '.' -f1)
@@ -405,7 +408,7 @@ add_mysql_database_temp_user() {
 	dbpass_esc=$(mysql_sql_escape "$dbpass")
 
 	if [ "$mysql_fork" = "mysql" ] && [ "$mysql_ver_sub" -ge 8 ]; then
-		query="CREATE USER \`$dbuser\`@localhost
+		query="CREATE USER IF NOT EXISTS \`$dbuser\`@localhost
 			IDENTIFIED BY '$dbpass_esc'"
 		mysql_query "$query" > /dev/null
 
@@ -419,10 +422,13 @@ add_mysql_database_temp_user() {
 }
 
 delete_mysql_database_temp_user() {
+	if [ -z "$host" ]; then
+		host="${HOST:-localhost}"
+	fi
 	mysql_connect $host
 	query="REVOKE ALL ON \`$database\`.* FROM \`$dbuser\`@localhost"
 	mysql_query "$query" > /dev/null
-	query="DROP USER '$dbuser'@'localhost'"
+	query="DROP USER IF EXISTS '$dbuser'@'localhost'"
 	mysql_query "$query" > /dev/null
 }
 

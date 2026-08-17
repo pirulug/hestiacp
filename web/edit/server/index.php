@@ -574,7 +574,7 @@ if (!empty($_POST["save"])) {
 				check_return_code($return_var, $output);
 				unset($output);
 				if (empty($_SESSION["error_msg"])) {
-					$_SESSION["PHPMYADMIN_KEY"] != "";
+					load_hestia_config();
 				}
 			} elseif ($_POST["v_phpmyadmin_key"] == "no" && $_SESSION["PHPMYADMIN_KEY"] != "") {
 				exec(HESTIA_CMD . "v-delete-sys-pma-sso quiet", $output, $return_var);

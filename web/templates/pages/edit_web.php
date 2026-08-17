@@ -15,6 +15,9 @@
 					<i class="fas fa-magic icon-blue"></i><?= tohtml( _("Quick Install App")) ?>
 				</a>
 			<?php } ?>
+			<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION['token']])) ?>" class="button button-secondary">
+				<i class="fab fa-github icon-orange"></i><?= tohtml( _("Git / GitHub")) ?>
+			</a>
 			<button type="submit" class="button" form="main-form">
 				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>

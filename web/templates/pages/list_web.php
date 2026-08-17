@@ -274,6 +274,16 @@
 										<span class="u-hide-desktop"><?= tohtml( _("Download Site")) ?></span>
 									</a>
 								</li>
+								<li class="units-table-row-action" data-key-action="href">
+									<a
+										class="units-table-row-action-link"
+										href="/edit/git/?<?= tohtml(http_build_query(["domain" => $key, "token" => $_SESSION["token"]])) ?>"
+										title="<?= tohtml( _("Git / GitHub")) ?>"
+									>
+										<i class="fab fa-github icon-orange"></i>
+										<span class="u-hide-desktop"><?= tohtml( _("Git / GitHub")) ?></span>
+									</a>
+								</li>
 							<?php } ?>
 							<li class="units-table-row-action shortcut-l" data-key-action="href">
 								<a

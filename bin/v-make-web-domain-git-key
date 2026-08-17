@@ -1,0 +1,94 @@
+#!/bin/bash
+# info: generate SSH deploy key for web domain git integration
+# options: USER DOMAIN [FORCE]
+#
+# example: v-make-web-domain-git-key admin example.com
+#
+# This function generates an SSH deploy key pair for a web domain to access private Git repositories.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+force=$3
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source $HESTIA/func/main.sh
+# shellcheck source=/usr/local/hestia/func/domain.sh
+source $HESTIA/func/domain.sh
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [FORCE]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+
+# Perform verification if read-only mode is enabled
+check_hestia_demo_mode
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+clean_domain=$(echo "$domain" | tr '.' '_')
+ssh_dir="$HOMEDIR/$user/.ssh"
+key_file="$ssh_dir/id_git_${clean_domain}"
+pub_file="${key_file}.pub"
+
+if [ ! -d "$ssh_dir" ]; then
+	mkdir -p "$ssh_dir"
+	chmod 700 "$ssh_dir"
+	chown "$user:$user" "$ssh_dir"
+fi
+
+if [ -f "$key_file" ] && [ "$force" != "yes" ]; then
+	if [ -f "$pub_file" ]; then
+		cat "$pub_file"
+		exit 0
+	fi
+fi
+
+# Generate ed25519 key pair with fallback to RSA
+if command -v ssh-keygen > /dev/null 2>&1; then
+	rm -f "$key_file" "$pub_file" > /dev/null 2>&1
+	ssh-keygen -q -t ed25519 -f "$key_file" -N "" -C "hestia-git-$domain" > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		ssh-keygen -q -t rsa -b 4096 -f "$key_file" -N "" -C "hestia-git-$domain" > /dev/null 2>&1
+	fi
+else
+	check_result "$E_NOTEXIST" "ssh-keygen command not found"
+fi
+
+chmod 600 "$key_file"
+chmod 644 "$pub_file"
+chown "$user:$user" "$key_file" "$pub_file"
+
+# Output public key for copying to GitHub
+if [ -f "$pub_file" ]; then
+	cat "$pub_file"
+else
+	check_result "$E_INVALID" "Failed to generate deploy key"
+fi
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+# Logging
+$BIN/v-log-action "$user" "Info" "Web" "Generated Git deploy key for domain $domain."
+log_event "$OK" "$ARGUMENTS"
+
+exit 0

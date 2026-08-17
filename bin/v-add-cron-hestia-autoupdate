@@ -45,12 +45,8 @@ date=$(echo "$time_n_date" | cut -f 2 -d \ )
 
 # Define time somewhere at night
 if [ -z "$mode" ] || [ "$mode" = "apt" ]; then
-	min=$(generate_password '012345' '2')
-	hour=$(generate_password '1234567' '1')
-	day='*'
-	month='*'
-	wday='*'
-	command='v-update-sys-hestia-all'
+	echo "Notice: Automatic updates from official APT repository are disabled on this fork."
+	exit 0
 fi
 
 if [ "$mode" = "git" ]; then

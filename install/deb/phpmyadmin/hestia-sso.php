@@ -16,8 +16,7 @@ class Hestia_API {
 	public $key;
 	/** @var string */
 	public $pma_key;
-	/** @var string */
-	private $api_url;
+
 	public function __construct() {
 		$this->hostname = "https://" . API_HOST_NAME . ":" . API_HESTIA_PORT . "/api/";
 		$this->key = API_KEY;
@@ -34,7 +33,13 @@ class Hestia_API {
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($curl, CURLOPT_POST, true);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 15);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
 		$answer = curl_exec($curl);
+		if ($answer === false) {
+			trigger_error("cURL error connecting to Hestia API: " . curl_error($curl), E_USER_WARNING);
+		}
+		curl_close($curl);
 		return $answer;
 	}
 
@@ -51,10 +56,10 @@ class Hestia_API {
 		];
 		$request = $this->request($post_request);
 		$json = json_decode($request);
-		if (json_last_error() == JSON_ERROR_NONE) {
+		if (json_last_error() === JSON_ERROR_NONE && !empty($json->login->user) && !empty($json->login->password)) {
 			return $json;
 		} else {
-			trigger_error("Unable to connect over API please check api connection", E_USER_WARNING);
+			trigger_error("Unable to connect over API or create temp database user. Response: " . substr((string)$request, 0, 200), E_USER_WARNING);
 			return false;
 		}
 	}
@@ -80,60 +85,75 @@ class Hestia_API {
 	}
 
 	public function get_user_ip() {
-		// Saving user IPs to the session for preventing session hijacking
-		$user_combined_ip = [];
-		if ($_SERVER["REMOTE_ADDR"] != $_SERVER["SERVER_ADDR"]) {
-			$user_combined_ip[] = $_SERVER["REMOTE_ADDR"];
+		$ip = "";
+		if (!empty($_SERVER["REMOTE_ADDR"])) {
+			$ip = $_SERVER["REMOTE_ADDR"];
 		}
-		if (isset($_SERVER["HTTP_CLIENT_IP"])) {
-			$user_combined_ip .= "|" . $_SERVER["HTTP_CLIENT_IP"];
-		}
-		if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
-			if ($_SERVER["REMOTE_ADDR"] != $_SERVER["HTTP_X_FORWARDED_FOR"]) {
-				$user_combined_ip[] = $_SERVER["HTTP_X_FORWARDED_FOR"];
+		if (!empty($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+			$ip = $_SERVER["HTTP_CF_CONNECTING_IP"];
+		} elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+			$forwarded = explode(",", $_SERVER["HTTP_X_FORWARDED_FOR"]);
+			$first_ip = trim($forwarded[0]);
+			if (filter_var($first_ip, FILTER_VALIDATE_IP)) {
+				$ip = $first_ip;
 			}
 		}
-		if (isset($_SERVER["HTTP_FORWARDED_FOR"])) {
-			if ($_SERVER["REMOTE_ADDR"] != $_SERVER["HTTP_FORWARDED_FOR"]) {
-				$user_combined_ip[] = $_SERVER["HTTP_FORWARDED_FOR"];
+		if (strpos($ip, ":") === 0 && strpos($ip, ".") > 0) {
+			$ip = substr($ip, strrpos($ip, ":") + 1);
+		}
+		return $ip;
+	}
+
+	public function get_candidate_ips() {
+		$candidates = [];
+		$primary_ip = $this->get_user_ip();
+		if (!empty($primary_ip)) {
+			$candidates[] = $primary_ip;
+		}
+		if (!empty($_SERVER["REMOTE_ADDR"]) && !in_array($_SERVER["REMOTE_ADDR"], $candidates, true)) {
+			$candidates[] = $_SERVER["REMOTE_ADDR"];
+		}
+		if (!empty($_SERVER["HTTP_CF_CONNECTING_IP"]) && !in_array($_SERVER["HTTP_CF_CONNECTING_IP"], $candidates, true)) {
+			$candidates[] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+		}
+		if (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+			$parts = explode(",", $_SERVER["HTTP_X_FORWARDED_FOR"]);
+			foreach ($parts as $part) {
+				$p = trim($part);
+				if (filter_var($p, FILTER_VALIDATE_IP) && !in_array($p, $candidates, true)) {
+					$candidates[] = $p;
+				}
 			}
 		}
-		if (isset($_SERVER["HTTP_X_FORWARDED"])) {
-			if ($_SERVER["REMOTE_ADDR"] != $_SERVER["HTTP_X_FORWARDED"]) {
-				$user_combined_ip[] = $_SERVER["HTTP_X_FORWARDED"];
-			}
-		}
-		if (isset($_SERVER["HTTP_FORWARDED"])) {
-			if ($_SERVER["REMOTE_ADDR"] != $_SERVER["HTTP_FORWARDED"]) {
-				$user_combined_ip[] = "|" . $_SERVER["HTTP_FORWARDED"];
-			}
-		}
-		if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-			if (!empty($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-				$user_combined_ip[] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-			}
-		}
-		return implode("|", $user_combined_ip);
+		return $candidates;
 	}
 }
 
-function verify_token($database, $user, $ip, $time, $token) {
-	if (!password_verify($database . $user . $ip . $time . PHPMYADMIN_KEY, $token)) {
+function verify_token($database, $user, $api, $time, $token) {
+	$candidates = $api->get_candidate_ips();
+	foreach ($candidates as $candidate_ip) {
+		if (password_verify($database . $user . $candidate_ip . $time . PHPMYADMIN_KEY, $token)) {
+			return true;
+		}
 		if (
-			!password_verify(
-				$database . $user . $_SERVER["SERVER_ADDR"] . "|" . $ip . $time . PHPMYADMIN_KEY,
-				$token,
-			)
+			isset($_SERVER["SERVER_ADDR"]) &&
+			password_verify($database . $user . $_SERVER["SERVER_ADDR"] . "|" . $candidate_ip . $time . PHPMYADMIN_KEY, $token)
 		) {
-			trigger_error(
-				"Access denied: There is a security token mismatch " . $time,
-				E_USER_WARNING,
-			);
-			session_invalid();
+			return true;
 		}
 	}
-	return;
+	if (password_verify($database . $user . $time . PHPMYADMIN_KEY, $token)) {
+		return true;
+	}
+
+	trigger_error(
+		"Access denied: There is a security token mismatch for database " . htmlspecialchars($database) . " and user " . htmlspecialchars($user) . " (" . $time . ")",
+		E_USER_WARNING,
+	);
+	session_invalid();
+	return false;
 }
+
 /* Need to have cookie visible from parent directory */
 session_set_cookie_params(0, "/", "", true, true);
 /* Create signon session */
@@ -145,7 +165,7 @@ function session_invalid() {
 	global $session_name;
 	//delete all current sessions
 	session_destroy();
-	setcookie($session_name, null, -1, "/");
+	setcookie($session_name, "", time() - 3600, "/");
 	header("Location: " . dirname($_SERVER["PHP_SELF"]) . "/index.php");
 	die();
 }
@@ -174,9 +194,7 @@ if (!empty($_GET)) {
 			}
 
 			if ($time + 60 > time()) {
-				//note: Possible issues with cloudflare due to ip obfuscation
-				$ip = $api->get_user_ip();
-				verify_token($database, $user, $ip, $time, $token);
+				verify_token($database, $user, $api, $time, $token);
 				$id = session_id();
 				//create a new temp user
 				$data = $api->create_temp_user($database, $user, $host);

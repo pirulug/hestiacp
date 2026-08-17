@@ -57,6 +57,10 @@ check_hestia_demo_mode
 # Get database values
 get_database_values
 
+if [ -z "$host" ]; then
+	host="${HOST:-localhost}"
+fi
+
 #generate password and unique user
 dbpass=$(generate_password)
 dbuser="hestia_sso_$(generate_password)"

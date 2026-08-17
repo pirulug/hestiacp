@@ -1,0 +1,100 @@
+#!/bin/bash
+# info: list Git integration status for web domain
+# options: USER DOMAIN [FORMAT]
+#
+# example: v-list-web-domain-git admin example.com json
+#
+# This function outputs Git configuration and deployment status for a web domain.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+format=${3:-json}
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source $HESTIA/func/main.sh
+# shellcheck source=/usr/local/hestia/func/domain.sh
+source $HESTIA/func/domain.sh
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [FORMAT]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+
+user_git_conf="$USER_DATA/git.conf"
+clean_domain=$(echo "$domain" | tr '.' '_')
+ssh_pub_file="$HOMEDIR/$user/.ssh/id_git_${clean_domain}.pub"
+deploy_key_content=""
+if [ -f "$ssh_pub_file" ]; then
+	deploy_key_content=$(cat "$ssh_pub_file" 2> /dev/null)
+fi
+
+if [ ! -f "$user_git_conf" ] || ! grep -q "DOMAIN='$domain'" "$user_git_conf"; then
+	if [ "$format" = "json" ]; then
+		echo "{
+    \"CONFIGURED\": \"no\",
+    \"DEPLOY_KEY\": \"$deploy_key_content\"
+}"
+		exit 0
+	else
+		echo "CONFIGURED=no"
+		exit 0
+	fi
+fi
+
+# Load current git configuration
+git_str=$(grep "DOMAIN='$domain'" "$user_git_conf")
+parse_object_kv_list "$git_str"
+
+# Get current commit if repo exists
+target_path="$HOMEDIR/$user/web/$domain/${DEPLOY_DIR:-public_html}"
+if [ -d "$target_path/.git" ]; then
+	curr_commit=$(git -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
+	curr_msg=$(git -C "$target_path" log -1 --format="%s" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_MSG")
+	curr_author=$(git -C "$target_path" log -1 --format="%an" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_AUTHOR")
+	curr_date=$(git -C "$target_path" log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2> /dev/null || echo "$DATE $TIME")
+else
+	curr_commit="$LAST_COMMIT"
+	curr_msg="$LAST_COMMIT_MSG"
+	curr_author="$LAST_COMMIT_AUTHOR"
+	curr_date="$DATE $TIME"
+fi
+
+if [ "$format" = "json" ]; then
+	echo "{
+    \"CONFIGURED\": \"yes\",
+    \"DOMAIN\": \"$DOMAIN\",
+    \"REPO\": \"$REPO\",
+    \"BRANCH\": \"$BRANCH\",
+    \"DEPLOY_DIR\": \"$DEPLOY_DIR\",
+    \"AUTH_TYPE\": \"$AUTH_TYPE\",
+    \"WEBHOOK_SECRET\": \"$WEBHOOK_SECRET\",
+    \"LAST_COMMIT\": \"$curr_commit\",
+    \"LAST_COMMIT_MSG\": \"$curr_msg\",
+    \"LAST_COMMIT_AUTHOR\": \"$curr_author\",
+    \"LAST_COMMIT_DATE\": \"$curr_date\",
+    \"LAST_DEPLOY\": \"$LAST_DEPLOY\",
+    \"POST_DEPLOY\": \"$POST_DEPLOY\",
+    \"AUTO_DEPLOY\": \"$AUTO_DEPLOY\",
+    \"DEPLOY_KEY\": \"$deploy_key_content\",
+    \"DATE\": \"$DATE\",
+    \"TIME\": \"$TIME\"
+}"
+else
+	echo "CONFIGURED='yes' DOMAIN='$DOMAIN' REPO='$REPO' BRANCH='$BRANCH' DEPLOY_DIR='$DEPLOY_DIR' AUTH_TYPE='$AUTH_TYPE' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$curr_commit' LAST_DEPLOY='$LAST_DEPLOY'"
+fi
+
+exit 0

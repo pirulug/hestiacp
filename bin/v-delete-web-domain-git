@@ -1,0 +1,81 @@
+#!/bin/bash
+# info: delete Git integration from web domain
+# options: USER DOMAIN [REMOVE_GIT_DIR]
+#
+# example: v-delete-web-domain-git admin example.com
+#
+# This function disconnects Git integration from a web domain.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+remove_git_dir=$3
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source $HESTIA/func/main.sh
+# shellcheck source=/usr/local/hestia/func/domain.sh
+source $HESTIA/func/domain.sh
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [REMOVE_GIT_DIR]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+
+# Perform verification if read-only mode is enabled
+check_hestia_demo_mode
+
+user_git_conf="$USER_DATA/git.conf"
+if [ ! -f "$user_git_conf" ] || ! grep -q "DOMAIN='$domain'" "$user_git_conf"; then
+	check_result "$E_NOTEXIST" "Git repository is not configured for domain $domain"
+fi
+
+# Load current git configuration
+git_str=$(grep "DOMAIN='$domain'" "$user_git_conf")
+parse_object_kv_list "$git_str"
+
+deploy_dir="${DEPLOY_DIR:-public_html}"
+target_path="$HOMEDIR/$user/web/$domain/$deploy_dir"
+clean_domain=$(echo "$domain" | tr '.' '_')
+ssh_key_file="$HOMEDIR/$user/.ssh/id_git_${clean_domain}"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Remove git config line
+sed -i "/DOMAIN='$domain'/d" "$user_git_conf"
+
+# Remove SSH deploy key if present
+if [ -f "$ssh_key_file" ]; then
+	rm -f "$ssh_key_file" "${ssh_key_file}.pub" > /dev/null 2>&1
+fi
+
+# Remove .git folder if requested
+if [ "$remove_git_dir" = "yes" ] && [ -d "$target_path/.git" ]; then
+	rm -rf "$target_path/.git"
+fi
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+# Logging
+$BIN/v-log-action "$user" "Info" "Web" "Disconnected Git repository from domain $domain."
+log_event "$OK" "$ARGUMENTS"
+
+exit 0
