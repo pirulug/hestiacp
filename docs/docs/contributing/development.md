@@ -19,7 +19,7 @@ These instructions use [Multipass](https://multipass.run/) to create an Ubuntu V
 1. [Fork Hestia](https://github.com/hestiacp/hestiacp/fork) and clone the repository to your local machine
 
    ```bash
-   git clone https://github.com/YourUsername/hestiacp.git ~/projects
+   git clone https://github.com/pirulug/hestiacp.git ~/projects/hestiacp
    ```
 
 1. Create an Ubuntu VM with at least 2GB of memory and 15GB of disk space
@@ -131,7 +131,7 @@ We currently use [Bats](https://github.com/bats-core/bats-core) to run our autom
 
 ```bash
 # Clone Hestia repo with testing submodules
-git clone --recurse-submodules https://github.com/hestiacp/hestiacp
+git clone --recurse-submodules https://github.com/pirulug/hestiacp
 # Or, using an existing local repo with an up-to-date main branch
 git submodule update --init --recursive
 
