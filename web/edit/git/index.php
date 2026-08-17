@@ -33,7 +33,7 @@ unset($output);
 
 // Handle manual action: Pull / Deploy
 if (isset($_GET["action"]) && $_GET["action"] === "pull") {
-	check_csrf_token();
+	verify_csrf($_GET);
 	exec(
 		HESTIA_CMD . "v-update-web-domain-git " . $user . " " . quoteshellarg($v_domain),
 		$output,
@@ -51,7 +51,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "pull") {
 
 // Handle manual action: Generate Deploy Key
 if (isset($_GET["action"]) && $_GET["action"] === "generate_key") {
-	check_csrf_token();
+	verify_csrf($_GET);
 	exec(
 		HESTIA_CMD . "v-make-web-domain-git-key " . $user . " " . quoteshellarg($v_domain) . " yes",
 		$output,
@@ -69,7 +69,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "generate_key") {
 
 // Handle manual action: Delete / Disconnect Git
 if (isset($_GET["action"]) && $_GET["action"] === "delete") {
-	check_csrf_token();
+	verify_csrf($_GET);
 	exec(
 		HESTIA_CMD . "v-delete-web-domain-git " . $user . " " . quoteshellarg($v_domain),
 		$output,
@@ -87,7 +87,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete") {
 
 // Handle Save / Connect Git POST
 if (!empty($_POST["save"])) {
-	check_csrf_token();
+	verify_csrf($_POST);
 
 	$v_repo = trim($_POST["v_repo"] ?? "");
 	$v_branch = trim($_POST["v_branch"] ?? "main");
