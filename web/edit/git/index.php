@@ -144,7 +144,8 @@ $v_last_commit = $git_info["LAST_COMMIT"] ?? "";
 $v_last_commit_msg = $git_info["LAST_COMMIT_MSG"] ?? "";
 $v_last_commit_author = $git_info["LAST_COMMIT_AUTHOR"] ?? "";
 $v_last_commit_date = $git_info["LAST_COMMIT_DATE"] ?? "";
-$v_post_deploy = $git_info["POST_DEPLOY"] ?? "";
+$v_post_deploy = !empty($git_info["POST_DEPLOY_B64"]) ? base64_decode($git_info["POST_DEPLOY_B64"]) : ($git_info["POST_DEPLOY"] ?? "");
+$v_post_deploy = str_replace("\r", "", $v_post_deploy);
 $v_auto_deploy = ($git_info["AUTO_DEPLOY"] ?? "yes") === "yes";
 $v_deploy_key = $git_info["DEPLOY_KEY"] ?? "";
 

@@ -303,7 +303,7 @@ function toggleBuildLog() {
 function applyLaravelPreset(type) {
 	var textarea = document.getElementById("v_post_deploy");
 	if (type === "full") {
-		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction\n\n# 2. Compilar assets de frontend con PNPM (si existe package.json)\n[ -f package.json ] && pnpm install --frozen-lockfile && pnpm run build\n\n# 3. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache";
+		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction\n\n# 2. Compilar assets de frontend con PNPM (si existe package.json)\n[ -f package.json ] && pnpm install && pnpm run build\n\n# 3. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache";
 	} else if (type === "api") {
 		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction\n\n# 2. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache";
 	} else if (type === "clear") {

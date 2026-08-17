@@ -166,8 +166,12 @@ if [ "$auth_type" = "token" ] && [ -n "$auth_token" ]; then
 	display_repo_url=$(echo "$repo_url" | sed -e 's#^https://[^@]*@#https://#')
 fi
 
+# Clean carriage returns and Base64 encode post_deploy for safe single-line storage
+post_deploy_clean=$(echo "$post_deploy" | tr -d '\r')
+post_deploy_b64=$(echo "$post_deploy_clean" | base64 -w 0 2>/dev/null || echo "$post_deploy_clean" | base64 | tr -d '\n')
+
 # Append new record
-echo "DOMAIN='$domain' REPO='$display_repo_url' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$webhook_secret' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY='$post_deploy' AUTO_DEPLOY='$auto_deploy' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
+echo "DOMAIN='$domain' REPO='$display_repo_url' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$webhook_secret' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$auto_deploy' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
 
 # Ensure Composer and PNPM are available for user if needed
 if [ ! -f "$HOMEDIR/$user/.composer/composer" ]; then
@@ -207,7 +211,7 @@ if [ -f "$target_path/artisan" ]; then
 	chmod -R 775 "$target_path/storage" "$target_path/bootstrap/cache"
 fi
 
-if [ -n "$post_deploy" ]; then
+if [ -n "$post_deploy_clean" ]; then
 	echo "=== Git Build & Deploy started: $(date) ===" > "$build_log"
 	echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
 	echo "PHP CLI: $php_bin" >> "$build_log"
@@ -230,7 +234,7 @@ composer() {
 export -f composer 2>/dev/null || true
 
 cd "$target_path" || exit 1
-$post_deploy
+$post_deploy_clean
 EOF
 
 	chown "$user:$user" "$build_runner"

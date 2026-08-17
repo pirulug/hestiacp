@@ -51,7 +51,15 @@ parse_object_kv_list "$git_str"
 branch="${branch_arg:-$BRANCH}"
 deploy_dir="${DEPLOY_DIR:-public_html}"
 auth_type="${AUTH_TYPE:-none}"
-post_deploy="$POST_DEPLOY"
+
+# Extract post_deploy if stored in base64
+if [ -n "$POST_DEPLOY_B64" ]; then
+	post_deploy=$(echo "$POST_DEPLOY_B64" | base64 --decode 2>/dev/null || echo "$POST_DEPLOY_B64" | base64 -d 2>/dev/null)
+else
+	post_deploy="$POST_DEPLOY"
+fi
+post_deploy_clean=$(echo "$post_deploy" | tr -d '\r')
+post_deploy_b64=$(echo "$post_deploy_clean" | base64 -w 0 2>/dev/null || echo "$post_deploy_clean" | base64 | tr -d '\n')
 
 target_path="$HOMEDIR/$user/web/$domain/$deploy_dir"
 clean_domain=$(echo "$domain" | tr '.' '_')
@@ -92,7 +100,7 @@ time_str=$(date +'%T')
 
 # Update git.conf record
 sed -i "/DOMAIN='$domain'/d" "$user_git_conf"
-echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY='$post_deploy' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
+echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
 
 # Ensure Composer and PNPM are available for user if needed
 if [ ! -f "$HOMEDIR/$user/.composer/composer" ]; then
@@ -132,7 +140,7 @@ if [ -f "$target_path/artisan" ]; then
 	chmod -R 775 "$target_path/storage" "$target_path/bootstrap/cache"
 fi
 
-if [ -n "$post_deploy" ]; then
+if [ -n "$post_deploy_clean" ]; then
 	echo "=== Git Pull & Deploy started: $(date) ===" > "$build_log"
 	echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
 	echo "PHP CLI: $php_bin" >> "$build_log"
@@ -155,7 +163,7 @@ composer() {
 export -f composer 2>/dev/null || true
 
 cd "$target_path" || exit 1
-$post_deploy
+$post_deploy_clean
 EOF
 
 	chown "$user:$user" "$build_runner"

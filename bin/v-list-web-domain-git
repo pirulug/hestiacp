@@ -87,7 +87,7 @@ if [ "$format" = "json" ]; then
     \"LAST_COMMIT_AUTHOR\": \"$curr_author\",
     \"LAST_COMMIT_DATE\": \"$curr_date\",
     \"LAST_DEPLOY\": \"$LAST_DEPLOY\",
-    \"POST_DEPLOY\": \"$POST_DEPLOY\",
+    \"POST_DEPLOY_B64\": \"$POST_DEPLOY_B64\",
     \"AUTO_DEPLOY\": \"$AUTO_DEPLOY\",
     \"DEPLOY_KEY\": \"$deploy_key_content\",
     \"DATE\": \"$DATE\",
