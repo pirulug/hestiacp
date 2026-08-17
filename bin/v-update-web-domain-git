@@ -155,6 +155,7 @@ export COMPOSER_HOME="$HOMEDIR/$user/.config/composer"
 export PNPM_HOME="$HOMEDIR/$user/.local/share/pnpm"
 export PATH="\$HOMEDIR/$user/.composer/vendor/bin:\$HOMEDIR/$user/.local/share/pnpm:/usr/local/bin:/usr/bin:/bin:\$PATH"
 export NODE_ENV="production"
+pnpm config set ignore-scripts false 2>/dev/null || true
 
 # Alias composer to use user binary
 composer() {

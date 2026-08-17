@@ -70,8 +70,9 @@ if ! grep -q "PNPM_HOME" "$bash_aliases" 2> /dev/null; then
 	echo "export PATH=\"\$PNPM_HOME:\$PATH\"" >> "$bash_aliases"
 fi
 
-# Configure pnpm store-dir for the user
+# Configure pnpm store-dir and allow build scripts for native modules (esbuild, etc.)
 user_exec env PNPM_HOME="$PNPM_DIR" pnpm config set store-dir "$PNPM_STORE" > /dev/null 2>&1 || true
+user_exec env PNPM_HOME="$PNPM_DIR" pnpm config set ignore-scripts false > /dev/null 2>&1 || true
 
 #----------------------------------------------------------#
 #                       Hestia                             #
