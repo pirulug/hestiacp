@@ -161,10 +161,10 @@ apply_distro_version() {
 }
 
 # Set compiling directory
-BUILD_DIR='/tmp/hestiacp-src'
-INSTALL_DIR='/tmp/hestia-src'
+BUILD_DIR="${BUILD_DIR:-/tmp/hestiacp-src}"
+INSTALL_DIR="${INSTALL_DIR:-/tmp/hestia-src}"
 SRC_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-ARCHIVE_DIR="/tmp/hestia-src/archive/"
+ARCHIVE_DIR="$BUILD_DIR/archive/"
 architecture="$(arch)"
 if [ "$architecture" = "aarch64" ]; then
 	BUILD_ARCH='arm64'
