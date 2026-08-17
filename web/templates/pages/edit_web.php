@@ -16,7 +16,7 @@
 				</a>
 			<?php } ?>
 			<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION['token']])) ?>" class="button button-secondary">
-				<i class="fab fa-github icon-orange"></i><?= tohtml( _("Git / GitHub")) ?>
+				<img src="/images/github.svg" alt="GitHub" width="16" height="16" style="vertical-align: middle; margin-right: 6px; display: inline-block;"><?= tohtml( _("Git / GitHub")) ?>
 			</a>
 			<button type="submit" class="button" form="main-form">
 				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>

@@ -25,7 +25,7 @@
 				data-confirm-title="<?= tohtml( _("Update from GitHub")) ?>"
 				data-confirm-message="<?= tohtml( _("Are you sure you want to download and install updates from GitHub (pirulug/hestiacp - main)?")) ?>"
 			>
-				<i class="fab fa-github icon-purple"></i><?= tohtml( _("Update from GitHub")) ?>
+				<img src="/images/github.svg" alt="GitHub" width="16" height="16" style="vertical-align: middle; margin-right: 6px; display: inline-block;"><?= tohtml( _("Update from GitHub")) ?>
 			</a>
 		</div>
 	</div>

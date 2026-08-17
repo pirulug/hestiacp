@@ -40,7 +40,7 @@
 
 		<div class="form-container">
 			<h1 class="u-mb20">
-				<i class="fab fa-github u-mr10"></i><?= tohtml( _("Git / GitHub Integration")) ?> - <?= tohtml($v_domain) ?>
+				<img src="/images/github.svg" alt="GitHub" width="24" height="24" style="vertical-align: middle; margin-right: 8px; display: inline-block;"><?= tohtml( _("Git / GitHub Integration")) ?> - <?= tohtml($v_domain) ?>
 			</h1>
 
 			<?php show_alert_message($_SESSION); ?>

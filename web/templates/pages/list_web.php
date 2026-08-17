@@ -280,7 +280,7 @@
 										href="/edit/git/?<?= tohtml(http_build_query(["domain" => $key, "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Git / GitHub")) ?>"
 									>
-										<i class="fab fa-github icon-orange"></i>
+										<img src="/images/github.svg" alt="<?= tohtml( _("Git / GitHub")) ?>" width="16" height="16" style="vertical-align: middle; display: inline-block;">
 										<span class="u-hide-desktop"><?= tohtml( _("Git / GitHub")) ?></span>
 									</a>
 								</li>
