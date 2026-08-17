@@ -35,3 +35,16 @@ systemctl restart hestia
 # 4. Reiniciar el servicio web de Hestia
 systemctl restart hestia
 ```
+
+---
+
+# ACTIVAR NODE.JS Y PNPM PARA DESPLIEGUES LARAVEL
+
+```bash
+# 1. Instalar Node.js y habilitar PNPM en el servidor
+/usr/local/hestia/bin/v-add-sys-pnpm
+
+# 2. Configurar entorno de usuario (ejemplo para usuario admin)
+/usr/local/hestia/bin/v-add-user-composer admin
+/usr/local/hestia/bin/v-add-user-pnpm admin
+```

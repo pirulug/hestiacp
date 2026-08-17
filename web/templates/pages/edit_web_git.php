@@ -190,18 +190,35 @@
 				</div>
 			<?php } ?>
 
-			<!-- Post deploy script -->
-			<div class="u-mb15">
-				<label for="v_post_deploy" class="form-label"><?= tohtml( _("Comandos Post-Despliegue (Opcional)")) ?></label>
-				<input
-					type="text"
+			<!-- Post deploy script with Laravel presets -->
+			<div class="u-mb20">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+					<label for="v_post_deploy" class="form-label" style="margin-bottom: 0;">
+						<?= tohtml( _("Comandos de Construcción y Despliegue (Build Pipeline)")) ?>
+					</label>
+					<div style="display: flex; gap: 6px;">
+						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('full')">
+							<i class="fab fa-laravel u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel Full")) ?>
+						</button>
+						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('api')">
+							<i class="fab fa-laravel u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel API")) ?>
+						</button>
+						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('clear')">
+							<i class="fas fa-eraser u-mr5"></i><?= tohtml( _("Limpiar")) ?>
+						</button>
+					</div>
+				</div>
+				<textarea
 					class="form-control"
 					name="v_post_deploy"
 					id="v_post_deploy"
-					value="<?= tohtml($v_post_deploy) ?>"
-					placeholder="composer install --no-dev || php artisan migrate --force"
-				>
-				<small class="form-text text-muted"><?= tohtml( _("Comandos que se ejecutarán automáticamente en el directorio de despliegue tras cada pull.")) ?></small>
+					rows="6"
+					style="font-family: monospace; font-size: 12px; line-height: 1.5; tab-size: 4;"
+					placeholder="composer install --no-dev --prefer-dist --optimize-autoloader&#10;pnpm install --frozen-lockfile && pnpm run build&#10;php artisan storage:link&#10;php artisan optimize:clear&#10;php artisan config:cache"
+				><?= tohtml($v_post_deploy) ?></textarea>
+				<small class="form-text text-muted">
+					<?= tohtml( _("Comandos ejecutados automáticamente con permisos del usuario en el directorio del proyecto tras cada pull o webhook.")) ?>
+				</small>
 			</div>
 
 			<!-- Auto deploy toggle -->
@@ -217,6 +234,23 @@
 					<?= tohtml( _("Permitir despliegue automático al recibir Webhook")) ?>
 				</label>
 			</div>
+
+			<?php if (!empty($v_build_log)) { ?>
+				<!-- Build and Deploy Logs Viewer -->
+				<div class="u-mb20">
+					<div style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; overflow: hidden;">
+						<div style="background: #2d2d2d; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
+							<span style="font-family: monospace; font-size: 12px; color: #4ade80;">
+								<i class="fas fa-terminal u-mr5"></i><?= tohtml( _("Último Registro de Construcción (Build Log)")) ?>
+							</span>
+							<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleBuildLog()">
+								<span id="toggle_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
+							</button>
+						</div>
+						<pre id="build_log_content" style="margin: 0; padding: 15px; font-family: monospace; font-size: 11px; line-height: 1.4; color: #d4d4d4; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;"><?= tohtml($v_build_log) ?></pre>
+					</div>
+				</div>
+			<?php } ?>
 		</div>
 	</form>
 </div>
@@ -255,5 +289,25 @@ function copyWebhookUrl() {
 	copyUrl.setSelectionRange(0, 99999);
 	navigator.clipboard.writeText(copyUrl.value);
 	alert("URL del Webhook copiada al portapapeles");
+}
+
+function toggleBuildLog() {
+	var log = document.getElementById("build_log_content");
+	if (log.style.display === "none") {
+		log.style.display = "block";
+	} else {
+		log.style.display = "none";
+	}
+}
+
+function applyLaravelPreset(type) {
+	var textarea = document.getElementById("v_post_deploy");
+	if (type === "full") {
+		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction\n\n# 2. Compilar assets de frontend con PNPM (si existe package.json)\n[ -f package.json ] && pnpm install --frozen-lockfile && pnpm run build\n\n# 3. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache";
+	} else if (type === "api") {
+		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction\n\n# 2. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache";
+	} else if (type === "clear") {
+		textarea.value = "";
+	}
 }
 </script>

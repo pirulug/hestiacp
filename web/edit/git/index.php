@@ -166,6 +166,13 @@ $backend_port = !empty($_SESSION["BACKEND_PORT"]) ? $_SESSION["BACKEND_PORT"] : 
 $panel_host = !empty($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : gethostname();
 $v_webhook_url = "https://" . $panel_host . "/api/webhook/?user=" . urlencode($user_plain) . "&domain=" . urlencode($v_domain) . "&secret=" . urlencode($v_webhook_secret);
 
+// Read build log if available
+$v_build_log = "";
+$log_file = "/home/" . $user_plain . "/web/" . $v_domain . "/log/git_build.log";
+if (file_exists($log_file) && is_readable($log_file)) {
+	$v_build_log = file_get_contents($log_file);
+}
+
 // Render page
 render_page($user, $TAB, "edit_web_git");
 

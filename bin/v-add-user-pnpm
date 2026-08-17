@@ -1,0 +1,83 @@
+#!/bin/bash
+# info: configure PNPM package manager for a user
+# options: USER
+#
+# example: v-add-user-pnpm user
+#
+# This function configures PNPM directory, storage and environment for a user.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source $HESTIA/func/main.sh
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+
+[ -z "$HOMEDIR" ] && check_result "$E_NOTEXIST" "Hestia environment vars not present"
+
+# Perform verification if read-only mode is enabled
+check_hestia_demo_mode
+
+# Checking root permissions
+if [ "x$(id -u)" != 'x0' ]; then
+	echo "ERROR: v-add-user-pnpm can be executed only by root user"
+	exit 10
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Ensure PNPM is available on the system
+if ! command -v pnpm > /dev/null 2>&1; then
+	$BIN/v-add-sys-pnpm quiet
+fi
+
+PNPM_DIR="$HOMEDIR/$user/.local/share/pnpm"
+PNPM_STORE="$PNPM_DIR/store"
+
+mkdir -p "$PNPM_STORE"
+mkdir -p "$HOMEDIR/$user/.config"
+chown -R "$user:$user" "$HOMEDIR/$user/.local"
+chown -R "$user:$user" "$HOMEDIR/$user/.config"
+
+# Add PNPM PATH and alias to .bash_aliases
+bash_aliases="$HOMEDIR/$user/.bash_aliases"
+if [ ! -f "$bash_aliases" ]; then
+	touch "$bash_aliases"
+	chown "$user:$user" "$bash_aliases"
+fi
+
+if ! grep -q "PNPM_HOME" "$bash_aliases" 2> /dev/null; then
+	echo "export PNPM_HOME=\"$HOMEDIR/$user/.local/share/pnpm\"" >> "$bash_aliases"
+	echo "export PATH=\"\$PNPM_HOME:\$PATH\"" >> "$bash_aliases"
+fi
+
+# Configure pnpm store-dir for the user
+user_exec env PNPM_HOME="$PNPM_DIR" pnpm config set store-dir "$PNPM_STORE" > /dev/null 2>&1 || true
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+$BIN/v-log-action "$user" "Info" "Plugins" "PNPM support configured for user $user."
+log_event "$OK" "$ARGUMENTS"
+
+exit 0

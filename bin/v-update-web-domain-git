@@ -94,11 +94,85 @@ time_str=$(date +'%T')
 sed -i "/DOMAIN='$domain'/d" "$user_git_conf"
 echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY='$post_deploy' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
 
-# Execute post deploy commands if specified
-if [ -n "$post_deploy" ]; then
-	cd "$target_path" || exit 1
-	user_exec bash -c "$post_deploy" > /dev/null 2>&1
+# Ensure Composer and PNPM are available for user if needed
+if [ ! -f "$HOMEDIR/$user/.composer/composer" ]; then
+	$BIN/v-add-user-composer "$user" > /dev/null 2>&1
 fi
+
+if command -v pnpm > /dev/null 2>&1; then
+	if [ ! -d "$HOMEDIR/$user/.local/share/pnpm" ]; then
+		$BIN/v-add-user-pnpm "$user" > /dev/null 2>&1
+	fi
+fi
+
+# Execute post deploy / build pipeline if provided
+log_dir="$HOMEDIR/$user/web/$domain/log"
+mkdir -p "$log_dir"
+chown "$user:$user" "$log_dir"
+build_log="$log_dir/git_build.log"
+
+# Detect domain specific PHP version if configured
+domain_backend=$(get_object_values 'web' 'DOMAIN' "$domain" '$BACKEND')
+php_bin="php"
+if [ -n "$domain_backend" ] && [ "$domain_backend" != "default" ]; then
+	clean_php_ver=$(echo "$domain_backend" | sed -e 's/PHP-//' -e 's/_/./')
+	if [ -x "/usr/bin/php$clean_php_ver" ]; then
+		php_bin="/usr/bin/php$clean_php_ver"
+	fi
+fi
+
+# Check and prepare Laravel directories and permissions if Laravel detected
+if [ -f "$target_path/artisan" ]; then
+	mkdir -p "$target_path/storage/framework/sessions" \
+		"$target_path/storage/framework/views" \
+		"$target_path/storage/framework/cache" \
+		"$target_path/storage/logs" \
+		"$target_path/bootstrap/cache"
+	chown -R "$user:$user" "$target_path/storage" "$target_path/bootstrap/cache"
+	chmod -R 775 "$target_path/storage" "$target_path/bootstrap/cache"
+fi
+
+if [ -n "$post_deploy" ]; then
+	echo "=== Git Pull & Deploy started: $(date) ===" > "$build_log"
+	echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
+	echo "PHP CLI: $php_bin" >> "$build_log"
+	echo "-----------------------------------------" >> "$build_log"
+
+	build_runner="$HOMEDIR/$user/tmp/run_build_${clean_domain}.sh"
+	cat << EOF > "$build_runner"
+#!/bin/bash
+export HOME="$HOMEDIR/$user"
+export USER="$user"
+export COMPOSER_HOME="$HOMEDIR/$user/.config/composer"
+export PNPM_HOME="$HOMEDIR/$user/.local/share/pnpm"
+export PATH="\$HOMEDIR/$user/.composer/vendor/bin:\$HOMEDIR/$user/.local/share/pnpm:/usr/local/bin:/usr/bin:/bin:\$PATH"
+export NODE_ENV="production"
+
+# Alias composer to use user binary
+composer() {
+	$php_bin "$HOMEDIR/$user/.composer/composer" "\$@"
+}
+export -f composer 2>/dev/null || true
+
+cd "$target_path" || exit 1
+$post_deploy
+EOF
+
+	chown "$user:$user" "$build_runner"
+	chmod 700 "$build_runner"
+
+	user_exec bash "$build_runner" >> "$build_log" 2>&1
+	build_status=$?
+
+	rm -f "$build_runner"
+
+	echo "-----------------------------------------" >> "$build_log"
+	echo "=== Build finished with exit code: $build_status ===" >> "$build_log"
+fi
+
+# Ensure domain files ownership
+chown -R "$user:$user" "$target_path"
+[ -f "$build_log" ] && chown "$user:$user" "$build_log"
 
 #----------------------------------------------------------#
 #                       Hestia                             #
