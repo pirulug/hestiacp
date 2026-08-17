@@ -10,7 +10,10 @@
 
 				<!-- Logo / Home Button -->
 				<a href="/" class="top-bar-logo" title="<?= htmlentities($_SESSION["APP_NAME"]) ?>">
-					<img src="/images/logo-header.svg" alt="<?= htmlentities($_SESSION["APP_NAME"]) ?>" width="54" height="29">
+					<picture>
+						<source srcset="/images/logo-header-white.svg" media="(prefers-color-scheme: dark)">
+						<img src="/images/logo-header.svg" alt="<?= htmlentities($_SESSION["APP_NAME"]) ?>" width="54" height="29">
+					</picture>
 				</a>
 
 				<!-- Usage Statistics -->

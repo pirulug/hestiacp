@@ -19,12 +19,22 @@
 			<a class="button button-secondary" href="<?= tohtml($btn_url) ?>">
 				<i class="fas <?= tohtml($btn_icon) ?>"></i><?= tohtml($btn_label) ?>
 			</a>
+			<a
+				class="button button-secondary data-controls js-confirm-action"
+				href="/update/git/?<?= tohtml(http_build_query(["token" => $_SESSION["token"], "fork" => "pirulug", "branch" => "main"])) ?>"
+				data-confirm-title="<?= tohtml( _("Update from GitHub")) ?>"
+				data-confirm-message="<?= tohtml( _("Are you sure you want to download and install updates from GitHub (pirulug/hestiacp - main)?")) ?>"
+			>
+				<i class="fab fa-github icon-purple"></i><?= tohtml( _("Update from GitHub")) ?>
+			</a>
 		</div>
 	</div>
 </div>
 <!-- End toolbar -->
 
 <div class="container">
+
+	<?php show_alert_message($_SESSION); ?>
 
 	<h1 class="u-text-center u-hide-desktop u-mt20 u-pr30 u-mb20 u-pl30"><?= tohtml( _("Updates")) ?></h1>
 

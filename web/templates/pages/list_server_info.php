@@ -17,7 +17,10 @@
 				<div class="container top-bar-inner">
 					<div class="top-bar-left">
 						<a href="/" class="top-bar-logo" title="<?= tohtml( _("Hestia Control Panel")) ?>">
-							<img src="/images/logo-header.svg" alt="<?= tohtml( _("Hestia Control Panel")) ?>" width="54" height="29">
+							<picture>
+								<source srcset="/images/logo-header-white.svg" media="(prefers-color-scheme: dark)">
+								<img src="/images/logo-header.svg" alt="<?= tohtml( _("Hestia Control Panel")) ?>" width="54" height="29">
+							</picture>
 						</a>
 					</div>
 					<div class="top-bar-right">

@@ -1,6 +1,9 @@
 <div class="login">
 	<a href="/" class="u-block u-mb40">
-		<img src="/images/logo.svg" alt="<?= tohtml($_SESSION["APP_NAME"]) ?>" width="100" height="120">
+		<picture>
+			<source srcset="/images/logo-white.svg" media="(prefers-color-scheme: dark)">
+			<img src="/images/logo.svg" alt="<?= tohtml($_SESSION["APP_NAME"]) ?>" width="100" height="120">
+		</picture>
 	</a>
 	<form method="get" action="/reset/">
 		<h1 class="login-title">
