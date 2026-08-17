@@ -118,13 +118,55 @@ get_branch_file() {
 	fi
 }
 
+get_distro_suffix() {
+	local distro_id distro_num
+	distro_id=$(lsb_release -is 2>/dev/null | tr '[:upper:]' '[:lower:]')
+	distro_num=$(lsb_release -rs 2>/dev/null)
+	if [ -z "$distro_id" ] && [ -f /etc/os-release ]; then
+		distro_id=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+		distro_num=$(grep "^VERSION_ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+	fi
+
+	if [ "$distro_id" = "debian" ]; then
+		echo "debian${distro_num}"
+	elif [ "$distro_id" = "ubuntu" ]; then
+		echo "ubuntu${distro_num}"
+	else
+		echo "unknown"
+	fi
+}
+
+apply_distro_version() {
+	local control_file="$1"
+	local distro_suffix="$2"
+	if [ -z "$distro_suffix" ]; then
+		distro_suffix=$(get_distro_suffix)
+	fi
+
+	local current_version
+	current_version=$(grep "^Version:" "$control_file" | awk '{print $2}')
+
+	local base_version="$current_version"
+	if echo "$current_version" | grep -qE '~'; then
+		base_version=$(echo "$current_version" | sed -E 's/~.*$//')
+	fi
+
+	local pkg_rev="${BUILD_PKG_REV:-1}"
+	local release_suffix="-${pkg_rev}+${distro_suffix}"
+	if [ -n "$BUILD_RELEASE" ]; then
+		release_suffix="${release_suffix}~${BUILD_RELEASE}"
+	fi
+
+	sed -i "s/^Version: \(.*\)/Version: ${base_version}${release_suffix}/" "$control_file"
+}
+
 # Set compiling directory
 BUILD_DIR='/tmp/hestiacp-src'
 INSTALL_DIR='/tmp/hestia-src'
 SRC_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 ARCHIVE_DIR="/tmp/hestia-src/archive/"
 architecture="$(arch)"
-if [ $architecture == 'aarch64' ]; then
+if [ "$architecture" = "aarch64" ]; then
 	BUILD_ARCH='arm64'
 else
 	BUILD_ARCH='amd64'
@@ -309,11 +351,17 @@ get_branch_file 'src/deb/hestia/control' "$BUILD_DIR_HESTIA/DEBIAN/control"
 if [ "$BUILD_ARCH" != "amd64" ]; then
 	sed -i "s/amd64/${BUILD_ARCH}/g" "$BUILD_DIR_HESTIA/DEBIAN/control"
 fi
+apply_distro_version "$BUILD_DIR_HESTIA/DEBIAN/control"
 get_branch_file 'src/deb/hestia/copyright' "$BUILD_DIR_HESTIA/DEBIAN/copyright"
 get_branch_file 'src/deb/hestia/preinst' "$BUILD_DIR_HESTIA/DEBIAN/preinst"
 get_branch_file 'src/deb/hestia/postinst' "$BUILD_DIR_HESTIA/DEBIAN/postinst"
 chmod +x $BUILD_DIR_HESTIA/DEBIAN/postinst
 chmod +x $BUILD_DIR_HESTIA/DEBIAN/preinst
+
+if [ ! -s "$BUILD_DIR_HESTIA/DEBIAN/control" ]; then
+	echo "ERROR: Control file is empty or missing at $BUILD_DIR_HESTIA/DEBIAN/control"
+	exit 1
+fi
 
 echo Building Hestia DEB
 dpkg-deb -Zxz --build $BUILD_DIR_HESTIA $DEB_DIR
