@@ -65,16 +65,11 @@ fi
 #                       Action                             #
 #----------------------------------------------------------#
 
-git_ssh_cmd=""
-if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
-	git_ssh_cmd="GIT_SSH_COMMAND=\"ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new\""
-fi
-
 # Fetch and pull / reset hard to origin/branch
-if [ -n "$git_ssh_cmd" ]; then
-	user_exec eval "$git_ssh_cmd git -C \"$target_path\" fetch origin \"$branch\""
-	user_exec eval "$git_ssh_cmd git -C \"$target_path\" checkout \"$branch\""
-	user_exec eval "$git_ssh_cmd git -C \"$target_path\" reset --hard origin/\"$branch\""
+if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
+	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" fetch origin "$branch"
+	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" checkout "$branch"
+	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" reset --hard origin/"$branch"
 else
 	user_exec git -C "$target_path" fetch origin "$branch"
 	user_exec git -C "$target_path" checkout "$branch"
@@ -102,7 +97,7 @@ echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AU
 # Execute post deploy commands if specified
 if [ -n "$post_deploy" ]; then
 	cd "$target_path" || exit 1
-	user_exec eval "$post_deploy" > /dev/null 2>&1
+	user_exec bash -c "$post_deploy" > /dev/null 2>&1
 fi
 
 #----------------------------------------------------------#

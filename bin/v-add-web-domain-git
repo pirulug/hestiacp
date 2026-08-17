@@ -65,12 +65,20 @@ chown "$user:$user" "$target_path"
 
 # Prepare Git credentials / SSH command
 final_repo_url="$repo_url"
-git_ssh_cmd=""
 
 if [ "$auth_type" = "ssh" ]; then
 	if [ ! -f "$ssh_key_file" ]; then
 		$BIN/v-make-web-domain-git-key "$user" "$domain" > /dev/null 2>&1
 	fi
+	# If URL is in HTTPS format, convert to SSH format for git clone with deploy key
+	if [[ "$final_repo_url" =~ ^https://github\.com/ ]]; then
+		repo_path=$(echo "$final_repo_url" | sed -e 's#^https://github\.com/##' -e 's#\.git$##')
+		final_repo_url="git@github.com:${repo_path}.git"
+	elif [[ "$final_repo_url" =~ ^https://gitlab\.com/ ]]; then
+		repo_path=$(echo "$final_repo_url" | sed -e 's#^https://gitlab\.com/##' -e 's#\.git$##')
+		final_repo_url="git@gitlab.com:${repo_path}.git"
+	fi
+
 	# Ensure known_hosts contains github.com / gitlab.com
 	mkdir -p "$HOMEDIR/$user/.ssh"
 	ssh_keyscan_hosts="github.com gitlab.com bitbucket.org"
@@ -79,8 +87,9 @@ if [ "$auth_type" = "ssh" ]; then
 			ssh-keyscan -H "$host" >> "$HOMEDIR/$user/.ssh/known_hosts" 2> /dev/null
 		fi
 	done
+	chmod 700 "$HOMEDIR/$user/.ssh"
+	[ -f "$HOMEDIR/$user/.ssh/known_hosts" ] && chmod 644 "$HOMEDIR/$user/.ssh/known_hosts"
 	chown -R "$user:$user" "$HOMEDIR/$user/.ssh"
-	git_ssh_cmd="GIT_SSH_COMMAND=\"ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new\""
 elif [ "$auth_type" = "token" ] && [ -n "$auth_token" ]; then
 	# Inject token into HTTPS URL if needed
 	if [[ "$repo_url" =~ ^https:// ]]; then
@@ -96,11 +105,11 @@ webhook_secret=$(generate_password '32')
 # Clone repository or initialize remote
 if [ -d "$target_path/.git" ]; then
 	# Update remote origin
-	if [ -n "$git_ssh_cmd" ]; then
-		user_exec eval "$git_ssh_cmd git -C \"$target_path\" remote set-url origin \"$final_repo_url\""
-		user_exec eval "$git_ssh_cmd git -C \"$target_path\" fetch origin \"$branch\""
-		user_exec eval "$git_ssh_cmd git -C \"$target_path\" checkout \"$branch\""
-		user_exec eval "$git_ssh_cmd git -C \"$target_path\" reset --hard origin/\"$branch\""
+	if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" remote set-url origin "$final_repo_url"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" fetch origin "$branch"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" checkout "$branch"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" reset --hard origin/"$branch"
 	else
 		user_exec git -C "$target_path" remote set-url origin "$final_repo_url"
 		user_exec git -C "$target_path" fetch origin "$branch"
@@ -114,8 +123,8 @@ else
 	mkdir -p "$temp_clone"
 	chown "$user:$user" "$temp_clone"
 
-	if [ -n "$git_ssh_cmd" ]; then
-		user_exec eval "$git_ssh_cmd git clone --branch \"$branch\" --depth 1 \"$final_repo_url\" \"$temp_clone\""
+	if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git clone --branch "$branch" --depth 1 "$final_repo_url" "$temp_clone"
 	else
 		user_exec git clone --branch "$branch" --depth 1 "$final_repo_url" "$temp_clone"
 	fi
