@@ -1,4 +1,8 @@
-# ACTIVAR FILE MANAGER
+# Opciones de Configuración y Módulos Adicionales de HestiaCP
+
+---
+
+## 1. Activar File Manager (Gestor de Archivos)
 
 ```bash
 # 1. Instalar dependencias del Administrador de Archivos (FileGator)
@@ -20,7 +24,7 @@ systemctl restart hestia
 
 ---
 
-# ACTIVAR LOGIN AUTOMATICO (SSO) EN PHPMYADMIN
+## 2. Activar Login Automático (SSO) en phpMyAdmin
 
 ```bash
 # 1. Habilitar el sistema API en Hestia (requerido para SSO)
@@ -38,7 +42,7 @@ systemctl restart hestia
 
 ---
 
-# ACTIVAR NODE.JS Y PNPM PARA DESPLIEGUES LARAVEL
+## 3. Activar Node.js y PNPM para Despliegues Laravel
 
 ```bash
 # 1. Instalar Node.js y habilitar PNPM en el servidor
