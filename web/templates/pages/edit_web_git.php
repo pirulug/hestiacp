@@ -235,6 +235,23 @@
 				</label>
 			</div>
 
+			<?php if (!empty($v_github_log)) { ?>
+				<!-- GitHub Webhook Log Viewer -->
+				<div class="u-mb20">
+					<div style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; overflow: hidden;">
+						<div style="background: #2d2d2d; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
+							<span style="font-family: monospace; font-size: 12px; color: #58a6ff;">
+								<i class="fab fa-github u-mr5"></i><?= tohtml( _("Registro de Eventos GitHub / Webhooks (GitHub Log)")) ?>
+							</span>
+							<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleGithubLog()">
+								<span id="toggle_github_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
+							</button>
+						</div>
+						<pre id="github_log_content" style="margin: 0; padding: 15px; font-family: monospace; font-size: 11px; line-height: 1.4; color: #c9d1d9; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;"><?= tohtml($v_github_log) ?></pre>
+					</div>
+				</div>
+			<?php } ?>
+
 			<?php if (!empty($v_build_log)) { ?>
 				<!-- Build and Deploy Logs Viewer -->
 				<div class="u-mb20">
@@ -289,6 +306,15 @@ function copyWebhookUrl() {
 	copyUrl.setSelectionRange(0, 99999);
 	navigator.clipboard.writeText(copyUrl.value);
 	alert("URL del Webhook copiada al portapapeles");
+}
+
+function toggleGithubLog() {
+	var log = document.getElementById("github_log_content");
+	if (log.style.display === "none") {
+		log.style.display = "block";
+	} else {
+		log.style.display = "none";
+	}
 }
 
 function toggleBuildLog() {

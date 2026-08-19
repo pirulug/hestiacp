@@ -174,6 +174,13 @@ if (file_exists($log_file) && is_readable($log_file)) {
 	$v_build_log = file_get_contents($log_file);
 }
 
+// Read GitHub / Webhook log if available
+$v_github_log = "";
+$webhook_log_file = "/home/" . $user_plain . "/web/" . $v_domain . "/log/git_webhook.log";
+if (file_exists($webhook_log_file) && is_readable($webhook_log_file)) {
+	$v_github_log = file_get_contents($webhook_log_file);
+}
+
 // Render page
 render_page($user, $TAB, "edit_web_git");
 

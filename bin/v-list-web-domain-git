@@ -62,10 +62,10 @@ parse_object_kv_list "$git_str"
 # Get current commit if repo exists
 target_path="$HOMEDIR/$user/web/$domain/${DEPLOY_DIR:-public_html}"
 if [ -d "$target_path/.git" ]; then
-	curr_commit=$(git -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
-	curr_msg=$(git -C "$target_path" log -1 --format="%s" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_MSG")
-	curr_author=$(git -C "$target_path" log -1 --format="%an" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_AUTHOR")
-	curr_date=$(git -C "$target_path" log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2> /dev/null || echo "$DATE $TIME")
+	curr_commit=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
+	curr_msg=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%s" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_MSG")
+	curr_author=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%an" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_AUTHOR")
+	curr_date=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2> /dev/null || echo "$DATE $TIME")
 else
 	curr_commit="$LAST_COMMIT"
 	curr_msg="$LAST_COMMIT_MSG"

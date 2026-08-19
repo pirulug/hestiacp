@@ -142,9 +142,9 @@ fi
 chown -R "$user:$user" "$target_path"
 
 # Retrieve latest commit info
-last_commit_hash=$(git -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "initial")
-last_commit_msg=$(git -C "$target_path" log -1 --format="%s" 2> /dev/null | tr "'" '"' || echo "Initial clone")
-last_commit_author=$(git -C "$target_path" log -1 --format="%an" 2> /dev/null | tr "'" '"' || echo "Git")
+last_commit_hash=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "initial")
+last_commit_msg=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%s" 2> /dev/null | tr "'" '"' || echo "Initial clone")
+last_commit_author=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%an" 2> /dev/null | tr "'" '"' || echo "Git")
 last_deploy_time=$(date +%s)
 date_str=$(date +'%F')
 time_str=$(date +'%T')
