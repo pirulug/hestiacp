@@ -34,13 +34,15 @@ unset($output);
 // Handle manual action: Pull / Deploy
 if (isset($_GET["action"]) && $_GET["action"] === "pull") {
 	verify_csrf($_GET);
-	exec(
-		HESTIA_CMD . "v-update-web-domain-git " . $user . " " . quoteshellarg($v_domain),
-		$output,
-		$return_var,
-	);
+	$run_build = (isset($_GET["build"]) && in_array(strtolower($_GET["build"]), ["no", "0", "false", "skip"], true)) ? "no" : "yes";
+	$cmd = HESTIA_CMD . "v-update-web-domain-git " . $user . " " . quoteshellarg($v_domain) . " " . quoteshellarg("") . " " . quoteshellarg($run_build);
+	exec($cmd, $output, $return_var);
 	if ($return_var === 0) {
-		$_SESSION["ok_msg"] = _("Git repository updated successfully.");
+		if ($run_build === "no") {
+			$_SESSION["ok_msg"] = _("Git repository updated successfully (Build Pipeline skipped).");
+		} else {
+			$_SESSION["ok_msg"] = _("Git repository updated and deployed successfully.");
+		}
 	} else {
 		$_SESSION["error_msg"] = _("Failed to update Git repository: ") . implode(" ", $output);
 	}

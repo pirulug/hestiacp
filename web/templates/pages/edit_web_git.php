@@ -8,9 +8,9 @@
 		</div>
 		<div class="toolbar-buttons">
 			<?php if ($v_configured) { ?>
-				<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "pull", "token" => $_SESSION["token"]])) ?>" class="button button-secondary">
+				<button type="button" class="button button-secondary" onclick="openDeployModal()">
 					<i class="fas fa-rotate icon-green"></i><?= tohtml( _("Deploy / Pull Now")) ?>
-				</a>
+				</button>
 				<a
 					href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "delete", "token" => $_SESSION["token"]])) ?>"
 					class="button button-secondary data-controls js-confirm-action"
@@ -272,7 +272,87 @@
 	</form>
 </div>
 
+<?php if ($v_configured) { ?>
+	<!-- Deploy Modal Dialog -->
+	<dialog id="deploy_dialog" class="modal" style="max-width: 520px; padding: 0;">
+		<div style="padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: space-between;">
+			<h2 class="modal-title" style="margin: 0; padding: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+				<i class="fas fa-rotate icon-green"></i><?= tohtml( _("Confirmar Despliegue / Git Pull")) ?>
+			</h2>
+			<button type="button" onclick="closeDeployModal()" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 16px; opacity: 0.7; padding: 0;">
+				<i class="fas fa-xmark"></i>
+			</button>
+		</div>
+		<div class="modal-message" style="padding: 18px 20px; text-align: left; line-height: 1.5; font-size: 13px;">
+			<p class="u-mb10">
+				<?= tohtml( _("¿Cómo deseas realizar el despliegue para")) ?> <strong><?= tohtml($v_domain) ?></strong>?
+			</p>
+			<div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+				<div style="font-weight: 600; margin-bottom: 4px; color: #4ade80; display: flex; align-items: center; gap: 6px;">
+					<i class="fas fa-terminal"></i><?= tohtml( _("Comandos de Construcción y Despliegue (Build Pipeline)")) ?>
+				</div>
+				<?php if (!empty($v_post_deploy)) { ?>
+					<div style="font-size: 11px; opacity: 0.85; font-family: monospace; white-space: pre-wrap; max-height: 90px; overflow-y: auto; background: rgba(0, 0, 0, 0.25); padding: 8px; border-radius: 4px; margin-top: 6px;"><?= tohtml($v_post_deploy) ?></div>
+				<?php } else { ?>
+					<div style="font-size: 11px; opacity: 0.7; font-style: italic; margin-top: 4px;">
+						<?= tohtml( _("No hay comandos de construcción configurados en el pipeline.")) ?>
+					</div>
+				<?php } ?>
+			</div>
+			<p style="font-size: 12px; opacity: 0.85; margin: 0;">
+				<?= tohtml( _("Puedes ejecutar los comandos del Build Pipeline (Composer, PNPM, Artisan, etc.) o realizar únicamente la actualización de archivos desde Git.")) ?>
+			</p>
+		</div>
+		<div class="modal-options" style="padding: 12px 20px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;">
+			<button type="button" class="button button-secondary" onclick="closeDeployModal()">
+				<?= tohtml( _("Cancelar")) ?>
+			</button>
+			<button type="button" class="button button-secondary" onclick="executeDeploy(false)">
+				<i class="fas fa-download icon-blue u-mr5"></i><?= tohtml( _("Solo Pull (Omitir Pipeline)")) ?>
+			</button>
+			<button type="button" class="button" onclick="executeDeploy(true)">
+				<i class="fas fa-play icon-green u-mr5"></i><?= tohtml( _("Pull + Ejecutar Pipeline")) ?>
+			</button>
+		</div>
+	</dialog>
+<?php } ?>
+
 <script>
+function openDeployModal() {
+	var dialog = document.getElementById("deploy_dialog");
+	if (dialog) {
+		dialog.showModal();
+	}
+}
+
+function closeDeployModal() {
+	var dialog = document.getElementById("deploy_dialog");
+	if (dialog) {
+		dialog.close();
+	}
+}
+
+function executeDeploy(runBuild) {
+	closeDeployModal();
+	var spinner = document.querySelector(".js-spinner");
+	if (spinner) {
+		spinner.classList.add("is-active");
+	}
+	var baseUrl = "/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "pull", "token" => $_SESSION["token"]] + (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : []))) ?>";
+	window.location.href = baseUrl + "&build=" + (runBuild ? "yes" : "no");
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+	var dialog = document.getElementById("deploy_dialog");
+	if (dialog) {
+		dialog.addEventListener("click", function(event) {
+			if (event.target === dialog) {
+				dialog.close();
+			}
+		});
+	}
+});
+
 function toggleAuthFields(val) {
 	var sshSection = document.getElementById("ssh_key_section");
 	var tokenSection = document.getElementById("token_section");

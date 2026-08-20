@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: update / pull latest Git changes for web domain
-# options: USER DOMAIN [BRANCH]
+# options: USER DOMAIN [BRANCH] [RUN_BUILD]
 #
 # example: v-update-web-domain-git admin example.com
 #
@@ -14,6 +14,8 @@
 user=$1
 domain=$2
 branch_arg=$3
+run_build_arg=$4
+run_build="${run_build_arg:-yes}"
 
 # Includes
 # shellcheck source=/etc/hestiacp/hestia.conf
@@ -29,7 +31,7 @@ source_conf "$HESTIA/conf/hestia.conf"
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'USER DOMAIN [BRANCH]'
+check_args '2' "$#" 'USER DOMAIN [BRANCH] [RUN_BUILD]'
 is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -141,13 +143,19 @@ if [ -f "$target_path/artisan" ]; then
 fi
 
 if [ -n "$post_deploy_clean" ]; then
-	echo "=== Git Pull & Deploy started: $(date) ===" > "$build_log"
-	echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
-	echo "PHP CLI: $php_bin" >> "$build_log"
-	echo "-----------------------------------------" >> "$build_log"
+	if [ "$run_build" = "no" ] || [ "$run_build" = "0" ] || [ "$run_build" = "false" ] || [ "$run_build" = "skip" ]; then
+		echo "=== Git Pull completed: $(date) ===" > "$build_log"
+		echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
+		echo "Build Pipeline: Omitido por solicitud del usuario (Pull only)" >> "$build_log"
+		echo "-----------------------------------------" >> "$build_log"
+	else
+		echo "=== Git Pull & Deploy started: $(date) ===" > "$build_log"
+		echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
+		echo "PHP CLI: $php_bin" >> "$build_log"
+		echo "-----------------------------------------" >> "$build_log"
 
-	build_runner="$HOMEDIR/$user/tmp/run_build_${clean_domain}.sh"
-	cat << EOF > "$build_runner"
+		build_runner="$HOMEDIR/$user/tmp/run_build_${clean_domain}.sh"
+		cat << EOF > "$build_runner"
 #!/bin/bash
 export HOME="$HOMEDIR/$user"
 export USER="$user"
@@ -167,16 +175,17 @@ cd "$target_path" || exit 1
 $post_deploy_clean
 EOF
 
-	chown "$user:$user" "$build_runner"
-	chmod 700 "$build_runner"
+		chown "$user:$user" "$build_runner"
+		chmod 700 "$build_runner"
 
-	user_exec bash "$build_runner" >> "$build_log" 2>&1
-	build_status=$?
+		user_exec bash "$build_runner" >> "$build_log" 2>&1
+		build_status=$?
 
-	rm -f "$build_runner"
+		rm -f "$build_runner"
 
-	echo "-----------------------------------------" >> "$build_log"
-	echo "=== Build finished with exit code: $build_status ===" >> "$build_log"
+		echo "-----------------------------------------" >> "$build_log"
+		echo "=== Build finished with exit code: $build_status ===" >> "$build_log"
+	fi
 fi
 
 # Ensure domain files ownership
