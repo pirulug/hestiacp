@@ -77,13 +77,13 @@ fi
 
 # Fetch and pull / reset hard to origin/branch
 if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
-	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" fetch origin "$branch"
-	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" checkout "$branch"
-	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" reset --hard origin/"$branch"
+	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$target_path" fetch origin "$branch" && \
+	user_exec git -c safe.directory=* -C "$target_path" checkout "$branch" && \
+	user_exec git -c safe.directory=* -C "$target_path" reset --hard origin/"$branch"
 else
-	user_exec git -C "$target_path" fetch origin "$branch"
-	user_exec git -C "$target_path" checkout "$branch"
-	user_exec git -C "$target_path" reset --hard origin/"$branch"
+	user_exec git -c safe.directory=* -C "$target_path" fetch origin "$branch" && \
+	user_exec git -c safe.directory=* -C "$target_path" checkout "$branch" && \
+	user_exec git -c safe.directory=* -C "$target_path" reset --hard origin/"$branch"
 fi
 
 if [ $? -ne 0 ]; then
@@ -153,6 +153,10 @@ if [ -n "$post_deploy_clean" ]; then
 		echo "Domain: $domain | User: $user | Branch: $branch" >> "$build_log"
 		echo "PHP CLI: $php_bin" >> "$build_log"
 		echo "-----------------------------------------" >> "$build_log"
+
+		mkdir -p "$HOMEDIR/$user/tmp"
+		chown "$user:$user" "$HOMEDIR/$user/tmp"
+		chmod 770 "$HOMEDIR/$user/tmp"
 
 		build_runner="$HOMEDIR/$user/tmp/run_build_${clean_domain}.sh"
 		cat << EOF > "$build_runner"

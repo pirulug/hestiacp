@@ -8,19 +8,34 @@ $TAB = "WEB";
 // Main include
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/main.php";
 
+$v_domain = !empty($_GET["domain"]) ? trim($_GET["domain"]) : "";
+
 // Check domain argument
-if (empty($_GET["domain"])) {
+if (empty($v_domain)) {
 	header("Location: /list/web/");
 	exit();
 }
 
 // Edit as someone else?
-if ($_SESSION["userContext"] === "admin" && !empty($_GET["user"])) {
-	$user = quoteshellarg($_GET["user"]);
-	$user_plain = htmlentities($_GET["user"]);
+if ($_SESSION["userContext"] === "admin") {
+	if (!empty($_GET["user"])) {
+		$user = quoteshellarg($_GET["user"]);
+		$user_plain = htmlentities($_GET["user"]);
+	} else if (!empty($v_domain)) {
+		exec(
+			HESTIA_CMD . "v-search-domain-owner " . quoteshellarg($v_domain) . " web",
+			$owner_out,
+			$owner_status,
+		);
+		if ($owner_status === 0 && !empty($owner_out[0])) {
+			$user_plain = trim($owner_out[0]);
+			$user = quoteshellarg($user_plain);
+		}
+		unset($owner_out);
+	}
 }
 
-$v_domain = trim($_GET["domain"]);
+$user_param = (!empty($_GET["user"])) ? "&user=" . urlencode($_GET["user"]) : ((!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"]) ? "&user=" . urlencode($user_plain) : "");
 
 // Verify that domain exists
 exec(
@@ -47,7 +62,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "pull") {
 		$_SESSION["error_msg"] = _("Failed to update Git repository: ") . implode(" ", $output);
 	}
 	unset($output);
-	header("Location: /edit/git/?domain=" . urlencode($v_domain) . (!empty($_GET["user"]) ? "&user=" . urlencode($_GET["user"]) : ""));
+	header("Location: /edit/git/?domain=" . urlencode($v_domain) . $user_param);
 	exit();
 }
 
@@ -65,7 +80,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "generate_key") {
 		$_SESSION["error_msg"] = _("Failed to generate SSH Deploy Key: ") . implode(" ", $output);
 	}
 	unset($output);
-	header("Location: /edit/git/?domain=" . urlencode($v_domain) . (!empty($_GET["user"]) ? "&user=" . urlencode($_GET["user"]) : ""));
+	header("Location: /edit/git/?domain=" . urlencode($v_domain) . $user_param);
 	exit();
 }
 
@@ -83,7 +98,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete") {
 		$_SESSION["error_msg"] = _("Failed to disconnect Git repository: ") . implode(" ", $output);
 	}
 	unset($output);
-	header("Location: /edit/git/?domain=" . urlencode($v_domain) . (!empty($_GET["user"]) ? "&user=" . urlencode($_GET["user"]) : ""));
+	header("Location: /edit/git/?domain=" . urlencode($v_domain) . $user_param);
 	exit();
 }
 
@@ -118,7 +133,7 @@ if (!empty($_POST["save"])) {
 		if ($return_var === 0) {
 			$_SESSION["ok_msg"] = _("Git repository connected and deployed successfully.");
 			unset($output);
-			header("Location: /edit/git/?domain=" . urlencode($v_domain) . (!empty($_GET["user"]) ? "&user=" . urlencode($_GET["user"]) : ""));
+			header("Location: /edit/git/?domain=" . urlencode($v_domain) . $user_param);
 			exit();
 		} else {
 			$_SESSION["error_msg"] = _("Error connecting Git repository: ") . implode(" ", $output);
@@ -167,7 +182,12 @@ if (empty($v_deploy_key)) {
 // Build webhook URL
 $backend_port = !empty($_SESSION["BACKEND_PORT"]) ? $_SESSION["BACKEND_PORT"] : "8083";
 $panel_host = !empty($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : gethostname();
-$v_webhook_url = "https://" . $panel_host . "/api/webhook/?user=" . urlencode($user_plain) . "&domain=" . urlencode($v_domain) . "&secret=" . urlencode($v_webhook_secret);
+if (!str_contains($panel_host, ":") && !empty($backend_port) && $backend_port !== "80" && $backend_port !== "443") {
+	$webhook_host = $panel_host . ":" . $backend_port;
+} else {
+	$webhook_host = $panel_host;
+}
+$v_webhook_url = "https://" . $webhook_host . "/api/webhook/?user=" . urlencode($user_plain) . "&domain=" . urlencode($v_domain) . "&secret=" . urlencode($v_webhook_secret);
 
 // Read build log if available
 $v_build_log = "";

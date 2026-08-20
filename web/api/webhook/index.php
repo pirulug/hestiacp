@@ -4,6 +4,14 @@ header("Content-Type: application/json; charset=utf-8");
 define("HESTIA_DIR_BIN", "/usr/local/hestia/bin/");
 define("HESTIA_CMD", "/usr/bin/sudo /usr/local/hestia/bin/");
 
+try {
+	require_once dirname(__DIR__, 2) . "/inc/vendor/autoload.php";
+} catch (Throwable $ex) {
+	http_response_code(500);
+	echo json_encode(["status" => "error", "message" => "Autoload error: " . $ex->getMessage()]);
+	exit(1);
+}
+
 use function Hestiacp\quoteshellarg\quoteshellarg;
 
 function log_webhook_entry($user, $domain, $event_type, $status, $details = []) {
@@ -47,7 +55,7 @@ $secret = $_GET["secret"] ?? "";
 $event_type = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? $_SERVER["HTTP_X_GITLAB_EVENT"] ?? $_SERVER["HTTP_X_EVENT_KEY"] ?? "push";
 $delivery_id = $_SERVER["HTTP_X_GITHUB_DELIVERY"] ?? $_SERVER["HTTP_X_REQUEST_ID"] ?? "-";
 
-if (empty($user) || empty($domain) || empty($secret)) {
+if (empty($user) || empty($domain) || (empty($secret) && empty($_SERVER["HTTP_X_HUB_SIGNATURE_256"]) && empty($_SERVER["HTTP_X_GITLAB_TOKEN"]))) {
 	http_response_code(400);
 	$msg = "Missing required parameters (user, domain, secret)";
 	echo json_encode(["status" => "error", "message" => $msg]);
@@ -86,8 +94,26 @@ if (($git_data["CONFIGURED"] ?? "no") !== "yes" || empty($git_data["WEBHOOK_SECR
 	exit();
 }
 
-// Verify secret token
-if (!hash_equals($git_data["WEBHOOK_SECRET"], $secret)) {
+// Parse payload body
+$payload_raw = file_get_contents("php://input");
+$payload = !empty($payload_raw) ? json_decode($payload_raw, true) : [];
+
+// Verify secret token (Query param, GitHub HMAC signature or GitLab token)
+$raw_secret_valid = false;
+if (!empty($secret) && hash_equals($git_data["WEBHOOK_SECRET"], $secret)) {
+	$raw_secret_valid = true;
+} elseif (!empty($_SERVER["HTTP_X_HUB_SIGNATURE_256"])) {
+	$expected_sig = "sha256=" . hash_hmac("sha256", $payload_raw, $git_data["WEBHOOK_SECRET"]);
+	if (hash_equals($expected_sig, $_SERVER["HTTP_X_HUB_SIGNATURE_256"])) {
+		$raw_secret_valid = true;
+	}
+} elseif (!empty($_SERVER["HTTP_X_GITLAB_TOKEN"])) {
+	if (hash_equals($git_data["WEBHOOK_SECRET"], $_SERVER["HTTP_X_GITLAB_TOKEN"])) {
+		$raw_secret_valid = true;
+	}
+}
+
+if (!$raw_secret_valid) {
 	http_response_code(403);
 	$msg = "Invalid webhook secret token";
 	log_webhook_entry($user_safe, $domain_safe, $event_type, "error (HTTP 403)", [
@@ -97,10 +123,6 @@ if (!hash_equals($git_data["WEBHOOK_SECRET"], $secret)) {
 	echo json_encode(["status" => "error", "message" => $msg]);
 	exit();
 }
-
-// Parse payload body
-$payload_raw = file_get_contents("php://input");
-$payload = !empty($payload_raw) ? json_decode($payload_raw, true) : [];
 
 // Handle GitHub Ping event (when adding webhook)
 if ($event_type === "ping" || isset($payload["zen"]) || isset($payload["hook_id"])) {

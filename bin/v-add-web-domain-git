@@ -103,18 +103,22 @@ fi
 webhook_secret=$(generate_password '32')
 
 # Clone repository or initialize remote
+mkdir -p "$HOMEDIR/$user/tmp"
+chown "$user:$user" "$HOMEDIR/$user/tmp"
+chmod 770 "$HOMEDIR/$user/tmp"
+
 if [ -d "$target_path/.git" ]; then
 	# Update remote origin
 	if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
-		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" remote set-url origin "$final_repo_url"
-		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" fetch origin "$branch"
-		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" checkout "$branch"
-		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git -C "$target_path" reset --hard origin/"$branch"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$target_path" remote set-url origin "$final_repo_url"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$target_path" fetch origin "$branch"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$target_path" checkout "$branch"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$target_path" reset --hard origin/"$branch"
 	else
-		user_exec git -C "$target_path" remote set-url origin "$final_repo_url"
-		user_exec git -C "$target_path" fetch origin "$branch"
-		user_exec git -C "$target_path" checkout "$branch"
-		user_exec git -C "$target_path" reset --hard origin/"$branch"
+		user_exec git -c safe.directory=* -C "$target_path" remote set-url origin "$final_repo_url"
+		user_exec git -c safe.directory=* -C "$target_path" fetch origin "$branch"
+		user_exec git -c safe.directory=* -C "$target_path" checkout "$branch"
+		user_exec git -c safe.directory=* -C "$target_path" reset --hard origin/"$branch"
 	fi
 else
 	# Clone into target path
@@ -124,9 +128,9 @@ else
 	chown "$user:$user" "$temp_clone"
 
 	if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
-		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new" git clone --branch "$branch" --depth 1 "$final_repo_url" "$temp_clone"
+		user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* clone --branch "$branch" --depth 1 "$final_repo_url" "$temp_clone"
 	else
-		user_exec git clone --branch "$branch" --depth 1 "$final_repo_url" "$temp_clone"
+		user_exec git -c safe.directory=* clone --branch "$branch" --depth 1 "$final_repo_url" "$temp_clone"
 	fi
 
 	if [ $? -ne 0 ]; then

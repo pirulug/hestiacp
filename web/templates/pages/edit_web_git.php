@@ -2,7 +2,7 @@
 <div class="toolbar">
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
-			<a class="button button-secondary button-back js-button-back" href="/edit/web/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION["token"]])) ?>">
+			<a class="button button-secondary button-back js-button-back" href="/edit/web/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>">
 				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
@@ -12,7 +12,7 @@
 					<i class="fas fa-rotate icon-green"></i><?= tohtml( _("Deploy / Pull Now")) ?>
 				</button>
 				<a
-					href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "delete", "token" => $_SESSION["token"]])) ?>"
+					href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "delete", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>"
 					class="button button-secondary data-controls js-confirm-action"
 					data-confirm-title="<?= tohtml( _("Disconnect Git")) ?>"
 					data-confirm-message="<?= tohtml( _("Are you sure you want to disconnect Git repository from this domain?")) ?>"
@@ -139,7 +139,7 @@
 						</button>
 					</div>
 					<div class="u-mt10">
-						<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "generate_key", "token" => $_SESSION["token"]])) ?>" class="button button-secondary" style="font-size: 12px;">
+						<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "generate_key", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>" class="button button-secondary" style="font-size: 12px;">
 							<i class="fas fa-arrows-rotate u-mr5"></i><?= tohtml( _("Regenerar nueva llave SSH")) ?>
 						</a>
 					</div>
@@ -338,7 +338,7 @@ function executeDeploy(runBuild) {
 	if (spinner) {
 		spinner.classList.add("is-active");
 	}
-	var baseUrl = "/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "pull", "token" => $_SESSION["token"]] + (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : []))) ?>";
+	var baseUrl = "/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "pull", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>";
 	window.location.href = baseUrl + "&build=" + (runBuild ? "yes" : "no");
 }
 
