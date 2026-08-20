@@ -338,7 +338,7 @@ function executeDeploy(runBuild) {
 	if (spinner) {
 		spinner.classList.add("is-active");
 	}
-	var baseUrl = "/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "pull", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>";
+	var baseUrl = "/edit/git/?<?= http_build_query(["domain" => $v_domain, "action" => "pull", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : []))) ?>";
 	window.location.href = baseUrl + "&build=" + (runBuild ? "yes" : "no");
 }
 

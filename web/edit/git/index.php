@@ -46,8 +46,11 @@ exec(
 check_return_code_redirect($return_var, $output, "/list/web/");
 unset($output);
 
+// Handle manual actions
+$action = $_GET["action"] ?? ($_GET["amp;action"] ?? "");
+
 // Handle manual action: Pull / Deploy
-if (isset($_GET["action"]) && $_GET["action"] === "pull") {
+if ($action === "pull") {
 	verify_csrf($_GET);
 	$run_build = (isset($_GET["build"]) && in_array(strtolower($_GET["build"]), ["no", "0", "false", "skip"], true)) ? "no" : "yes";
 	$cmd = HESTIA_CMD . "v-update-web-domain-git " . $user . " " . quoteshellarg($v_domain) . " " . quoteshellarg("") . " " . quoteshellarg($run_build);
@@ -67,7 +70,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "pull") {
 }
 
 // Handle manual action: Generate Deploy Key
-if (isset($_GET["action"]) && $_GET["action"] === "generate_key") {
+if ($action === "generate_key") {
 	verify_csrf($_GET);
 	exec(
 		HESTIA_CMD . "v-make-web-domain-git-key " . $user . " " . quoteshellarg($v_domain) . " yes",
@@ -85,7 +88,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "generate_key") {
 }
 
 // Handle manual action: Delete / Disconnect Git
-if (isset($_GET["action"]) && $_GET["action"] === "delete") {
+if ($action === "delete") {
 	verify_csrf($_GET);
 	exec(
 		HESTIA_CMD . "v-delete-web-domain-git " . $user . " " . quoteshellarg($v_domain),
