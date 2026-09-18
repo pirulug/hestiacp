@@ -62,7 +62,7 @@ if [ -z "$host" ]; then
 fi
 
 #generate password and unique user
-dbpass=$(generate_password)
+dbpass=$(generate_password "A-Za-z0-9@#%^-_=+")
 dbuser="hestia_sso_$(generate_password)"
 
 add_mysql_database_temp_user
