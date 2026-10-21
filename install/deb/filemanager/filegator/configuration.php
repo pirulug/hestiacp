@@ -237,7 +237,6 @@ $dist_config["services"]["Filegator\Services\Auth\AuthInterface"] = [
 
 $dist_config["services"]["Filegator\Services\View\ViewInterface"]["config"] = [
 	"add_to_head" => '
-	<link rel="stylesheet" href="/css/themes/default.min.css">
 	<link rel="stylesheet" href="/fm/css/hst-custom.css">
     <style>
         .logo {

@@ -1,5 +1,21 @@
 /* ------------------------------ */
 
+/*      Bootstrap Icons Font      */
+
+/* ------------------------------ */
+
+@font-face {
+	font-family: "bootstrap-icons";
+	font-style: normal;
+	font-weight: 400;
+	font-display: block;
+	src:
+		url("/webfonts/bootstrap-icons.woff2") format("woff2"),
+		url("/webfonts/bootstrap-icons.woff") format("woff");
+}
+
+/* ------------------------------ */
+
 /*            General           */
 
 /* ------------------------------ */
@@ -230,9 +246,14 @@ html {
 /* ------------------------------ */
 
 .dropdown-trigger .button {
-	background-color: #fff0 !important;
-	border-color: #fff0 !important;
-	border-width: 1px !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-color: transparent !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
+	min-width: unset !important;
+	width: auto !important;
 	color: #363636 !important;
 	cursor: pointer !important;
 	justify-content: center !important;
@@ -250,6 +271,11 @@ html {
 @media (prefers-color-scheme: dark) {
 	.dropdown-trigger .button {
 		color: #fff !important;
+		background: transparent !important;
+		background-color: transparent !important;
+		border: none !important;
+		box-shadow: none !important;
+		text-shadow: none !important;
 	}
 
 	.dropdown-trigger .button:hover {
