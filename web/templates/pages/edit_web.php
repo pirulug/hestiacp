@@ -16,7 +16,7 @@
 				</a>
 			<?php } ?>
 			<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>" class="button button-secondary">
-				<img src="/images/github.svg" alt="GitHub" width="16" height="16" style="vertical-align: middle; margin-right: 6px; display: inline-block;"><?= tohtml( _("Git / GitHub")) ?>
+				<i class="bi bi-github"></i><?= tohtml( _("Git / GitHub")) ?>
 			</a>
 			<button type="submit" class="button" form="main-form">
 				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>

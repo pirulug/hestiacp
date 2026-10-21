@@ -280,7 +280,7 @@
 										href="/edit/git/?<?= tohtml(http_build_query(["domain" => $key, "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>"
 										title="<?= tohtml( _("Git / GitHub")) ?>"
 									>
-										<img src="/images/github.svg" alt="<?= tohtml( _("Git / GitHub")) ?>" width="16" height="16" style="vertical-align: middle; display: inline-block;">
+										<i class="bi bi-github"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Git / GitHub")) ?></span>
 									</a>
 								</li>
