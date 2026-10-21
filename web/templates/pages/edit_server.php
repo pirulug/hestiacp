@@ -3,21 +3,21 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/list/server/" class="button button-secondary button-back js-button-back">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="/list/ip/" class="button button-secondary">
-				<i class="fas fa-ethernet icon-blue"></i><?= tohtml( _("Network")) ?>
+				<i class="bi bi-ethernet icon-blue"></i><?= tohtml( _("Network")) ?>
 			</a>
 			<a href="/edit/server/whitelabel/" class="button button-secondary">
-				<i class="fas fa-paint-brush icon-blue"></i><?= tohtml( _("White Label")) ?>
+				<i class="bi bi-palette icon-blue"></i><?= tohtml( _("White Label")) ?>
 			</a>
 			<a href="/edit/server/hestiaweb/" class="button button-secondary">
-				<i class="fas fa-clock icon-blue"></i><?= tohtml( _("Panel Cronjobs")) ?>
+				<i class="bi bi-clock icon-blue"></i><?= tohtml( _("Panel Cronjobs")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -58,7 +58,7 @@
 			<!-- Basic options section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-gear u-mr10"></i><?= tohtml( _("Basic Options")) ?>
+					<i class="bi bi-gear u-mr10"></i><?= tohtml( _("Basic Options")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<div class="u-mb10">
@@ -148,7 +148,7 @@
 			<!-- Updates section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-code-branch u-mr10"></i><?= tohtml( _("Updates")) ?>
+					<i class="bi bi-git u-mr10"></i><?= tohtml( _("Updates")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<p class="u-mb10">
@@ -215,7 +215,7 @@
 			<!-- Web Server section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-earth-americas u-mr10"></i><?= tohtml( _("Web Server")) ?>
+					<i class="bi bi-globe-americas u-mr10"></i><?= tohtml( _("Web Server")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<?php if (!empty($_SESSION["PROXY_SYSTEM"])) { ?>
@@ -225,7 +225,7 @@
 								<?= tohtml($_SESSION["PROXY_SYSTEM"]) ?>
 							</span>
 							<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["PROXY_SYSTEM"])) ?>/" class="u-ml5">
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 							</a>
 						</p>
 					<?php } ?>
@@ -236,7 +236,7 @@
 								<?= tohtml($_SESSION["WEB_SYSTEM"]) ?>
 							</span>
 							<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["WEB_SYSTEM"])) ?>/" class="u-ml5">
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 							</a>
 						</p>
 					<?php } ?>
@@ -247,7 +247,7 @@
 								<?= tohtml($_SESSION["WEB_BACKEND"]) ?>
 							</span>
 							<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["WEB_BACKEND"])) ?>/" class="u-ml5">
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 							</a>
 						</p>
 					<?php } ?>
@@ -265,7 +265,7 @@
 								<?= tohtml( _("Enabled PHP Versions")) ?>
 							</p>
 							<div class="alert alert-info u-mb10" role="alert">
-								<i class="fas fa-info"></i>
+								<i class="bi bi-info-lg"></i>
 								<p><?= tohtml( _("It may take a few minutes to save your changes. Please wait until the process has completed and do not refresh the page.")) ?></p>
 							</div>
 						</div>
@@ -287,7 +287,7 @@
 								<?php foreach ($wd_domains as $wd_domain) { ?>
 									<p class="u-side-by-side" style="padding: 0 10px">
 										<span>
-											<i class="fas fa-user"></i>
+											<i class="bi bi-person"></i>
 											<?= tohtml($wd_user) ?>
 										</span>
 										<span class="optional"><?= tohtml($wd_domain) ?></span>
@@ -322,7 +322,7 @@
 			<?php if (!empty($_SESSION["DNS_SYSTEM"])) { ?>
 				<details class="box-collapse u-mb10">
 					<summary class="box-collapse-header">
-						<i class="fas fa-book-atlas u-mr10"></i><?= tohtml( _("DNS Server")) ?>
+						<i class="bi bi-journal-bookmark u-mr10"></i><?= tohtml( _("DNS Server")) ?>
 					</summary>
 					<div class="box-collapse-content">
 						<p>
@@ -331,7 +331,7 @@
 								<?= tohtml($_SESSION["DNS_SYSTEM"]) ?>
 							</span>
 							<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["DNS_SYSTEM"])) ?>/" class="u-ml5">
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 							</a>
 						</p>
 						<p>
@@ -367,7 +367,7 @@
 			<?php if (!empty($_SESSION["MAIL_SYSTEM"])) { ?>
 				<details class="box-collapse u-mb10">
 					<summary class="box-collapse-header">
-						<i class="fas fa-envelopes-bulk u-mr10"></i><?= tohtml( _("Mail Server")) ?>
+						<i class="bi bi-envelope-paper u-mr10"></i><?= tohtml( _("Mail Server")) ?>
 					</summary>
 					<div class="box-collapse-content">
 						<p>
@@ -376,7 +376,7 @@
 								<?= tohtml($_SESSION["MAIL_SYSTEM"]) ?>
 							</span>
 							<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["MAIL_SYSTEM"])) ?>/" class="u-ml5">
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 							</a>
 						</p>
 						<?php if (!empty($_SESSION["ANTIVIRUS_SYSTEM"])) { ?>
@@ -386,7 +386,7 @@
 									<?= tohtml($_SESSION["ANTIVIRUS_SYSTEM"]) ?>
 								</span>
 								<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["ANTIVIRUS_SYSTEM"])) ?>/" class="u-ml5">
-									<i class="fas fa-pencil icon-orange"></i>
+									<i class="bi bi-pencil icon-orange"></i>
 								</a>
 							</p>
 						<?php } ?>
@@ -397,7 +397,7 @@
 									<?= tohtml($_SESSION["ANTISPAM_SYSTEM"]) ?>
 								</span>
 								<a href="/edit/server/<?= tohtml(rawurlencode($_SESSION["ANTISPAM_SYSTEM"])) ?>/" class="u-ml5">
-									<i class="fas fa-pencil icon-orange"></i>
+									<i class="bi bi-pencil icon-orange"></i>
 								</a>
 							</p>
 						<?php } ?>
@@ -491,7 +491,7 @@
 			<?php if (!empty($_SESSION["DB_SYSTEM"])) { ?>
 				<details class="box-collapse u-mb10">
 					<summary class="box-collapse-header">
-						<i class="fas fa-database u-mr10"></i><?= tohtml( _("Databases")) ?>
+						<i class="bi bi-database u-mr10"></i><?= tohtml( _("Databases")) ?>
 					</summary>
 					<div class="box-collapse-content">
 						<div class="u-mb10">
@@ -501,7 +501,7 @@
 									<?= tohtml($v_mysql == "yes" ? _("Yes") : _("No")) ?>
 								</span>
 								<a href="/edit/server/mysql/" class="u-ml5">
-									<i class="fas fa-pencil icon-orange"></i>
+									<i class="bi bi-pencil icon-orange"></i>
 								</a>
 							</p>
 						</div>
@@ -635,7 +635,7 @@
 										<?= tohtml($v_pgsql == "yes" ? _("Yes") : _("No")) ?>
 									</span>
 									<a href="/edit/server/postgresql/" class="u-ml5">
-										<i class="fas fa-pencil icon-orange"></i>
+										<i class="bi bi-pencil icon-orange"></i>
 									</a>
 								</p>
 							</div>
@@ -677,7 +677,7 @@
 			<!-- Backups section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-arrow-rotate-left u-mr10"></i><?= tohtml( _("Backups")) ?>
+					<i class="bi bi-arrow-counterclockwise u-mr10"></i><?= tohtml( _("Backups")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<div class="u-mb10">
@@ -701,7 +701,7 @@
 								target="_blank"
 								class="u-ml5"
 							>
-								<i class="fas fa-circle-question"></i>
+								<i class="bi bi-question-circle"></i>
 							</a>
 						</label>
 						<select class="form-select" name="v_backup_mode" id="v_backup_mode">
@@ -721,7 +721,7 @@
 								target="_blank"
 								class="u-ml5"
 							>
-								<i class="fas fa-circle-question"></i>
+								<i class="bi bi-question-circle"></i>
 							</a>
 						</label>
 						<select class="form-select" name="v_backup_gzip" id="v_backup_gzip">
@@ -744,7 +744,7 @@
 								target="_blank"
 								class="u-ml5"
 							>
-								<i class="fas fa-circle-question"></i>
+								<i class="bi bi-question-circle"></i>
 							</a>
 						</label>
 						<input
@@ -777,7 +777,7 @@
 									target="_blank"
 									class="u-ml5"
 								>
-									<i class="fas fa-circle-question"></i>
+									<i class="bi bi-question-circle"></i>
 								</a>
 							</label>
 							<select
@@ -933,7 +933,7 @@
 			</details>
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-arrows-rotate u-mr10"></i><?= tohtml( _("Incremental Backups")) ?>
+					<i class="bi bi-arrow-repeat u-mr10"></i><?= tohtml( _("Incremental Backups")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<div class="u-mb10">
@@ -1029,7 +1029,7 @@
 			<!-- SSL section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-lock u-mr10"></i><?= tohtml( _("SSL")) ?>
+					<i class="bi bi-lock u-mr10"></i><?= tohtml( _("SSL")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<div class="u-mb20">
@@ -1100,7 +1100,7 @@
 			<!-- Security section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-key u-mr10"></i><?= tohtml( _("Security")) ?>
+					<i class="bi bi-key u-mr10"></i><?= tohtml( _("Security")) ?>
 				</summary>
 				<div class="box-collapse-content">
 
@@ -1478,7 +1478,7 @@
 			<!-- Plugins section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-puzzle-piece u-mr10"></i><?= tohtml( _("Plugins")) ?>
+					<i class="bi bi-puzzle u-mr10"></i><?= tohtml( _("Plugins")) ?>
 				</summary>
 				<div class="box-collapse-content">
 					<div class="u-mb10">

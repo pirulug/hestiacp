@@ -8,7 +8,7 @@
 		<div class="clipboard">
 			<input type="text" class="form-control clipboard-input js-copy-input js-account-output" name="email_settings_username" id="email_settings_username" value="<?= htmlentities(trim($v_account, "'")) ?>@<?= htmlentities(trim($v_domain, "'")) ?>" data-postfix="@<?= htmlentities(trim($v_domain, "'")) ?>" readonly>
 			<button type="button" class="clipboard-button js-copy-button" title="<?= _("Copy to clipboard") ?>">
-				<i class="fas fa-copy"></i>
+				<i class="bi bi-copy"></i>
 			</button>
 		</div>
 	</div>
@@ -17,7 +17,7 @@
 		<div class="clipboard">
 			<input type="text" class="form-control clipboard-input js-copy-input js-password-output" name="email_settings_password" id="email_settings_password" readonly>
 			<button type="button" class="clipboard-button js-copy-button" title="<?= _("Copy to clipboard") ?>">
-				<i class="fas fa-copy"></i>
+				<i class="bi bi-copy"></i>
 			</button>
 		</div>
 	</div>
@@ -27,7 +27,7 @@
 			<div class="clipboard">
 				<input type="text" class="form-control clipboard-input js-copy-input" name="email_settings_webmail" id="email_settings_webmail" value="http://<?= htmlentities($v_webmail_alias) ?>" readonly>
 				<button type="button" class="clipboard-button js-copy-button" title="<?= _("Copy to clipboard") ?>">
-					<i class="fas fa-copy"></i>
+					<i class="bi bi-copy"></i>
 				</button>
 			</div>
 		</div>
@@ -37,7 +37,7 @@
 		<div class="clipboard">
 			<input type="text" class="form-control clipboard-input js-copy-input" name="email_settings_hostname" id="email_settings_hostname" value="mail.<?= htmlentities($v_domain) ?>" readonly>
 			<button type="button" class="clipboard-button js-copy-button" title="<?= _("Copy to clipboard") ?>">
-				<i class="fas fa-copy"></i>
+				<i class="bi bi-copy"></i>
 			</button>
 		</div>
 	</div>

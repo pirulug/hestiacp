@@ -3,11 +3,11 @@
 	<div class="toolbar-inner">
 			<div class="toolbar-buttons">
 				<a class="button button-secondary button-back js-button-back" href="/list/backup/">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 				</a>
 				<?php if ($read_only !== true) { ?>
 					<a href="/schedule/restore/?<?= tohtml(http_build_query(array("token" => $_SESSION["token"], "backup" => $_GET["backup"]))) ?>" class="button button-secondary">
-						<i class="fas fa-arrow-rotate-left icon-green"></i><?= tohtml( _("Restore All")) ?>
+						<i class="bi bi-arrow-counterclockwise icon-green"></i><?= tohtml( _("Restore All")) ?>
 					</a>
 				<?php } ?>
 			</div>
@@ -21,7 +21,7 @@
 							<option value="restore"><?= tohtml( _("Restore")) ?></option>
 						</select>
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-							<i class="fas fa-arrow-right"></i>
+							<i class="bi bi-arrow-right"></i>
 						</button>
 					</form>
 				<?php } ?>
@@ -30,7 +30,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 						<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_GET['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -73,7 +73,7 @@
 					</div>
 				<div class="units-table-cell units-table-heading-cell">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-					<i class="fas fa-earth-americas u-mr5"></i><?= tohtml( _("Web Domain")) ?>
+					<i class="bi bi-globe-americas u-mr5"></i><?= tohtml( _("Web Domain")) ?>
 				</div>
 				<div class="units-table-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -89,7 +89,7 @@
 								data-confirm-title="<?= tohtml( _("Restore")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to restore %s?"), $key)) ?>"
 							>
-								<i class="fas fa-arrow-rotate-left icon-green"></i>
+								<i class="bi bi-arrow-counterclockwise icon-green"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 							</a>
 						</li>
@@ -116,7 +116,7 @@
 					</div>
 				<div class="units-table-cell units-table-heading-cell">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-					<i class="fas fa-envelopes-bulk u-mr5"></i><?= tohtml( _("Mail Domain")) ?>
+					<i class="bi bi-envelope-paper u-mr5"></i><?= tohtml( _("Mail Domain")) ?>
 				</div>
 				<div class="units-table-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -132,7 +132,7 @@
 								data-confirm-title="<?= tohtml( _("Restore")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to restore %s?"), $key)) ?>"
 							>
-								<i class="fas fa-arrow-rotate-left icon-green"></i>
+								<i class="bi bi-arrow-counterclockwise icon-green"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 							</a>
 						</li>
@@ -159,7 +159,7 @@
 					</div>
 				<div class="units-table-cell units-table-heading-cell">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-					<i class="fas fa-book-atlas u-mr5"></i><?= tohtml( _("DNS Zone")) ?>
+					<i class="bi bi-journal-bookmark u-mr5"></i><?= tohtml( _("DNS Zone")) ?>
 				</div>
 				<div class="units-table-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -175,7 +175,7 @@
 								data-confirm-title="<?= tohtml( _("Restore")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to restore %s?"), $key)) ?>"
 							>
-								<i class="fas fa-arrow-rotate-left icon-green"></i>
+								<i class="bi bi-arrow-counterclockwise icon-green"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 							</a>
 						</li>
@@ -202,7 +202,7 @@
 					</div>
 				<div class="units-table-cell units-table-heading-cell">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-					<i class="fas fa-database u-mr5"></i><?= tohtml( _("Database")) ?>
+					<i class="bi bi-database u-mr5"></i><?= tohtml( _("Database")) ?>
 				</div>
 				<div class="units-table-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -218,7 +218,7 @@
 								data-confirm-title="<?= tohtml( _("Restore")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to restore %s?"), $key)) ?>"
 							>
-								<i class="fas fa-arrow-rotate-left icon-green"></i>
+								<i class="bi bi-arrow-counterclockwise icon-green"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 							</a>
 						</li>
@@ -243,7 +243,7 @@
 					</div>
 				<div class="units-table-cell units-table-heading-cell">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-					<i class="fas fa-clock u-mr5"></i><?= tohtml( _("Cron Jobs")) ?>
+					<i class="bi bi-clock u-mr5"></i><?= tohtml( _("Cron Jobs")) ?>
 				</div>
 				<div class="units-table-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -259,7 +259,7 @@
 									data-confirm-title="<?= tohtml( _("Restore")) ?>"
 									data-confirm-message="<?= tohtml( _("Are you sure you want to restore cron jobs?")) ?>"
 								>
-									<i class="fas fa-arrow-rotate-left icon-green"></i>
+									<i class="bi bi-arrow-counterclockwise icon-green"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 							</a>
 						</li>
@@ -286,7 +286,7 @@
 					</div>
 				<div class="units-table-cell units-table-heading-cell">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-					<i class="fas fa-folder-open u-mr5"></i><?= tohtml( _("User Directory")) ?>
+					<i class="bi bi-folder2-open u-mr5"></i><?= tohtml( _("User Directory")) ?>
 				</div>
 				<div class="units-table-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -302,7 +302,7 @@
 								data-confirm-title="<?= tohtml( _("Restore")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to restore %s?"), $key)) ?>"
 							>
-								<i class="fas fa-arrow-rotate-left icon-green"></i>
+								<i class="bi bi-arrow-counterclockwise icon-green"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 							</a>
 						</li>

@@ -18,7 +18,7 @@
 			<input type="text" class="form-control" name="user" id="username" autocomplete="username" required autofocus>
 		</div>
 		<button type="submit" class="button">
-			<i class="fas fa-right-to-bracket"></i><?= tohtml( _("Next")) ?>
+			<i class="bi bi-box-arrow-in-right"></i><?= tohtml( _("Next")) ?>
 		</button>
 	</form>
 </div>

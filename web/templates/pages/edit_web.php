@@ -3,23 +3,23 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/web/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<a href="/delete/web/cache/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION['token']])) ?>" class="button button-secondary js-clear-cache-button <?php if (!($v_nginx_cache == 'yes' || (($v_proxy_template == 'caching' || is_int(strpos($v_proxy_template, 'caching-'))) && $_SESSION['PROXY_SYSTEM'] == 'nginx'))) { echo "u-hidden"; } ?>">
-				<i class="fas fa-trash icon-red"></i><?= tohtml( _("Purge NGINX Cache")) ?>
+				<i class="bi bi-trash3 icon-red"></i><?= tohtml( _("Purge NGINX Cache")) ?>
 			</a>
 			<?php if ($_SESSION["PLUGIN_APP_INSTALLER"] !== "false") { ?>
 				<a href="/add/webapp/?<?= tohtml(http_build_query(["domain" => $v_domain])) ?>" class="button button-secondary">
-					<i class="fas fa-magic icon-blue"></i><?= tohtml( _("Quick Install App")) ?>
+					<i class="bi bi-stars icon-blue"></i><?= tohtml( _("Quick Install App")) ?>
 				</a>
 			<?php } ?>
 			<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>" class="button button-secondary">
 				<img src="/images/github.svg" alt="GitHub" width="16" height="16" style="vertical-align: middle; margin-right: 6px; display: inline-block;"><?= tohtml( _("Git / GitHub")) ?>
 			</a>
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -65,7 +65,7 @@
 			</div>
 			<?php if ($v_letsencrypt == "yes" || $v_letsencrypt == "on") { ?>
 				<div class="alert alert-info u-mb10" role="alert">
-					<i class="fas fa-exclamation"></i>
+					<i class="bi bi-exclamation-lg"></i>
 					<p><?= tohtml( _("If the aliases changes, Let's Encrypt will obtain a new SSL certificate.")) ?></p>
 				</div>
 			<?php } ?>
@@ -115,7 +115,7 @@
 						<label for="v_password" class="form-label">
 							<?= tohtml( _("Password")) ?>
 							<button type="button" title="<?= tohtml( _("Generate")) ?>" class="u-unstyled-button u-ml5 js-generate-password">
-								<i class="fas fa-arrows-rotate icon-green"></i>
+								<i class="bi bi-arrow-repeat icon-green"></i>
 							</button>
 						</label>
 						<div class="u-pos-relative">
@@ -190,7 +190,7 @@
 					<label for="ssl_hsts">
 						<?= tohtml( _("Enable HTTP Strict Transport Security (HSTS)")) ?>
 						<a href="https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security" target="_blank">
-							<i class="fas fa-question-circle"></i>
+							<i class="bi bi-question-circle"></i>
 						</a>
 					</label>
 				</div>
@@ -288,7 +288,7 @@
 							<label for="v_nginx_cache_check">
 								<?= tohtml( _("Enable FastCGI cache")) ?>
 								<a href="https://hestiacp.com/docs/server-administration/web-templates.html#nginx-fastcgi-cache" target="_blank" class="u-ml5">
-									<i class="fas fa-circle-question"></i>
+									<i class="bi bi-question-circle"></i>
 								</a>
 							</label>
 						</div>
@@ -421,7 +421,7 @@
 								<label for="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" class="form-label">
 									<?= tohtml( _("Password")) ?>
 									<button type="button" title="<?= tohtml( _("Generate")) ?>" class="u-unstyled-button u-ml5 js-ftp-password-generate">
-										<i class="fas fa-arrows-rotate icon-green"></i>
+										<i class="bi bi-arrow-repeat icon-green"></i>
 									</button>
 								</label>
 								<input type="text" class="form-control js-ftp-user-psw" name="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" id="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" value="<?= tohtml(trim($v_ftp_password, "'")) ?>">
@@ -474,7 +474,7 @@
 			<label for="v_ftp_user[%INDEX%][v_ftp_password]" class="form-label">
 				<?= tohtml( _("Password")) ?>
 				<button type="button" title="<?= tohtml( _("Generate")) ?>" class="u-unstyled-button u-ml5 js-ftp-password-generate">
-					<i class="fas fa-arrows-rotate icon-green"></i>
+					<i class="bi bi-arrow-repeat icon-green"></i>
 				</button>
 			</label>
 			<input type="text" class="form-control js-ftp-user-psw" name="v_ftp_user[%INDEX%][v_ftp_password]" id="v_ftp_user[%INDEX%][v_ftp_password]">

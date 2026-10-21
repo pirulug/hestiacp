@@ -5,19 +5,19 @@
 			<?php if($v_config_path == "/var/spool/cron/crontabs/hestiaweb"){
 				?>
 				<a class="button button-secondary button-back js-button-back" href="/edit/server/">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 				</a>
 			<?php
 			}else{
 				?>
 			<a class="button button-secondary button-back js-button-back" href="/list/server/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>

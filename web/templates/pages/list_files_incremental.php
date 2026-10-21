@@ -5,10 +5,10 @@
 			<?php if ($read_only !== true) { ?>
 			<?php if(str_starts_with($files[0]['path'],'/home/'.$user_plain) && $files[0]['path'] != '/home/'.$user_plain ){
 			?>
-			<a class="button button-secondary" id="btn-back" href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "browse" => "yes", "folder" => $files[0]["path"] . "/../", "token" => $_SESSION["token"]])) ?>"><i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?></a>
+			<a class="button button-secondary" id="btn-back" href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "browse" => "yes", "folder" => $files[0]["path"] . "/../", "token" => $_SESSION["token"]])) ?>"><i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?></a>
 			<?php }else{
 			?>
-			<a class="button button-secondary" id="btn-back" href="/list/backup/incremental/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>"><i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?></a>
+			<a class="button button-secondary" id="btn-back" href="/list/backup/incremental/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>"><i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?></a>
 			<?php
 			}
 			?>
@@ -24,7 +24,7 @@
 							<option value="delete"><?= tohtml( _("Restore Files")) ?></option>
 						</select>
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-							<i class="fas fa-arrow-right"></i>
+							<i class="bi bi-arrow-right"></i>
 						</button>
 					</form>
 				<?php } ?>
@@ -33,7 +33,7 @@
 						<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 						<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-							<i class="fas fa-magnifying-glass"></i>
+							<i class="bi bi-search"></i>
 						</button>
 					</form>
 				</div>
@@ -63,7 +63,7 @@
 						<div class="units-table-cell">
 						</div>
 						<div class="units-table-cell units-table-heading-cell u-text-bold">
-								<b><a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "browse" => "yes", "folder" => $files[0]["path"] . "/../", "token" => $_SESSION["token"]])) ?>"><i class="fas fa-folder icon-dim u-mr5"></i>..</a></b>
+								<b><a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "browse" => "yes", "folder" => $files[0]["path"] . "/../", "token" => $_SESSION["token"]])) ?>"><i class="bi bi-folder icon-dim u-mr5"></i>..</a></b>
 						</div>
 						<div class="units-table-cell">
 						</div>
@@ -90,23 +90,23 @@
 								<?php if($file['type'] == 'dir'){
 									if(str_starts_with($file['path'], '/home/'.$user_plain.'/conf')){
 								?>
-								<b><i class="fas fa-folder icon-dim u-mr5"></i><?= tohtml($file['name']) ?></b>
+								<b><i class="bi bi-folder icon-dim u-mr5"></i><?= tohtml($file['name']) ?></b>
 								<?php
 									}else{
 									?>
-											<b><a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "browse" => "yes", "folder" => $file["path"], "token" => $_SESSION["token"]])) ?>"><i class="fas fa-folder icon-dim u-mr5"></i><?= tohtml($file['name']) ?></a></b>
+											<b><a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "browse" => "yes", "folder" => $file["path"], "token" => $_SESSION["token"]])) ?>"><i class="bi bi-folder icon-dim u-mr5"></i><?= tohtml($file['name']) ?></a></b>
 									<?php
 									}
 								}else{
 									?>
-										<b><i class="fas fa-file icon-dim u-mr5"></i><?= tohtml($file['name']) ?></b>
+										<b><i class="bi bi-file-earmark icon-dim u-mr5"></i><?= tohtml($file['name']) ?></b>
 									<?php
 								}?>
 							</div>
 						</div>
 						<div class="units-table-cell">
 							<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(["snapshot" => $_GET["snapshot"], "type" => "file", "object" => $file["path"], "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Restore")) ?>">
-								<i class="fas fa-arrow-rotate-left icon-green icon-dim u-mr5"></i>
+								<i class="bi bi-arrow-counterclockwise icon-green icon-dim u-mr5"></i>
 							</a>
 						</div>
 						<div class="units-table-cell">

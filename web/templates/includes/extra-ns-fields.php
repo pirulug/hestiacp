@@ -6,7 +6,7 @@
 			<div class="u-side-by-side u-mb5">
 				<input type="text" class="form-control" name="<?php echo $nsValue; ?>" value="<?php echo htmlentities(trim($$nsValue, "'")); ?>">
 				<button type="button" class="u-button-reset u-ml10 js-remove-ns" title="<?= _("Remove") ?>">
-					<i class="fas fa-trash icon-dim icon-red"></i>
+					<i class="bi bi-trash3 icon-dim icon-red"></i>
 				</button>
 			</div>
 			<?php

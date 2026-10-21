@@ -3,21 +3,21 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/server/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<?php
 				if ($autoupdate == 'Enabled') {
 					$btn_url = '/delete/cron/autoupdate/?token='.$_SESSION['token'].'';
-					$btn_icon = 'fa-toggle-on icon-green';
+					$btn_icon = 'bi-toggle-on icon-green';
 					$btn_label = _('Disable Automatic Updates');
 				} else {
 					$btn_url = '/add/cron/autoupdate/?token='.$_SESSION['token'].'';
-					$btn_icon = 'fa-toggle-off icon-red';
+					$btn_icon = 'bi-toggle-off icon-red';
 					$btn_label = _('Enable Automatic Updates');
 				}
 			?>
 			<a class="button button-secondary" href="<?= tohtml($btn_url) ?>">
-				<i class="fas <?= tohtml($btn_icon) ?>"></i><?= tohtml($btn_label) ?>
+				<i class="bi <?= tohtml($btn_icon) ?>"></i><?= tohtml($btn_label) ?>
 			</a>
 			<a
 				class="button button-secondary data-controls js-confirm-action"
@@ -75,9 +75,9 @@
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Status")) ?>:</span>
 					<?php if ($data[$key]['UPDATED'] == 'no'): ?>
-						<i class="fas fa-triangle-exclamation icon-orange" title="<?= tohtml( _("Update available")) ?>"></i>
+						<i class="bi bi-exclamation-triangle icon-orange" title="<?= tohtml( _("Update available")) ?>"></i>
 					<?php elseif ($data[$key]['UPDATED'] == 'yes'): ?>
-						<i class="fas fa-circle-check icon-green" title="<?= tohtml( _("Package up-to-date")) ?>"></i>
+						<i class="bi bi-check-circle icon-green" title="<?= tohtml( _("Package up-to-date")) ?>"></i>
 					<?php endif; ?>
 				</div>
 			</div>

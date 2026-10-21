@@ -22,7 +22,7 @@
 						download="<?= tohtml($v_domain) ?>.crt"
 						title="<?= tohtml( _("Download")) ?>"
 					>
-						<i class="fas fa-download"></i>
+						<i class="bi bi-download"></i>
 						<span class="u-hidden"><?= tohtml( _("Download")) ?></span>
 					</a>
 				</label>
@@ -49,7 +49,7 @@
 						download="<?= tohtml($v_domain) ?>.key"
 						title="<?= tohtml( _("Download")) ?>"
 					>
-						<i class="fas fa-download"></i>
+						<i class="bi bi-download"></i>
 						<span class="u-hidden"><?= tohtml( _("Download")) ?></span>
 					</a>
 				</label>
@@ -76,7 +76,7 @@
 						download="<?= tohtml($v_domain) ?>.csr"
 						title="<?= tohtml( _("Download")) ?>"
 					>
-						<i class="fas fa-download"></i>
+						<i class="bi bi-download"></i>
 						<span class="u-hidden"><?= tohtml( _("Download")) ?></span>
 					</a>
 				</label>

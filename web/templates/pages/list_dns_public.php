@@ -4,7 +4,7 @@
 		<div class="toolbar-buttons">
 			<?php if ($read_only !== true) { ?>
 				<a href="/add/dns/" class="button button-secondary js-button-create">
-					<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add DNS Domain")) ?>
+					<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add DNS Domain")) ?>
 				</a>
 			<?php } ?>
 		</div>
@@ -14,7 +14,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>" />
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>

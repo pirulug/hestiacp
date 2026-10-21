@@ -16,7 +16,7 @@
 	</p>
 <?php } ?>
 	<div class="spinner-overlay js-spinner">
-		<i class="fas fa-circle-notch fa-spin"></i>
+		<i class="bi bi-arrow-repeat bi-spin"></i>
 	</div>
 
 	<div x-data>
@@ -27,7 +27,7 @@
 					x-on:click="$refs.dialog.close()"
 					class="shortcuts-close"
 				>
-					<i class="fas fa-xmark"></i>
+					<i class="bi bi-x-lg"></i>
 				</div>
 			</div>
 			<div class="shortcuts-inner">
@@ -60,7 +60,7 @@
 			class="button button-secondary button-circle button-floating button-floating-shortcuts"
 			title="<?= _("Shortcuts") ?>"
 		>
-			<i class="fas fa-keyboard"></i>
+			<i class="bi bi-keyboard"></i>
 			<span class="u-hidden"><?= _("Shortcuts") ?></span>
 		</button>
 	</div>

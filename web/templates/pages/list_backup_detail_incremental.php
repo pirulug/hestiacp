@@ -2,9 +2,9 @@
 <div class="toolbar">
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
-			<a class="button button-secondary button-back js-button-back" href="/list/backup/incremental/"><i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?></a>
+			<a class="button button-secondary button-back js-button-back" href="/list/backup/incremental/"><i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?></a>
 			<?php if ($read_only !== true) { ?>
-			<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("token" => $_SESSION["token"], "snapshot" => $_GET["snapshot"]))) ?>" class="button button-secondary"><i class="fas fa-arrow-rotate-left icon-green"></i><?= tohtml( _("Restore All")) ?></a>
+			<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("token" => $_SESSION["token"], "snapshot" => $_GET["snapshot"]))) ?>" class="button button-secondary"><i class="bi bi-arrow-counterclockwise icon-green"></i><?= tohtml( _("Restore All")) ?></a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-right">
@@ -17,7 +17,7 @@
 						<option value="restore"><?= tohtml( _("Restore Snapshot")) ?></option>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			<?php } ?>
@@ -26,7 +26,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -63,7 +63,7 @@
 			</div>
 			<div class="units-table-cell units-table-heading-cell">
 				<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-				<i class="fas fa-earth-americas u-mr5"></i><?= tohtml( _("Web Domain")) ?>
+				<i class="bi bi-globe-americas u-mr5"></i><?= tohtml( _("Web Domain")) ?>
 			</div>
 			<div class="units-table-cell u-text-bold">
 				<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -73,7 +73,7 @@
 				<ul class="units-table-row-actions">
 					<li class="units-table-row-action shortcut-enter" data-key-action="href">
 						<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("snapshot" => $_GET["snapshot"], "type" => "web", "object" => $key, "token" => $_SESSION["token"]))) ?>" title="<?= tohtml( _("Restore")) ?>">
-						<i class="fas fa-arrow-rotate-left icon-green"></i>
+						<i class="bi bi-arrow-counterclockwise icon-green"></i>
 						<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 						</a>
 					</li>
@@ -97,7 +97,7 @@
 			</div>
 			<div class="units-table-cell units-table-heading-cell">
 				<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-				<i class="fas fa-envelopes-bulk u-mr5"></i><?= tohtml( _("Mail Domain")) ?>
+				<i class="bi bi-envelope-paper u-mr5"></i><?= tohtml( _("Mail Domain")) ?>
 			</div>
 			<div class="units-table-cell u-text-bold">
 				<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -107,7 +107,7 @@
 				<ul class="units-table-row-actions">
 					<li class="units-table-row-action shortcut-enter" data-key-action="href">
 							<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("snapshot" => $_GET["snapshot"], "type" => "mail", "object" => $key, "token" => $_SESSION["token"]))) ?>" title="<?= tohtml( _("Restore")) ?>">
-						<i class="fas fa-arrow-rotate-left icon-green"></i>
+						<i class="bi bi-arrow-counterclockwise icon-green"></i>
 						<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 						</a>
 					</li>
@@ -131,7 +131,7 @@
 			</div>
 			<div class="units-table-cell units-table-heading-cell">
 				<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-				<i class="fas fa-book-atlas u-mr5"></i><?= tohtml( _("DNS Domain")) ?>
+				<i class="bi bi-journal-bookmark u-mr5"></i><?= tohtml( _("DNS Domain")) ?>
 			</div>
 			<div class="units-table-cell u-text-bold">
 				<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -141,7 +141,7 @@
 				<ul class="units-table-row-actions">
 					<li class="units-table-row-action shortcut-enter" data-key-action="href">
 							<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("snapshot" => $_GET["snapshot"], "type" => "dns", "object" => $key, "token" => $_SESSION["token"]))) ?>" title="<?= tohtml( _("Restore")) ?>">
-						<i class="fas fa-arrow-rotate-left icon-green"></i>
+						<i class="bi bi-arrow-counterclockwise icon-green"></i>
 						<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 						</a>
 					</li>
@@ -165,7 +165,7 @@
 			</div>
 			<div class="units-table-cell units-table-heading-cell">
 				<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-				<i class="fas fa-database u-mr5"></i><?= tohtml( _("Database")) ?>
+				<i class="bi bi-database u-mr5"></i><?= tohtml( _("Database")) ?>
 			</div>
 			<div class="units-table-cell u-text-bold">
 				<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -175,7 +175,7 @@
 				<ul class="units-table-row-actions">
 					<li class="units-table-row-action shortcut-enter" data-key-action="href">
 							<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("snapshot" => $_GET["snapshot"], "type" => "db", "object" => $key, "token" => $_SESSION["token"]))) ?>" title="<?= tohtml( _("Restore")) ?>">
-						<i class="fas fa-arrow-rotate-left icon-green"></i>
+						<i class="bi bi-arrow-counterclockwise icon-green"></i>
 						<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 						</a>
 					</li>
@@ -199,7 +199,7 @@
 		</div>
 		<div class="units-table-cell units-table-heading-cell">
 			<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Type")) ?>:</span>
-			<i class="fas fa-clock u-mr5"></i><?= tohtml( _("Cronjob")) ?>
+			<i class="bi bi-clock u-mr5"></i><?= tohtml( _("Cronjob")) ?>
 		</div>
 		<div class="units-table-cell u-text-bold">
 			<span class="u-hide-desktop"><?= tohtml( _("Details")) ?>:</span>
@@ -209,7 +209,7 @@
 			<ul class="units-table-row-actions">
 				<li class="units-table-row-action shortcut-enter" data-key-action="href">
 					<a href="/schedule/restore/incremental/?<?= tohtml(http_build_query(array("snapshot" => $_GET["snapshot"], "type" => "cron", "object" => $key, "token" => $_SESSION["token"]))) ?>" title="<?= tohtml( _("Restore")) ?>">
-					<i class="fas fa-arrow-rotate-left icon-green"></i>
+					<i class="bi bi-arrow-counterclockwise icon-green"></i>
 					<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 					</a>
 				</li>

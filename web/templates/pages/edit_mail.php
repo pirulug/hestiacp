@@ -3,12 +3,12 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/mail/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -107,7 +107,7 @@
 					</label>
 				</div>
 				<div class="alert alert-info u-mb20" role="alert">
-					<i class="fas fa-exclamation"></i>
+					<i class="bi bi-exclamation-lg"></i>
 					<div>
 						<p><?php echo $v_webmail_alias; ?></p>
 						<p><?= tohtml(sprintf(_("To enable Let's Encrypt SSL, ensure that DNS records exist for mail.%s and %s!"), $v_domain, $v_webmail_alias)) ?></p>

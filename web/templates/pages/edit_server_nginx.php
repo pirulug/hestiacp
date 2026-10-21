@@ -3,15 +3,15 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/server/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="/edit/server/php/" class="button button-secondary">
-				<i class="fas fa-pencil icon-orange"></i><?= tohtml( _("Configure")) ?> PHP
+				<i class="bi bi-pencil icon-orange"></i><?= tohtml( _("Configure")) ?> PHP
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>

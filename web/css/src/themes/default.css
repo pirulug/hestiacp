@@ -1,7 +1,6 @@
 @import url("node:@xterm/xterm/css/xterm.css");
 @import url("node:normalize.css/normalize.css");
-@import url("node:@fortawesome/fontawesome-free/css/fontawesome");
-@import url("node:@fortawesome/fontawesome-free/css/solid");
+@import url("node:bootstrap-icons/font/bootstrap-icons.css");
 @import url("../dependencies/animate");
 @import url("../media_queries");
 @import url("../fonts");
@@ -153,6 +152,7 @@
 		margin-right: 0;
 	}
 
+	& .bi,
 	& .fas {
 		margin-right: 3px;
 	}
@@ -203,6 +203,7 @@
 	font-size: 1rem;
 	color: #6f6f6f;
 
+	& .bi,
 	& .fas {
 		font-size: 3rem;
 		margin-bottom: 20px;
@@ -286,6 +287,7 @@
 	padding-right: 5px;
 	background: none;
 
+	& .bi,
 	& .fas {
 		color: #c36;
 		font-size: 0.9rem;
@@ -312,6 +314,7 @@
 		color: var(--color-text-link-hover);
 	}
 
+	& .bi,
 	& .fas {
 		color: #c36;
 		margin-right: 5px;
@@ -438,6 +441,7 @@
 		border-right: 1px solid rgb(255 255 255 / 98%);
 	}
 
+	& .bi,
 	& .fas {
 		font-size: 1.1rem;
 	}
@@ -483,6 +487,7 @@
 		}
 	}
 
+	& .bi,
 	& .fas {
 		color: #999;
 		margin-right: 5px;
@@ -547,7 +552,8 @@
 		& .main-menu-item-label {
 			color: var(--color-text-link-hover);
 
-			& .fas {
+			& .bi,
+	& .fas {
 				color: var(--color-text-link-hover);
 			}
 		}
@@ -578,6 +584,7 @@
 	color: #5b5b5b;
 	font-weight: 600;
 
+	& .bi,
 	& .fas {
 		color: #999;
 		margin-left: 6px;
@@ -586,7 +593,8 @@
 	@media (--viewport-medium) {
 		font-size: 1rem;
 
-		& .fas {
+		& .bi,
+	& .fas {
 			margin-left: 10px;
 		}
 	}
@@ -969,7 +977,8 @@
 			padding: 14px 15px;
 		}
 
-		& .fas {
+		& .bi,
+	& .fas {
 			font-size: 1rem;
 		}
 	}
@@ -1110,6 +1119,7 @@
 		margin-right: 0;
 	}
 
+	& .bi,
 	& .fas {
 		padding: 5px 0;
 		margin: 0 5px 0 10px;
@@ -1120,7 +1130,8 @@
 		margin-right: 0;
 		margin-bottom: 0;
 
-		& .fas {
+		& .bi,
+	& .fas {
 			color: silver;
 			padding: 4px;
 			margin: 0;
@@ -1701,6 +1712,7 @@
 		opacity: 1;
 	}
 
+	& .bi,
 	& .fas {
 		font-size: 0.8rem;
 		color: #4e4e4e;
@@ -1890,6 +1902,7 @@
 			inset -1px -1px 4px rgb(220 220 220 / 40%);
 	}
 
+	& .bi,
 	& .fas {
 		margin-right: 6px;
 	}
@@ -1930,6 +1943,7 @@
 	min-height: 30px;
 	padding: 3px;
 
+	& .bi,
 	& .fas {
 		line-height: 1.1;
 		margin-right: 0;
@@ -1984,11 +1998,13 @@
 	color: var(--color-text);
 
 	&:hover {
-		& .fas {
+		& .bi,
+	& .fas {
 			color: var(--color-text-link-hover);
 		}
 	}
 
+	& .bi,
 	& .fas {
 		font-size: 0.8rem;
 	}
@@ -2035,6 +2051,7 @@
 	text-align: center;
 	margin-bottom: 10px;
 
+	& .bi,
 	& .fas {
 		font-size: 4.6rem;
 	}
@@ -2149,6 +2166,7 @@
 		right: 15px;
 	}
 
+	& .bi,
 	& .fas {
 		min-width: 20px;
 	}
@@ -2170,7 +2188,7 @@
 }
 
 .collapse[open] .collapse-header::after {
-	content: "\f146";
+	content: "\f2e9";
 }
 
 .collapse-header {
@@ -2192,8 +2210,13 @@
 	}
 
 	&::after {
-		font: var(--fa-font-solid);
-		content: "\f0fe";
+		font-family: "bootstrap-icons";
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+		content: "\f4fd";
 		color: #ddd;
 		display: inline-block;
 		text-rendering: auto;
@@ -2312,6 +2335,7 @@
 		opacity: 1;
 	}
 
+	& .bi,
 	& .fas {
 		border-radius: 50%;
 		box-shadow: 0 0 40px 0 rgb(0 0 0 / 35%);
@@ -2533,6 +2557,7 @@
 		}
 	}
 
+	& .bi,
 	& .fas {
 		flex-shrink: 0;
 		width: 32px;
@@ -2549,7 +2574,8 @@
 	@media (--viewport-small) {
 		display: flex;
 
-		& .fas {
+		& .bi,
+	& .fas {
 			margin-right: 15px;
 			margin-bottom: 0;
 		}
@@ -2559,6 +2585,7 @@
 .alert-info {
 	background-color: var(--alert-info-color);
 
+	& .bi,
 	& .fas {
 		color: var(--alert-info-color);
 	}
@@ -2567,6 +2594,7 @@
 .alert-danger {
 	background-color: var(--alert-danger-color);
 
+	& .bi,
 	& .fas {
 		color: var(--alert-danger-color);
 	}
@@ -2575,6 +2603,7 @@
 .alert-success {
 	background-color: var(--alert-success-color);
 
+	& .bi,
 	& .fas {
 		color: var(--alert-success-color);
 	}
@@ -2587,6 +2616,7 @@
 	display: flex;
 	font-weight: 600;
 
+	& .bi,
 	& .fas {
 		margin-top: 4px;
 		margin-right: 6px;
@@ -2684,4 +2714,19 @@
 	padding: 20px;
 	max-height: 300px;
 	overflow: auto;
+}
+
+.bi-spin {
+	display: inline-block;
+	animation: bi-spin 2s infinite linear;
+}
+
+@keyframes bi-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
 }

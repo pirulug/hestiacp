@@ -3,11 +3,11 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<?php if ($read_only !== true) { ?>
-				<a href="/schedule/backup/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" class="button button-secondary"><i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Create Backup")) ?></a>
-				<a href="/list/backup/exclusions/" class="button button-secondary"><i class="fas fa-folder-minus icon-orange"></i><?= tohtml( _("Backup Exclusions")) ?></a>
+				<a href="/schedule/backup/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" class="button button-secondary"><i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Create Backup")) ?></a>
+				<a href="/list/backup/exclusions/" class="button button-secondary"><i class="bi bi-folder-minus icon-orange"></i><?= tohtml( _("Backup Exclusions")) ?></a>
 			<?php } ?>
 			<?php if ($panel[$user_plain]['BACKUPS_INCREMENTAL'] === 'yes') { ?>
-				<a href="/list/backup/incremental/" class="button button-secondary"><i class="fas fa-vault icon-blue"></i><?= tohtml( _("Incremental Backups")) ?></a>
+				<a href="/list/backup/incremental/" class="button button-secondary"><i class="bi bi-safe icon-blue"></i><?= tohtml( _("Incremental Backups")) ?></a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-right">
@@ -19,7 +19,7 @@
 						<option value="delete"><?= tohtml( _("Delete")) ?></option>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			<?php } ?>
@@ -28,7 +28,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -98,7 +98,7 @@
 									href="/download/backup/?<?= tohtml(http_build_query(["backup" => $key, "token" => $_SESSION["token"]])) ?>"
 									title="<?= tohtml( _("Download")) ?>"
 								>
-									<i class="fas fa-file-arrow-down icon-lightblue"></i>
+									<i class="bi bi-file-earmark-arrow-down icon-lightblue"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Download")) ?></span>
 								</a>
 							</li>
@@ -109,7 +109,7 @@
 										href="/list/backup/?<?= tohtml(http_build_query(["backup" => $key, "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Restore")) ?>"
 									>
-										<i class="fas fa-arrow-rotate-left icon-green"></i>
+										<i class="bi bi-arrow-counterclockwise icon-green"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Restore")) ?></span>
 									</a>
 								</li>
@@ -121,7 +121,7 @@
 										data-confirm-title="<?= tohtml( _("Delete")) ?>"
 										data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete backup %s?"), $key)) ?>"
 									>
-										<i class="fas fa-trash icon-red"></i>
+										<i class="bi bi-trash3 icon-red"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 									</a>
 								</li>

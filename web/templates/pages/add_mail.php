@@ -3,13 +3,13 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/mail/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<?php if (($_SESSION["role"] == "admin" && $accept === "true") || $_SESSION["role"] !== "admin") { ?>
 				<button type="submit" class="button" form="main-form">
-					<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+					<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 				</button>
 			<?php } ?>
 		</div>
@@ -35,7 +35,7 @@
 			<?php show_alert_message($_SESSION); ?>
 			<?php if ($_SESSION["role"] == "admin" && $accept !== "true") { ?>
 				<div class="alert alert-danger" role="alert">
-					<i class="fas fa-exclamation"></i>
+					<i class="bi bi-exclamation-lg"></i>
 						<p><?= htmlify_trans(
      	sprintf(
      		_("It is strongly advised to {create a standard user account} before adding %s to the server due to the increased privileges the admin account possesses and potential security risks."),

@@ -3,10 +3,10 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/firewall/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="/add/firewall/banlist/" class="button button-secondary js-button-create">
-				<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Ban IP Address")) ?>
+				<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Ban IP Address")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -17,7 +17,7 @@
 					<option value="delete"><?= tohtml( _("Delete")) ?></option>
 				</select>
 				<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-					<i class="fas fa-arrow-right"></i>
+					<i class="bi bi-arrow-right"></i>
 				</button>
 			</form>
 		</div>
@@ -68,7 +68,7 @@
 								data-confirm-title="<?= tohtml( _("Delete")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete IP address %s?"), $key)) ?>"
 							>
-								<i class="fas fa-trash icon-red"></i>
+								<i class="bi bi-trash3 icon-red"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 							</a>
 						</li>

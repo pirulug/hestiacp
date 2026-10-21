@@ -3,13 +3,13 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/edit/web/?<?= tohtml(http_build_query(["domain" => $v_domain, "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<?php if ($v_configured) { ?>
 				<button type="button" class="button button-secondary" onclick="openDeployModal()">
-					<i class="fas fa-rotate icon-green"></i><?= tohtml( _("Deploy / Pull Now")) ?>
+					<i class="bi bi-arrow-repeat icon-green"></i><?= tohtml( _("Deploy / Pull Now")) ?>
 				</button>
 				<a
 					href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "delete", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>"
@@ -17,11 +17,11 @@
 					data-confirm-title="<?= tohtml( _("Disconnect Git")) ?>"
 					data-confirm-message="<?= tohtml( _("Are you sure you want to disconnect Git repository from this domain?")) ?>"
 				>
-					<i class="fas fa-unlink icon-red"></i><?= tohtml( _("Disconnect Git")) ?>
+					<i class="bi bi-slash-circle icon-red"></i><?= tohtml( _("Disconnect Git")) ?>
 				</a>
 			<?php } ?>
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save / Connect")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save / Connect")) ?>
 			</button>
 		</div>
 	</div>
@@ -49,7 +49,7 @@
 				<!-- Status Panel -->
 				<div class="u-mb20" style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
 					<h3 class="u-mb10" style="display: flex; align-items: center; justify-content: space-between;">
-						<span><i class="fas fa-circle-check icon-green u-mr10"></i><?= tohtml( _("Repository Connected")) ?></span>
+						<span><i class="bi bi-check-circle icon-green u-mr10"></i><?= tohtml( _("Repository Connected")) ?></span>
 						<span class="badge" style="font-size: 12px; background: #2f81f7; color: #fff; padding: 3px 8px; border-radius: 4px;"><?= tohtml($v_branch) ?></span>
 					</h3>
 					<div style="font-size: 13px; line-height: 1.6;">
@@ -116,7 +116,7 @@
 			<!-- SSH Deploy Key Section -->
 			<div id="ssh_key_section" class="u-mb20" style="<?= $v_auth_type === "ssh" ? "" : "display: none;" ?>">
 				<div style="background: rgba(47, 129, 247, 0.1); border: 1px solid rgba(47, 129, 247, 0.3); border-radius: 6px; padding: 15px;">
-					<h4 class="u-mb10"><i class="fas fa-key icon-blue u-mr10"></i><?= tohtml( _("SSH Deploy Key")) ?></h4>
+					<h4 class="u-mb10"><i class="bi bi-key icon-blue u-mr10"></i><?= tohtml( _("SSH Deploy Key")) ?></h4>
 					<p class="u-mb10" style="font-size: 13px;">
 						<?= tohtml( _("Copia esta clave pública y agrégala en GitHub:")) ?><br>
 						<strong>GitHub -> Tu Repositorio -> Settings -> Deploy keys -> Add deploy key</strong>
@@ -135,12 +135,12 @@
 							style="position: absolute; right: 10px; bottom: 10px;"
 							onclick="copyDeployKey()"
 						>
-							<i class="fas fa-copy u-mr5"></i><span id="copy_btn_text"><?= tohtml( _("Copiar Clave")) ?></span>
+							<i class="bi bi-copy u-mr5"></i><span id="copy_btn_text"><?= tohtml( _("Copiar Clave")) ?></span>
 						</button>
 					</div>
 					<div class="u-mt10">
 						<a href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "generate_key", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>" class="button button-secondary" style="font-size: 12px;">
-							<i class="fas fa-arrows-rotate u-mr5"></i><?= tohtml( _("Regenerar nueva llave SSH")) ?>
+							<i class="bi bi-arrow-repeat u-mr5"></i><?= tohtml( _("Regenerar nueva llave SSH")) ?>
 						</a>
 					</div>
 				</div>
@@ -162,7 +162,7 @@
 			<?php if ($v_configured && !empty($v_webhook_secret)) { ?>
 				<!-- Webhook Integration -->
 				<div class="u-mb20" style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
-					<h4 class="u-mb10"><i class="fas fa-bolt icon-orange u-mr10"></i><?= tohtml( _("Despliegue Automático con Webhooks (GitHub / GitLab)")) ?></h4>
+					<h4 class="u-mb10"><i class="bi bi-lightning icon-orange u-mr10"></i><?= tohtml( _("Despliegue Automático con Webhooks (GitHub / GitLab)")) ?></h4>
 					<p class="u-mb10" style="font-size: 13px;">
 						<?= tohtml( _("Configura el Webhook en GitHub para desplegar automáticamente al hacer 'git push':")) ?><br>
 						<strong>GitHub -> Tu Repositorio -> Settings -> Webhooks -> Add webhook</strong>
@@ -173,7 +173,7 @@
 						<div style="display: flex; gap: 8px;">
 							<input type="text" class="form-control" id="webhook_url_input" value="<?= tohtml($v_webhook_url) ?>" readonly style="font-family: monospace; font-size: 12px;">
 							<button type="button" class="button button-secondary" onclick="copyWebhookUrl()">
-								<i class="fas fa-copy"></i>
+								<i class="bi bi-copy"></i>
 							</button>
 						</div>
 					</div>
@@ -198,13 +198,13 @@
 					</label>
 					<div style="display: flex; gap: 6px;">
 						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('full')">
-							<i class="fab fa-laravel u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel Full")) ?>
+							<i class="bi bi-box u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel Full")) ?>
 						</button>
 						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('api')">
-							<i class="fab fa-laravel u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel API")) ?>
+							<i class="bi bi-box u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel API")) ?>
 						</button>
 						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('clear')">
-							<i class="fas fa-eraser u-mr5"></i><?= tohtml( _("Limpiar")) ?>
+							<i class="bi bi-eraser u-mr5"></i><?= tohtml( _("Limpiar")) ?>
 						</button>
 					</div>
 				</div>
@@ -241,7 +241,7 @@
 					<div style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; overflow: hidden;">
 						<div style="background: #2d2d2d; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
 							<span style="font-family: monospace; font-size: 12px; color: #58a6ff;">
-								<i class="fab fa-github u-mr5"></i><?= tohtml( _("Registro de Eventos GitHub / Webhooks (GitHub Log)")) ?>
+								<i class="bi bi-github u-mr5"></i><?= tohtml( _("Registro de Eventos GitHub / Webhooks (GitHub Log)")) ?>
 							</span>
 							<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleGithubLog()">
 								<span id="toggle_github_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
@@ -258,7 +258,7 @@
 					<div style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; overflow: hidden;">
 						<div style="background: #2d2d2d; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
 							<span style="font-family: monospace; font-size: 12px; color: #4ade80;">
-								<i class="fas fa-terminal u-mr5"></i><?= tohtml( _("Último Registro de Construcción (Build Log)")) ?>
+								<i class="bi bi-terminal u-mr5"></i><?= tohtml( _("Último Registro de Construcción (Build Log)")) ?>
 							</span>
 							<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleBuildLog()">
 								<span id="toggle_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
@@ -277,10 +277,10 @@
 	<dialog id="deploy_dialog" class="modal" style="max-width: 520px; padding: 0;">
 		<div style="padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: space-between;">
 			<h2 class="modal-title" style="margin: 0; padding: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-				<i class="fas fa-rotate icon-green"></i><?= tohtml( _("Confirmar Despliegue / Git Pull")) ?>
+				<i class="bi bi-arrow-repeat icon-green"></i><?= tohtml( _("Confirmar Despliegue / Git Pull")) ?>
 			</h2>
 			<button type="button" onclick="closeDeployModal()" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 16px; opacity: 0.7; padding: 0;">
-				<i class="fas fa-xmark"></i>
+				<i class="bi bi-x-lg"></i>
 			</button>
 		</div>
 		<div class="modal-message" style="padding: 18px 20px; text-align: left; line-height: 1.5; font-size: 13px;">
@@ -289,7 +289,7 @@
 			</p>
 			<div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px; margin-bottom: 12px;">
 				<div style="font-weight: 600; margin-bottom: 4px; color: #4ade80; display: flex; align-items: center; gap: 6px;">
-					<i class="fas fa-terminal"></i><?= tohtml( _("Comandos de Construcción y Despliegue (Build Pipeline)")) ?>
+					<i class="bi bi-terminal"></i><?= tohtml( _("Comandos de Construcción y Despliegue (Build Pipeline)")) ?>
 				</div>
 				<?php if (!empty($v_post_deploy)) { ?>
 					<div style="font-size: 11px; opacity: 0.85; font-family: monospace; white-space: pre-wrap; max-height: 90px; overflow-y: auto; background: rgba(0, 0, 0, 0.25); padding: 8px; border-radius: 4px; margin-top: 6px;"><?= tohtml($v_post_deploy) ?></div>
@@ -308,10 +308,10 @@
 				<?= tohtml( _("Cancelar")) ?>
 			</button>
 			<button type="button" class="button button-secondary" onclick="executeDeploy(false)">
-				<i class="fas fa-download icon-blue u-mr5"></i><?= tohtml( _("Solo Pull (Omitir Pipeline)")) ?>
+				<i class="bi bi-download icon-blue u-mr5"></i><?= tohtml( _("Solo Pull (Omitir Pipeline)")) ?>
 			</button>
 			<button type="button" class="button" onclick="executeDeploy(true)">
-				<i class="fas fa-play icon-green u-mr5"></i><?= tohtml( _("Pull + Ejecutar Pipeline")) ?>
+				<i class="bi bi-play-fill icon-green u-mr5"></i><?= tohtml( _("Pull + Ejecutar Pipeline")) ?>
 			</button>
 		</div>
 	</dialog>

@@ -3,18 +3,18 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/server/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml(_("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml(_("Back")) ?>
 			</a>
 			<a href="/add/firewall/" class="button button-secondary js-button-create">
-				<i class="fas fa-circle-plus icon-green"></i><?= tohtml(_("Add Rule")) ?>
+				<i class="bi bi-plus-circle icon-green"></i><?= tohtml(_("Add Rule")) ?>
 			</a>
 			<?php if (!empty($_SESSION["FIREWALL_EXTENSION"])): ?>
 				<a class="button button-secondary" href="/list/firewall/banlist/">
-					<i class="fas fa-eye icon-red"></i><?= tohtml(_("Banned IP Addresses")) ?>
+					<i class="bi bi-eye icon-red"></i><?= tohtml(_("Banned IP Addresses")) ?>
 				</a>
 			<?php endif; ?>
 			<a class="button button-secondary" href="/list/firewall/ipset/">
-				<i class="fas fa-list icon-blue"></i><?= tohtml(_("IPset IP Lists")) ?>
+				<i class="bi bi-list-ul icon-blue"></i><?= tohtml(_("IPset IP Lists")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -22,24 +22,24 @@
 				<button class="toolbar-sorting-toggle js-toggle-sorting-menu" type="button" title="<?= tohtml(_("Sort items")) ?>">
 					<?= tohtml(_("Sort by")) ?>:
 					<span class="u-text-bold">
-						<?= tohtml(_("Action")) ?> <i class="fas fa-arrow-up-a-z"></i>
+						<?= tohtml(_("Action")) ?> <i class="bi bi-sort-alpha-up"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-action">
-						<span class="name"><?= tohtml(_("Action")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up active"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml(_("Action")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up active"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-protocol">
-						<span class="name"><?= tohtml(_("Protocol")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml(_("Protocol")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-port">
-						<span class="name"><?= tohtml(_("Port")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml(_("Port")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-ip" data-sort-as-int="1">
-						<span class="name"><?= tohtml(_("IP Address")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml(_("IP Address")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-comment">
-						<span class="name"><?= tohtml(_("Comment")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml(_("Comment")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<form x-data x-bind="BulkEdit" action="/bulk/firewall/" method="post">
@@ -49,7 +49,7 @@
 						<option value="delete"><?= tohtml(_("Delete")) ?></option>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml(_("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			</div>
@@ -95,14 +95,14 @@
   		$status = "suspended";
   		$spnd_action = "unsuspend";
   		$spnd_action_title = _("Unsuspend");
-  		$spnd_icon = "fa-play";
+  		$spnd_icon = "bi-play-fill";
   		$spnd_icon_class = "icon-green";
   		$spnd_confirmation = _("Are you sure you want to unsuspend rule #%s?");
   	} else {
   		$status = "active";
   		$spnd_action = "suspend";
   		$spnd_action_title = _("Suspend");
-  		$spnd_icon = "fa-pause";
+  		$spnd_icon = "bi-pause-fill";
   		$spnd_icon_class = "icon-highlight";
   		$spnd_confirmation = _("Are you sure you want to suspend rule #%s?");
   	}
@@ -138,7 +138,7 @@
 								title="<?= tohtml(_("Move Firewall Rule Up")) ?>"
 								data-confirm-title="<?= tohtml(_("Move Up")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to move rule #%s up?"), $key)) ?>">
-								<i class="fas fa-arrow-up icon-blue"></i>
+								<i class="bi bi-arrow-up icon-blue"></i>
 								<span class="u-hide-desktop"><?= tohtml(_("Move Firewall Rule Up")) ?></span>
 							</a>
 						</li>
@@ -150,7 +150,7 @@
 								title="<?= tohtml(_("Move Firewall Rule Down")) ?>"
 								data-confirm-title="<?= tohtml(_("Move Down")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to move rule #%s down?"), $key)) ?>">
-								<i class="fas fa-arrow-down icon-blue"></i>
+								<i class="bi bi-arrow-down icon-blue"></i>
 								<span class="u-hide-desktop"><?= tohtml(_("Move Firewall Rule Down")) ?></span>
 							</a>
 						</li>
@@ -162,10 +162,10 @@
 						<?php
       $suspended = $data[$key]["SUSPENDED"] == "no";
       $action = $data[$key]["ACTION"];
-      $iconClass = $action == "DROP" ? "fa-circle-minus" : "fa-circle-check";
+      $iconClass = $action == "DROP" ? "bi-dash-circle" : "bi-check-circle";
       $colorClass = $action == "DROP" ? "icon-red" : "icon-green";
       ?>
-						<i class="fas <?= tohtml($iconClass) ?> u-mr5 <?= tohtml($suspended ? $colorClass : "") ?>"></i> <?= tohtml($action) ?>
+						<i class="bi <?= tohtml($iconClass) ?> u-mr5 <?= tohtml($suspended ? $colorClass : "") ?>"></i> <?= tohtml($action) ?>
 					</a>
 				</div>
 				<div class="units-table-cell">
@@ -176,7 +176,7 @@
 								href="/edit/firewall/?<?= tohtml(http_build_query(["rule" => $key, "token" => $_SESSION["token"]])) ?>"
 								title="<?= tohtml(_("Edit Firewall Rule")) ?>"
 							>
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 								<span class="u-hide-desktop"><?= tohtml(_("Edit Firewall Rule")) ?></span>
 							</a>
 						</li>
@@ -188,7 +188,7 @@
 								data-confirm-title="<?= tohtml($spnd_action_title) ?>"
 								data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
 							>
-								<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+								<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 								<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
 							</a>
 						</li>
@@ -200,7 +200,7 @@
 								data-confirm-title="<?= tohtml(_("Delete")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete rule #%s?"), $key)) ?>"
 							>
-								<i class="fas fa-trash icon-red"></i>
+								<i class="bi bi-trash3 icon-red"></i>
 								<span class="u-hide-desktop"><?= tohtml(_("Delete")) ?></span>
 							</a>
 						</li>

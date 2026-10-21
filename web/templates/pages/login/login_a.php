@@ -29,7 +29,7 @@
 			<input type="password" class="form-control" name="password" id="password" autocomplete="current-password" required>
 		</div>
 		<button type="submit" class="button">
-			<i class="fas fa-right-to-bracket"></i><?= tohtml( _("Next")) ?>
+			<i class="bi bi-box-arrow-in-right"></i><?= tohtml( _("Next")) ?>
 		</button>
 	</form>
 </div>

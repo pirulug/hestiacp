@@ -17,21 +17,21 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 		<div class="toolbar-buttons">
 			<?php if ($read_only !== true) { ?>
 				<a href="/add/db/" class="button button-secondary js-button-create">
-					<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add Database")) ?>
+					<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add Database")) ?>
 				</a>
 				<?php if ($_SESSION["DB_SYSTEM"] === "mysql" || $_SESSION["DB_SYSTEM"] === "mysql,pgsql" || $_SESSION["DB_SYSTEM"] === "pgsql,mysql") { ?>
 					<a class="button button-secondary <?= tohtml(ipUsed() ? "button-suspended" : "") ?>" href="<?= tohtml($db_myadmin_link) ?>" target="_blank">
-						<i class="fas fa-database icon-orange"></i>phpMyAdmin
+						<i class="bi bi-database icon-orange"></i>phpMyAdmin
 					</a>
 				<?php } ?>
 				<?php if ($_SESSION["DB_SYSTEM"] === "pgsql" || $_SESSION["DB_SYSTEM"] === "mysql,pgsql" || $_SESSION["DB_SYSTEM"] === "pgsql,mysql") { ?>
 					<a class="button button-secondary <?= tohtml(ipUsed() ? "button-suspended" : "") ?>" href="<?= tohtml($db_pgadmin_link) ?>" target="_blank">
-						<i class="fas fa-database icon-orange"></i>phpPgAdmin
+						<i class="bi bi-database icon-orange"></i>phpPgAdmin
 					</a>
 				<?php } ?>
 				<?php if (ipUsed()) { ?>
 					<a target="_blank" href="https://hestiacp.com/docs/server-administration/databases.html#why-i-can-t-use-http-ip-phpmyadmin">
-						<i class="fas fa-circle-question"></i>
+						<i class="bi bi-question-circle"></i>
 					</a>
 				<?php } ?>
 			<?php } ?>
@@ -42,27 +42,27 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
 						<?php if ($_SESSION['userSortOrder'] === 'name') { $label = _('Name'); } else { $label = _('Date'); } ?>
-						<?= tohtml($label) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml($label) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-charset">
-						<span class="name"><?= tohtml( _("Charset")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Charset")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-disk" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Disk")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Disk")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-server">
-						<span class="name"><?= tohtml( _("Host")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Host")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-user">
-						<span class="name"><?= tohtml( _("Username")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Username")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<?php if ($read_only !== true) { ?>
@@ -78,7 +78,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 							<option value="delete"><?= tohtml( _("Delete")) ?></option>
 						</select>
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-							<i class="fas fa-arrow-right"></i>
+							<i class="bi bi-arrow-right"></i>
 						</button>
 					</form>
 				<?php } ?>
@@ -88,7 +88,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -124,14 +124,14 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 					$status = 'suspended';
 					$spnd_action = 'unsuspend';
 					$spnd_action_title = _('Unsuspend');
-					$spnd_icon = 'fa-play';
+					$spnd_icon = 'bi-play-fill';
 					$spnd_icon_class = 'icon-green';
 					$spnd_confirmation = _('Are you sure you want to unsuspend database %s?') ;
 				} else {
 					$status = 'active';
 					$spnd_action = 'suspend';
 					$spnd_action_title = _('Suspend');
-					$spnd_icon = 'fa-pause';
+					$spnd_icon = 'bi-pause-fill';
 					$spnd_icon_class = 'icon-highlight';
 					$spnd_confirmation = _('Are you sure you want to suspend database %s?') ;
 				}
@@ -176,7 +176,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 											href="/edit/db/?<?= tohtml(http_build_query(["database" => $key, "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Edit Database")) ?>"
 									>
-										<i class="fas fa-pencil icon-orange"></i>
+										<i class="bi bi-pencil icon-orange"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Edit Database")) ?></span>
 									</a>
 								</li>
@@ -201,7 +201,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 											href="<?= tohtml($hestia_sso_url) ?>"
 											title="phpMyAdmin" target="_blank"
 										>
-										<i class="fas fa-right-to-bracket icon-orange"></i>
+										<i class="bi bi-box-arrow-in-right icon-orange"></i>
 										<span class="u-hide-desktop">phpMyAdmin</span>
 									</a>
 								</li>
@@ -212,7 +212,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 									href="/download/database/?<?= tohtml(http_build_query(["database" => $key, "token" => $_SESSION["token"]])) ?>"
 									title="<?= tohtml( _("Download Database")) ?>"
 								>
-									<i class="fas fa-download icon-orange"></i>
+									<i class="bi bi-download icon-orange"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Download Database")) ?></span>
 								</a>
 							</li>
@@ -224,7 +224,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 									data-confirm-title="<?= tohtml($spnd_action_title) ?>"
 									data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
 								>
-									<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+									<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 									<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
 								</a>
 							</li>
@@ -236,7 +236,7 @@ if (!empty($_SESSION["DB_PGA_ALIAS"])) {
 									data-confirm-title="<?= tohtml( _("Delete")) ?>"
 									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete database %s?"), $key)) ?>"
 								>
-									<i class="fas fa-trash icon-red"></i>
+									<i class="bi bi-trash3 icon-red"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 								</a>
 							</li>

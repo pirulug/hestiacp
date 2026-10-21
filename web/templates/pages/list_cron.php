@@ -4,15 +4,15 @@
 		<div class="toolbar-buttons">
 			<?php if ($read_only !== true) { ?>
 				<a href="/add/cron/" class="button button-secondary js-button-create">
-					<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add Cron Job")) ?>
+					<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add Cron Job")) ?>
 				</a>
 				<?php if ($panel[$user_plain]["CRON_REPORTS"] == "yes") { ?>
 					<a class="button button-secondary" href="/delete/cron/reports/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>">
-						<i class="fas fa-toggle-on icon-green"></i><?= tohtml( _("Disable Notifications")) ?>
+						<i class="bi bi-toggle-on icon-green"></i><?= tohtml( _("Disable Notifications")) ?>
 					</a>
 				<?php } else { ?>
 					<a class="button button-secondary" href="/add/cron/reports/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>">
-						<i class="fas fa-toggle-off"></i><?= tohtml( _("Enable Notifications")) ?>
+						<i class="bi bi-toggle-off"></i><?= tohtml( _("Enable Notifications")) ?>
 					</a>
 				<?php } ?>
 			<?php } ?>
@@ -23,15 +23,15 @@
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
 						<?php if ($_SESSION['userSortOrder'] === 'name') { $label = _('Command'); } else { $label = _('Date'); } ?>
-						<?= tohtml($label) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml($label) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Command")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Command")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<?php if ($read_only !== true) { ?>
@@ -46,7 +46,7 @@
 							<option value="delete"><?= tohtml( _("Delete")) ?></option>
 						</select>
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-							<i class="fas fa-arrow-right"></i>
+							<i class="bi bi-arrow-right"></i>
 						</button>
 					</form>
 				<?php } ?>
@@ -56,7 +56,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -91,14 +91,14 @@
 				$status = 'suspended';
 				$spnd_action = 'unsuspend';
 				$spnd_action_title = _('Unsuspend');
-				$spnd_icon = 'fa-play';
+				$spnd_icon = 'bi-play-fill';
 				$spnd_icon_class = 'icon-green';
 				$spnd_confirmation = _('Are you sure you want to unsuspend this cron job?') ;
 			} else {
 				$status = 'active';
 				$spnd_action = 'suspend';
 				$spnd_action_title = _('Suspend');
-				$spnd_icon = 'fa-pause';
+				$spnd_icon = 'bi-pause-fill';
 				$spnd_icon_class = 'icon-highlight';
 				$spnd_confirmation = _('Are you sure you want to suspend this cron job?') ;
 			}
@@ -132,7 +132,7 @@
 										href="/edit/cron/?<?= tohtml(http_build_query(["job" => $data[$key]["JOB"], "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Edit")) ?>"
 									>
-										<i class="fas fa-pencil icon-orange"></i>
+										<i class="bi bi-pencil icon-orange"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Edit")) ?></span>
 									</a>
 								</li>
@@ -145,7 +145,7 @@
 									data-confirm-title="<?= tohtml($spnd_action_title) ?>"
 									data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
 								>
-									<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+									<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 									<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
 								</a>
 							</li>
@@ -157,7 +157,7 @@
 									data-confirm-title="<?= tohtml( _("Delete")) ?>"
 									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete this cron job?"), $key)) ?>"
 								>
-									<i class="fas fa-trash icon-red"></i>
+									<i class="bi bi-trash3 icon-red"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 								</a>
 							</li>

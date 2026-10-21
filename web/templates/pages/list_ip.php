@@ -3,10 +3,10 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/edit/server/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="/add/ip/" class="button button-secondary js-button-create">
-				<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add IP Address")) ?>
+				<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add IP Address")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -14,27 +14,27 @@
 				<button class="toolbar-sorting-toggle js-toggle-sorting-menu" type="button" title="<?= tohtml( _("Sort items")) ?>">
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
-						<?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-ip">
-						<span class="name"><?= tohtml( _("IP Address")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("IP Address")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-netmask">
-						<span class="name"><?= tohtml( _("Netmask")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Netmask")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-interface">
-						<span class="name"><?= tohtml( _("Interface")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Interface")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-domains" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Domains")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Domains")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-owner">
-						<span class="name"><?= tohtml( _("Owner")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Owner")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<form x-data x-bind="BulkEdit" action="/bulk/ip/" method="post">
@@ -45,7 +45,7 @@
 						<option value="delete"><?= tohtml( _("Delete")) ?></option>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			</div>
@@ -104,7 +104,7 @@
 								href="/edit/ip/?<?= tohtml(http_build_query(["ip" => $key, "token" => $_SESSION["token"]])) ?>"
 								title="<?= tohtml( _("Edit IP Address")) ?>"
 							>
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Edit IP Address")) ?></span>
 							</a>
 						</li>
@@ -116,7 +116,7 @@
 								data-confirm-title="<?= tohtml( _("Delete")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete IP address %s?"), $key)) ?>"
 							>
-								<i class="fas fa-trash icon-red"></i>
+								<i class="bi bi-trash3 icon-red"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 							</a>
 						</li>

@@ -3,12 +3,12 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/db/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -41,7 +41,7 @@
 				<label for="v_password" class="form-label">
 					<?= tohtml( _("Password")) ?>
 					<button type="button" title="<?= tohtml( _("Generate")) ?>" class="u-unstyled-button u-ml5 js-generate-password">
-						<i class="fas fa-arrows-rotate icon-green"></i>
+						<i class="bi bi-arrow-repeat icon-green"></i>
 					</button>
 				</label>
 				<div class="u-pos-relative u-mb10">

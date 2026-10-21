@@ -3,12 +3,12 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/edit/server/" class="button button-secondary" id="btn-back">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -37,7 +37,7 @@
 			<!-- Basic options section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-gear u-mr15"></i>
+					<i class="bi bi-gear u-mr15"></i>
 					<?= tohtml( _("General")) ?>
 				</summary>
 				<div class="box-collapse-content">
@@ -115,7 +115,7 @@
 			<!-- Custom Logo options section -->
 			<details class="box-collapse u-mb10">
 				<summary class="box-collapse-header">
-					<i class="fas fa-gear u-mr15"></i>
+					<i class="bi bi-gear u-mr15"></i>
 					<?= tohtml( _("Custom Logo")) ?>
 				</summary>
 				<div class="box-collapse-content">

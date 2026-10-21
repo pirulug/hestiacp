@@ -46,6 +46,7 @@ h1 {
 }
 
 .top-bar-notification-delete {
+	& .bi,
 	& .fas {
 		color: #ff6701;
 	}
@@ -87,6 +88,7 @@ h1 {
 		}
 	}
 
+	& .bi,
 	& .fas {
 		display: none;
 	}
@@ -273,6 +275,7 @@ h1 {
 		box-shadow: none;
 	}
 
+	& .bi,
 	& .fas {
 		display: none;
 	}
@@ -306,6 +309,7 @@ h1 {
 }
 
 .button-floating {
+	& .bi,
 	& .fas {
 		display: block;
 	}
@@ -391,6 +395,7 @@ h1 {
 		color: #ff791f;
 	}
 
+	& .bi,
 	& .fas {
 		display: none;
 	}

@@ -9,14 +9,14 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/mail/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<?php if ($read_only !== true) { ?>
 				<a href="/add/mail/?<?= tohtml(http_build_query(["domain" => $_GET["domain"]])) ?>" class="button button-secondary js-button-create">
-					<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add Mail Account")) ?>
+					<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add Mail Account")) ?>
 				</a>
 				<a href="/edit/mail/?<?= tohtml(http_build_query(["domain" => $_GET["domain"]])) ?>" class="button button-secondary js-button-create">
-					<i class="fas fa-pencil icon-blue"></i><?= tohtml( _("Edit Mail Domain")) ?>
+					<i class="bi bi-pencil icon-blue"></i><?= tohtml( _("Edit Mail Domain")) ?>
 				</a>
 			<?php } ?>
 		</div>
@@ -26,21 +26,21 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
 						<?php if ($_SESSION['userSortOrder'] === 'name') { $label = _('Name'); } else { $label = _('Date'); } ?>
-						<?= tohtml($label) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml($label) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-disk" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Disk")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Disk")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-quota" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Quota")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Quota")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<?php if ($read_only !== true) { ?>
@@ -54,7 +54,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 							<option value="delete"><?= tohtml( _("Delete")) ?></option>
 						</select>
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-							<i class="fas fa-arrow-right"></i>
+							<i class="bi bi-arrow-right"></i>
 						</button>
 					</form>
 				<?php } ?>
@@ -64,7 +64,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -99,56 +99,56 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 					$status = 'suspended';
 					$spnd_action = 'unsuspend';
 					$spnd_action_title = _('Unsuspend');
-					$spnd_icon = 'fa-play';
+					$spnd_icon = 'bi-play-fill';
 					$spnd_icon_class = 'icon-green';
 					$spnd_confirmation = _('Are you sure you want to unsuspend %s?');
 					if ($data[$key]['ALIAS'] == '') {
-						$alias_icon = 'fa-circle-minus';
+						$alias_icon = 'bi-dash-circle';
 						$alias_title = _('No aliases');
 					} else {
-						$alias_icon = 'fa-circle-check';
+						$alias_icon = 'bi-check-circle';
 						$alias_title = _('Aliases used');
 					}
 					if ($data[$key]['FWD'] == '') {
-						$fwd_icon = 'fa-circle-minus';
+						$fwd_icon = 'bi-dash-circle';
 						$fwd_title = _('Disabled');
 					} else {
-						$fwd_icon = 'fa-circle-check';
+						$fwd_icon = 'bi-check-circle';
 						$fwd_title = _('Enabled');
 					}
 					if ($data[$key]['AUTOREPLY'] == 'no') {
-						$autoreply_icon = 'fa-circle-minus';
+						$autoreply_icon = 'bi-dash-circle';
 						$autoreply_title = _('Disabled');
 					} else {
-						$autoreply_icon = 'fa-circle-check';
+						$autoreply_icon = 'bi-check-circle';
 						$autoreply_title = _('Enabled');
 					}
 				} else {
 					$status = 'active';
 					$spnd_action = 'suspend';
 					$spnd_action_title = _('Suspend');
-					$spnd_icon = 'fa-pause';
+					$spnd_icon = 'bi-pause-fill';
 					$spnd_icon_class = 'icon-highlight';
 					$spnd_confirmation = _('Are you sure you want to suspend %s?');
 					if ($data[$key]['ALIAS'] == '') {
-						$alias_icon = 'fa-circle-minus';
+						$alias_icon = 'bi-dash-circle';
 						$alias_title = _('No aliases');
 					} else {
-						$alias_icon = 'fa-circle-check icon-green';
+						$alias_icon = 'bi-check-circle icon-green';
 						$alias_title = _('Aliases used');
 					}
 					if ($data[$key]['FWD'] == '') {
-						$fwd_icon = 'fa-circle-minus';
+						$fwd_icon = 'bi-dash-circle';
 						$fwd_title = _('Disabled');
 					} else {
-						$fwd_icon = 'fa-circle-check icon-green';
+						$fwd_icon = 'bi-check-circle icon-green';
 						$fwd_title = _('Enabled');
 					}
 					if ($data[$key]['AUTOREPLY'] == 'no') {
-						$autoreply_icon = 'fa-circle-minus';
+						$autoreply_icon = 'bi-dash-circle';
 						$autoreply_title = _('Disabled');
 					} else {
-						$autoreply_icon = 'fa-circle-check icon-green';
+						$autoreply_icon = 'bi-check-circle icon-green';
 						$autoreply_title = _('Enabled');
 					}
 				}
@@ -186,7 +186,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 										target="_blank"
 										title="<?= tohtml( _("Open Webmail")) ?>"
 									>
-										<i class="fas fa-envelope-open-text icon-maroon"></i>
+										<i class="bi bi-envelope-open icon-maroon"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Open Webmail")) ?></span>
 									</a>
 								</li>
@@ -202,7 +202,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 												target="_blank"
 												title="<?= tohtml( _("Open Webmail")) ?>"
 											>
-												<i class="fas fa-envelope-open-text icon-maroon"></i>
+												<i class="bi bi-envelope-open icon-maroon"></i>
 												<span class="u-hide-desktop"><?= tohtml( _("Open Webmail")) ?></span>
 											</a>
 										</li>
@@ -214,7 +214,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 										href="/edit/mail/?<?= tohtml(http_build_query(["domain" => $_GET["domain"], "account" => $key, "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Edit Mail Account")) ?>"
 									>
-										<i class="fas fa-pencil icon-orange"></i>
+										<i class="bi bi-pencil icon-orange"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Edit Mail Account")) ?></span>
 									</a>
 								</li>
@@ -227,7 +227,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 									data-confirm-title="<?= tohtml($spnd_action_title) ?>"
 									data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
 								>
-									<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+									<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 									<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
 								</a>
 							</li>
@@ -239,7 +239,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 									data-confirm-title="<?= tohtml( _("Delete")) ?>"
 									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete %s?"), $key)) ?>"
 								>
-									<i class="fas fa-trash icon-red"></i>
+									<i class="bi bi-trash3 icon-red"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 								</a>
 							</li>
@@ -266,15 +266,15 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 				</div>
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Aliases")) ?>:</span>
-					<i class="fas <?= tohtml($alias_icon) ?>" title="<?= tohtml($alias_title) ?>"></i>
+					<i class="bi <?= tohtml($alias_icon) ?>" title="<?= tohtml($alias_title) ?>"></i>
 				</div>
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Forwarding")) ?>:</span>
-					<i class="fas <?= tohtml($fwd_icon) ?>" title="<?= tohtml($fwd_title) ?>"></i>
+					<i class="bi <?= tohtml($fwd_icon) ?>" title="<?= tohtml($fwd_title) ?>"></i>
 				</div>
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Auto Reply")) ?>:</span>
-					<i class="fas <?= tohtml($autoreply_icon) ?>" title="<?= tohtml($autoreply_title) ?>"></i>
+					<i class="bi <?= tohtml($autoreply_icon) ?>" title="<?= tohtml($autoreply_title) ?>"></i>
 				</div>
 			</div>
 		<?php } ?>

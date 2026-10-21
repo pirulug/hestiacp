@@ -4,25 +4,25 @@
 		<div class="toolbar-buttons">
 			<?php if ($_SESSION["userContext"] === "admin") { ?>
 				<a href="/list/user/" class="button button-secondary button-back js-button-back">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 				</a>
 			<?php } elseif ($_SESSION["userContext"] === "admin" && htmlentities($_GET["user"]) === "system") { ?>
 				<a href="/list/server/" class="button button-secondary button-back js-button-back">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 				</a>
 			<?php } else { ?>
 					<a href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" class="button button-secondary button-back js-button-back">
-						<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+						<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 					</a>
 			<?php } ?>
 			<?php if ($_SESSION['DEMO_MODE'] != "yes") { ?>
 				<a href="/list/log/auth/" class="button button-secondary button-back js-button-back" title="<?= tohtml( _("Login History")) ?>">
-					<i class="fas fa-binoculars icon-green"></i><?= tohtml( _("Login History")) ?>
+					<i class="bi bi-binoculars icon-green"></i><?= tohtml( _("Login History")) ?>
 				</a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-buttons">
-			<a href="javascript:location.reload();" class="button button-secondary"><i class="fas fa-arrow-rotate-right icon-green"></i><?= tohtml( _("Refresh")) ?></a>
+			<a href="javascript:location.reload();" class="button button-secondary"><i class="bi bi-arrow-clockwise icon-green"></i><?= tohtml( _("Refresh")) ?></a>
 			<?php if ($_SESSION["userContext"] === "admin" && $_SESSION["look"] === $_SESSION["ROOT_USER"] && $_SESSION["POLICY_SYSTEM_PROTECTED_ADMIN"] === "yes") { ?>
 				<!-- Hide delete buttons-->
 			<?php } else { ?>
@@ -33,7 +33,7 @@
 						data-confirm-title="<?= tohtml( _("Delete")) ?>"
 						data-confirm-message="<?= tohtml( _("Are you sure you want to delete the logs?")) ?>"
 					>
-						<i class="fas fa-circle-xmark icon-red"></i><?= tohtml( _("Delete")) ?>
+						<i class="bi bi-x-circle icon-red"></i><?= tohtml( _("Delete")) ?>
 					</a>
 				<?php } ?>
 			<?php } ?>
@@ -61,21 +61,21 @@
 				++$i;
 
 				if ($data[$key]['LEVEL'] === 'Info') {
-					$level_icon = 'fa-info-circle icon-blue';
+					$level_icon = 'bi-info-circle icon-blue';
 					$level_title = _('Information');
 				}
 				if ($data[$key]['LEVEL'] === 'Warning') {
-					$level_icon = 'fa-triangle-exclamation icon-orange';
+					$level_icon = 'bi-exclamation-triangle icon-orange';
 					$level_title = _('Warning');
 				}
 				if ($data[$key]['LEVEL'] === 'Error') {
-					$level_icon = 'fa-circle-xmark icon-red';
+					$level_icon = 'bi-x-circle icon-red';
 					$level_title = _('Error');
 				}
 			?>
 			<div class="units-table-row js-unit">
 				<div class="units-table-cell u-text-center-desktop">
-					<i class="fas <?= tohtml($level_icon) ?>" title="<?= tohtml($level_title) ?>"></i>
+					<i class="bi <?= tohtml($level_icon) ?>" title="<?= tohtml($level_title) ?>"></i>
 				</div>
 				<div class="units-table-cell units-table-heading-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Date")) ?>:</span>

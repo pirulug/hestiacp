@@ -3,12 +3,12 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/add/webapp/?<?= tohtml(http_build_query(["domain" => $v_domain])) ?>">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -28,7 +28,7 @@
 				<?php show_alert_message($_SESSION); ?>
 				<?php if (!$WebappInstaller->isDomainRootClean()) { ?>
 					<div class="alert alert-info u-mb10" role="alert">
-						<i class="fas fa-info"></i>
+						<i class="bi bi-info-lg"></i>
 						<div>
 							<p class="u-mb10"><?= tohtml( _("Data Loss Warning!")) ?></p>
 							<p class="u-mb10"><?= tohtml( _("Your web folder already has files uploaded to it. The installer will overwrite your files and/or the installation might fail.")) ?></p>
@@ -61,7 +61,7 @@
 								<?= tohtml($field_label) ?>
 								<?php if ($field_type == "password"): ?>
 									<button type="button" title="<?= tohtml( _("Generate")) ?>" class="u-unstyled-button u-ml5 js-generate-password">
-										<i class="fas fa-arrows-rotate icon-green"></i>
+										<i class="bi bi-arrow-repeat icon-green"></i>
 									</button>
 								<?php endif; ?>
 							</label>

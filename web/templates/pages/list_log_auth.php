@@ -3,11 +3,11 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/list/log/" class="button button-secondary button-back js-button-back">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
-			<a href="javascript:location.reload();" class="button button-secondary"><i class="fas fa-arrow-rotate-right icon-green"></i><?= tohtml( _("Refresh")) ?></a>
+			<a href="javascript:location.reload();" class="button button-secondary"><i class="bi bi-arrow-clockwise icon-green"></i><?= tohtml( _("Refresh")) ?></a>
 			<?php if ($_SESSION["userContext"] === "admin" && $_SESSION["look"] === $_SESSION["ROOT_USER"] && $_SESSION["POLICY_SYSTEM_PROTECTED_ADMIN"] === "yes") { ?>
 				<!-- Hide delete buttons-->
 			<?php } else { ?>
@@ -18,7 +18,7 @@
 						data-confirm-title="<?= tohtml( _("Delete")) ?>"
 						data-confirm-message="<?= tohtml( _("Are you sure you want to delete the logs?")) ?>"
 					>
-						<i class="fas fa-circle-xmark icon-red"></i><?= tohtml( _("Delete")) ?>
+						<i class="bi bi-x-circle icon-red"></i><?= tohtml( _("Delete")) ?>
 					</a>
 				<?php } ?>
 			<?php } ?>
@@ -47,22 +47,22 @@
 
 				if ($data[$key]['ACTION'] == 'login') {
 					if ($data[$key]['ACTIVE'] === 'yes') {
-						$action_icon = 'fa-right-to-bracket icon-maroon';
+						$action_icon = 'bi-box-arrow-in-right icon-maroon';
 					} else {
-						$action_icon = ' fa-right-to-bracket icon-dim';
+						$action_icon = ' bi-box-arrow-in-right icon-dim';
 					}
 				}
 				if ($data[$key]['STATUS'] == 'success')	{
-					$status_icon = 'fa-circle-check icon-green';
+					$status_icon = 'bi-check-circle icon-green';
 					$status_title = _('Success');
 				} else {
-					$status_icon = 'fa-circle-minus icon-red';
+					$status_icon = 'bi-dash-circle icon-red';
 					$status_title = _('Failed');
 				}
 			?>
 			<div class="units-table-row js-unit">
 				<div class="units-table-cell u-text-center-desktop">
-					<i class="fas <?= tohtml($status_icon) ?> u-mr5" title="<?= tohtml($status_title) ?>"></i>
+					<i class="bi <?= tohtml($status_icon) ?> u-mr5" title="<?= tohtml($status_title) ?>"></i>
 				</div>
 				<div class="units-table-cell units-table-heading-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Date")) ?>:</span>

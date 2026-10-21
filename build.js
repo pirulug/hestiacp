@@ -95,6 +95,13 @@ async function processCSS(inputFile, outputFile) {
 							loc: node.loc,
 						};
 					}
+					if (node.url.includes('bootstrap-icons.')) {
+						const fontFile = node.url.split('/').pop().split('?')[0];
+						return {
+							url: `/webfonts/${fontFile}`,
+							loc: node.loc,
+						};
+					}
 					return node;
 				},
 			},
@@ -119,8 +126,25 @@ async function processCSS(inputFile, outputFile) {
 	}
 }
 
+// Copy Bootstrap Icons webfonts
+async function copyWebfonts() {
+	const biFontsDir = './node_modules/bootstrap-icons/font/fonts/';
+	try {
+		await ensureDir('./web/webfonts');
+		const files = await fs.readdir(biFontsDir);
+		for (const file of files) {
+			if (file.endsWith('.woff') || file.endsWith('.woff2')) {
+				await fs.copyFile(path.join(biFontsDir, file), path.join('./web/webfonts', file));
+			}
+		}
+	} catch {
+		// Ignore if node_modules/bootstrap-icons is not present
+	}
+}
+
 // Build CSS
 async function buildCSS() {
+	await copyWebfonts();
 	const themesSourcePath = './web/css/src/themes/';
 	const cssEntries = await fs.readdir(themesSourcePath);
 

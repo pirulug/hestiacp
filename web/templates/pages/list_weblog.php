@@ -27,7 +27,7 @@
 								type="button"
 								class="top-bar-menu-link u-hide-tablet"
 								x-on:click="open = !open">
-								<i class="fas fa-bars"></i>
+								<i class="bi bi-list"></i>
 									<span class="u-hidden" x-text="open ? <?= tohtml(json_encode(_("Close menu"), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR)) ?> : <?= tohtml(json_encode(_("Open menu"), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR)) ?>">
 										<?= tohtml( _("Open menu")) ?>
 									</span>
@@ -36,49 +36,49 @@
 								<ul class="top-bar-menu-list">
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link" href="/list/web/" title="<?= tohtml( _("Back")) ?>">
-											<i class="fas fa-circle-left"></i>
+											<i class="bi bi-arrow-left-circle"></i>
 											<span class="top-bar-menu-link-label"><?= tohtml( _("Back")) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link <?php if ($_GET['type'] == 'access') echo 'active' ?>" href="/list/web-log/?<?= tohtml(http_build_query(["domain" => $_GET['domain'], "type" => 'access', "token" => $_SESSION['token']])) ?>" title="<?= tohtml( _("View Logs")) ?>">
-											<i class="fas fa-eye"></i>
+											<i class="bi bi-eye"></i>
 											<span class="top-bar-menu-link-label"><?= tohtml( _("View Logs")) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link <?php if ($_GET['type'] == 'access') echo 'active' ?>" href="/download/web-log/?<?= tohtml(http_build_query(["domain" => $_GET['domain'], "type" => 'access', "token" => $_SESSION['token']])) ?>" title="<?= tohtml( _("Download")) ?>">
-											<i class="fas fa-download"></i>
+											<i class="bi bi-download"></i>
 											<span class="u-hidden"><?= tohtml( _("Download")) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link <?php if ($_GET['type'] == 'error') echo 'active' ?>" href="/list/web-log/?<?= tohtml(http_build_query(["domain" => $_GET['domain'], "type" => 'error', "token" => $_SESSION['token']])) ?>" title="<?= tohtml( _("Error Log")) ?>">
-											<i class="fas fa-circle-exclamation"></i>
+											<i class="bi bi-exclamation-circle"></i>
 											<span class="top-bar-menu-link-label"><?= tohtml( _("Error Log")) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link <?php if ($_GET['type'] == 'error') echo 'active' ?>" href="/download/web-log/?<?= tohtml(http_build_query(["domain" => $_GET['domain'], "type" => 'error', "token" => $_SESSION['token']])) ?>" title="<?= tohtml( _("Download")) ?>">
-											<i class="fas fa-download"></i>
+											<i class="bi bi-download"></i>
 											<span class="u-hidden"><?= tohtml( _("Download")) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link" href="javascript:location.reload();" title="<?= tohtml( _("Refresh")) ?>">
-											<i class="fas fa-arrow-rotate-right"></i>
+											<i class="bi bi-arrow-clockwise"></i>
 											<span class="u-hidden"><?= tohtml( _("Refresh")) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link" href="/list/user/" title="<?= tohtml($user) ?>">
-											<i class="fas fa-circle-user"></i>
+											<i class="bi bi-person-circle"></i>
 											<span class="u-hidden"><?= tohtml($user) ?></span>
 										</a>
 									</li>
 									<li class="top-bar-menu-item">
 										<a class="top-bar-menu-link top-bar-menu-link-logout" href="/logout/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Log out")) ?>">
-											<i class="fas fa-right-from-bracket"></i>
+											<i class="bi bi-box-arrow-right"></i>
 											<span class="u-hidden"><?= tohtml( _("Log out")) ?></span>
 										</a>
 									</li>

@@ -261,18 +261,18 @@ function show_alert_message($data) {
 	$msgText = "";
 	$msgClass = "";
 	if (!empty($data["error_msg"])) {
-		$msgIcon = "fa-circle-exclamation";
+		$msgIcon = "bi-exclamation-circle";
 		$msgText = htmlentities($data["error_msg"]);
 		$msgClass = "inline-alert-danger";
 	} elseif (!empty($data["ok_msg"])) {
-		$msgIcon = "fa-circle-check";
+		$msgIcon = "bi-check-circle";
 		$msgText = $data["ok_msg"];
 		$msgClass = "inline-alert-success";
 	}
 
 	if (!empty($msgText)) {
 		printf(
-			'<div class="inline-alert %s u-mb20" role="alert"><i class="fas %s"></i><p>%s</p></div>',
+			'<div class="inline-alert %s u-mb20" role="alert"><i class="bi %s"></i><p>%s</p></div>',
 			$msgClass,
 			$msgIcon,
 			$msgText,

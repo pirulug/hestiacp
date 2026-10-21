@@ -3,10 +3,10 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="javascript:window.history.back();" class="button button-secondary button-back js-button-back">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="javascript:location.reload();" class="button button-secondary">
-				<i class="fas fa-arrows-rotate icon-green"></i><?= tohtml( _("Refresh")) ?>
+				<i class="bi bi-arrow-repeat icon-green"></i><?= tohtml( _("Refresh")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -14,15 +14,15 @@
 				<button class="toolbar-sorting-toggle js-toggle-sorting-menu" type="button" title="<?= tohtml( _("Sort items")) ?>">
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
-						<?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<div class="toolbar-search">
@@ -30,7 +30,7 @@
 						<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 						<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_GET['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-							<i class="fas fa-magnifying-glass"></i>
+							<i class="bi bi-search"></i>
 						</button>
 					</form>
 				</div>
@@ -90,33 +90,33 @@
 				<div class="units-table-cell u-text-center-desktop">
 					<?php
 						if ($object === 'web domain') {
-							$icon = 'fa-earth-americas';
+							$icon = 'bi-globe-americas';
 						}
 						if ($object === 'mail domain') {
-							$icon = 'fa-envelopes-bulk';
+							$icon = 'bi-envelope-paper';
 						}
 						if ($object === 'dns domain') {
-							$icon = 'fa-book-atlas';
+							$icon = 'bi-journal-bookmark';
 						}
 						if ($object === 'dns record') {
-							$icon = 'fa-book-atlas';
+							$icon = 'bi-journal-bookmark';
 						}
 						if ($object === 'database') {
-							$icon = 'fa-database';
+							$icon = 'bi-database';
 						}
 						if ($object === 'cron job') {
-							$icon = 'fa-clock';
+							$icon = 'bi-clock';
 						}
 					?>
-					<i class="fa <?= tohtml($icon) ?> icon-dim"></i>
+					<i class="bi <?= tohtml($icon) ?> icon-dim"></i>
 				</div>
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Status")) ?>:</span>
 					<?php if ($status === "active") { ?>
-						<i class="fas fa-circle-check icon-green"></i>
+						<i class="bi bi-check-circle icon-green"></i>
 					<?php } ?>
 					<?php if ($status === "suspended") { ?>
-						<i class="fas fa-triangle-exclamation icon-orange"></i>
+						<i class="bi bi-exclamation-triangle icon-orange"></i>
 					<?php } ?>
 				</div>
 				<div class="units-table-cell units-table-heading-cell u-text-bold">
@@ -175,7 +175,7 @@
 					</a>
 					<?php if (!($_SESSION["POLICY_SYSTEM_HIDE_ADMIN"] === "yes" && $value["USER"] === $_SESSION["ROOT_USER"]) && $_SESSION["userContext"] === "admin") { ?>
 						<a href="/login/?<?= tohtml(http_build_query(["loginas" => $value["USER"], "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Log in as")) ?> <?= tohtml($value["USER"]) ?>" class="u-ml5">
-							<i class="fas fa-right-to-bracket icon-green icon-dim"></i>
+							<i class="bi bi-box-arrow-in-right icon-green icon-dim"></i>
 							<span class="u-hidden-visually"><?= tohtml( _("Log in as")) ?> <?= tohtml($value["USER"]) ?></span>
 						</a>
 					<?php } ?>

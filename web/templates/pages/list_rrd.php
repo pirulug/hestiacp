@@ -3,10 +3,10 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/server/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="/list/server/?cpu" class="button button-secondary">
-				<i class="fas fa-chart-pie icon-green"></i><?= tohtml( _("Advanced Details")) ?>
+				<i class="bi bi-pie-chart icon-green"></i><?= tohtml( _("Advanced Details")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">

@@ -3,11 +3,11 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" class="button button-secondary button-back js-button-back">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<?php if($read_only !== true) { ?>
 				<a href="/add/key/" class="button button-secondary js-button-create">
-					<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add SSH Key")) ?>
+					<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add SSH Key")) ?>
 				</a>
 			<?php } ?>
 		</div>
@@ -49,7 +49,7 @@
 								data-confirm-title="<?= tohtml( _("Delete")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete SSH key %s?"), tohtml($key))) ?>"
 							>
-								<i class="fas fa-trash icon-red"></i>
+								<i class="bi bi-trash3 icon-red"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 							</a>
 						</li>

@@ -3,10 +3,10 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/firewall/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<a href="/add/firewall/ipset/" class="button button-secondary js-button-create">
-				<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add IP list")) ?>
+				<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add IP list")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -17,7 +17,7 @@
 					<option value="delete"><?= tohtml( _("Delete")) ?></option>
 				</select>
 				<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-					<i class="fas fa-arrow-right"></i>
+					<i class="bi bi-arrow-right"></i>
 				</button>
 			</form>
 		</div>
@@ -69,7 +69,7 @@
 								data-confirm-title="<?= tohtml( _("Delete")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete IP list %s?"), $key)) ?>"
 							>
-								<i class="fas fa-trash icon-red"></i>
+								<i class="bi bi-trash3 icon-red"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 							</a>
 						</li>
@@ -78,9 +78,9 @@
 				<div class="units-table-cell u-text-bold u-text-center-desktop">
 					<span class="u-hide-desktop"><?= tohtml( _("Auto Update")) ?>:</span>
 					<?php if ($data[$key]["AUTOUPDATE"] == "no") { ?>
-						<i class="fas fa-circle-xmark icon-red" title="<?= tohtml( _("Disabled")) ?>"></i>
+						<i class="bi bi-x-circle icon-red" title="<?= tohtml( _("Disabled")) ?>"></i>
 					<?php } else { ?>
-						<i class="fas fa-circle-check icon-green" title="<?= tohtml( _("Enabled")) ?>"></i>
+						<i class="bi bi-check-circle icon-green" title="<?= tohtml( _("Enabled")) ?>"></i>
 					<?php } ?>
 				</div>
 				<div class="units-table-cell u-text-center-desktop">

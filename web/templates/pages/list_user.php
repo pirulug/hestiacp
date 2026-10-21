@@ -3,10 +3,10 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/add/user/" class="button button-secondary js-button-create">
-				<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add User")) ?>
+				<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add User")) ?>
 			</a>
 			<a href="/list/package/" class="button button-secondary">
-				<i class="fas fa-box-open icon-orange"></i><?= tohtml( _("Packages")) ?>
+				<i class="bi bi-box2 icon-orange"></i><?= tohtml( _("Packages")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -15,24 +15,24 @@
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
 						<?php if ($_SESSION['userSortOrder'] === 'name') { $label = _('Name'); } else { $label = _('Date'); } ?>
-						<?= tohtml($label) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml($label) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-bandwidth" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Bandwidth")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Bandwidth")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-disk" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Disk")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Disk")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-package">
-						<span class="name"><?= tohtml( _("Package")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Package")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<form x-data x-bind="BulkEdit" action="/bulk/user/" method="post">
@@ -52,7 +52,7 @@
 						<option value="delete"><?= tohtml( _("Delete")) ?></option>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			</div>
@@ -61,7 +61,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_GET['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -84,31 +84,31 @@
 			<div class="units-table-cell u-text-center"><?= tohtml( _("Package")) ?></div>
 			<div class="units-table-cell u-text-center"><?= tohtml( _("IPs")) ?></div>
 			<div class="units-table-cell u-text-center">
-				<i class="fas fa-hard-drive" title="<?= tohtml( _("Disk")) ?>"></i>
+				<i class="bi bi-hdd" title="<?= tohtml( _("Disk")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("Disk")) ?></span>
 			</div>
 			<div class="units-table-cell u-text-center">
-				<i class="fas fa-right-left" title="<?= tohtml( _("Bandwidth")) ?>"></i>
+				<i class="bi bi-arrow-left-right" title="<?= tohtml( _("Bandwidth")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("Bandwidth")) ?></span>
 			</div>
 			<div class="units-table-cell compact u-text-center">
-				<i class="fas fa-earth-americas" title="<?= tohtml( _("Web Domains")) ?>"></i>
+				<i class="bi bi-globe-americas" title="<?= tohtml( _("Web Domains")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("Web Domains")) ?></span>
 			</div>
 			<div class="units-table-cell compact u-text-center">
-				<i class="fas fa-book-atlas" title="<?= tohtml( _("DNS Zones")) ?>"></i>
+				<i class="bi bi-journal-bookmark" title="<?= tohtml( _("DNS Zones")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("DNS Zones")) ?></span>
 			</div>
 			<div class="units-table-cell compact u-text-center">
-				<i class="fas fa-envelopes-bulk" title="<?= tohtml( _("Mail Domains")) ?>"></i>
+				<i class="bi bi-envelope-paper" title="<?= tohtml( _("Mail Domains")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("Mail Domains")) ?></span>
 			</div>
 			<div class="units-table-cell compact u-text-center">
-				<i class="fas fa-database" title="<?= tohtml( _("Databases")) ?>"></i>
+				<i class="bi bi-database" title="<?= tohtml( _("Databases")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("Databases")) ?></span>
 			</div>
 			<div class="units-table-cell compact u-text-center">
-				<i class="fas fa-file-zipper" title="<?= tohtml( _("Backups")) ?>"></i>
+				<i class="bi bi-file-earmark-zip" title="<?= tohtml( _("Backups")) ?>"></i>
 				<span class="u-hidden-visually"><?= tohtml( _("Backups")) ?></span>
 			</div>
 		</div>
@@ -121,14 +121,14 @@
 					$status = 'suspended';
 					$spnd_action = 'unsuspend';
 					$spnd_action_title = _('Unsuspend');
-					$spnd_icon = 'fa-play';
+					$spnd_icon = 'bi-play-fill';
 					$spnd_icon_class = 'icon-green';
 					$spnd_confirmation = _('Are you sure you want to unsuspend user %s?');
 				} else {
 					$status = 'active';
 					$spnd_action = 'suspend';
 					$spnd_action_title = _('Suspend');
-					$spnd_icon = 'fa-pause';
+					$spnd_icon = 'bi-pause-fill';
 					$spnd_icon_class = 'icon-highlight';
 					$spnd_confirmation = _('Are you sure you want to suspend user %s?');
 				}
@@ -171,7 +171,7 @@
 					<ul class="units-table-row-actions">
 						<?php if ($key == $user_plain) { ?>
 							<li class="units-table-row-action">
-								<i class="fas fa-user-check" title="<?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)"></i>
+								<i class="bi bi-person-check" title="<?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)"></i>
 								<span class="u-hide-desktop"><?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)</span>
 							</li>
 						<?php } else { ?>
@@ -181,7 +181,7 @@
 									href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"]])) ?>"
 									title="<?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?>"
 								>
-									<i class="fas fa-right-to-bracket icon-green"></i>
+									<i class="bi bi-box-arrow-in-right icon-green"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?></span>
 								</a>
 							</li>
@@ -194,7 +194,7 @@
 									href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>"
 									title="<?= tohtml( _("Edit User")) ?>"
 								>
-									<i class="fas fa-pencil icon-orange"></i>
+									<i class="bi bi-pencil icon-orange"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Edit User")) ?></span>
 								</a>
 							</li>
@@ -205,7 +205,7 @@
 									href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"], "edit_link" => "/edit/user/"])) ?>"
 									title="<?= tohtml( _("Edit User")) ?>"
 								>
-									<i class="fas fa-pencil icon-orange"></i>
+									<i class="bi bi-pencil icon-orange"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Edit User")) ?></span>
 								</a>
 							</li>
@@ -220,7 +220,7 @@
 									data-confirm-title="<?= tohtml($spnd_action_title) ?>"
 									data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
 								>
-									<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+									<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 									<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
 								</a>
 							</li>
@@ -232,7 +232,7 @@
 									data-confirm-title="<?= tohtml( _("Delete")) ?>"
 									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete user %s?"), $key)) ?>"
 								>
-									<i class="fas fa-trash icon-red"></i>
+									<i class="bi bi-trash3 icon-red"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 								</a>
 							</li>

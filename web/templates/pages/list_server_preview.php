@@ -3,7 +3,7 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/edit/server/" class="button button-secondary button-back js-button-back">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 	</div>
@@ -24,7 +24,7 @@
 
 		<div class="units-table-row js-unit">
 			<div class="units-table-cell u-text-center-desktop">
-				<i class="fas fa-gear icon-blue"></i>
+				<i class="bi bi-gear icon-blue"></i>
 			</div>
 			<div class="units-table-cell units-table-heading-cell u-text-bold">
 				<span class="u-hide-desktop"><?= tohtml( _("Category")) ?>:</span>

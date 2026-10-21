@@ -3,7 +3,7 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<?php if ($_SESSION["userContext"] === "admin" && $_SESSION["look"] == '') { ?>
-				<a class="button button-secondary" href='/list/stats/'><i class="fas fa-binoculars icon-lightblue"></i><?= tohtml( _("Overall Statistics")) ?></a>
+				<a class="button button-secondary" href='/list/stats/'><i class="bi bi-binoculars icon-lightblue"></i><?= tohtml( _("Overall Statistics")) ?></a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-right">
@@ -27,7 +27,7 @@
 						?>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			<?php } ?>
@@ -36,7 +36,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_POST['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -54,7 +54,7 @@
 			<div class="stats-item">
 
 				<div class="stats-item-header">
-					<i class="fas fa-chart-bar icon-dim stats-item-header-icon u-mr10"></i>
+					<i class="bi bi-bar-chart icon-dim stats-item-header-icon u-mr10"></i>
 					<h2 class="stats-item-header-title">
 						<?php $date = new DateTime($key);
 						echo _($date -> format('M')) .' '.$date -> format('Y') ?>
@@ -66,7 +66,7 @@
 					<div class="stats-item-summary">
 						<h3 class="stats-item-summary-title">
 							<span class="u-text-bold">
-								<i class="fas fa-right-left icon-dim icon-large u-mr5" title="<?= tohtml( _("Bandwidth")) ?>"></i>
+								<i class="bi bi-arrow-left-right icon-dim icon-large u-mr5" title="<?= tohtml( _("Bandwidth")) ?>"></i>
 								<?= tohtml( _("Bandwidth")) ?>
 							</span>
 							<span class="u-mr10">
@@ -90,7 +90,7 @@
 						</ul>
 						<h3 class="stats-item-summary-title">
 							<span class="u-text-bold">
-								<i class="fas fa-hard-drive icon-dim icon-large u-mr5" title="Disk"></i>
+								<i class="bi bi-hdd icon-dim icon-large u-mr5" title="Disk"></i>
 								<?= tohtml( _("Disk")) ?>
 							</span>
 							<span class="u-mr10">

@@ -4,7 +4,7 @@
 		<div class="toolbar-buttons">
 		<?php if ($read_only !== true) { ?>
 			<a href="/schedule/backup/incremental/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" class="button button-secondary js-button-create">
-				<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Create Snapshot")) ?>
+				<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Create Snapshot")) ?>
 			</a>
 		<?php } ?>
 		</div>
@@ -17,7 +17,7 @@
 						<option value="delete"><?= tohtml( _("Delete")) ?></option>
 					</select>
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-						<i class="fas fa-arrow-right"></i>
+						<i class="bi bi-arrow-right"></i>
 					</button>
 				</form>
 			<?php } ?>
@@ -26,7 +26,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 						<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_GET['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -77,10 +77,10 @@
 				<?php if (!$read_only) { ?>
 					<ul class="units-table-row-actions">
 						<li class="units-table-row-action shortcut-enter" data-key-action="href">
-							<a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $value['short_id'], "browse" => 'yes', "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Browse")) ?>"><i class="fas fa-folder-open icon-lightblue icon-dim"></i></a>
+							<a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $value['short_id'], "browse" => 'yes', "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Browse")) ?>"><i class="bi bi-folder2-open icon-lightblue icon-dim"></i></a>
 						</li>
 						<li class="units-table-row-action shortcut-enter" data-key-action="href">
-							<a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $value['short_id'], "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Restore")) ?>"><i class="fas fa-arrow-rotate-left icon-green icon-dim"></i></a>
+							<a href="/list/backup/incremental/?<?= tohtml(http_build_query(["snapshot" => $value['short_id'], "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Restore")) ?>"><i class="bi bi-arrow-counterclockwise icon-green icon-dim"></i></a>
 						</li>
 					</ul>
 				<?php } ?>

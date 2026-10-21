@@ -3,21 +3,21 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a href="/edit/server/" class="button button-secondary">
-				<i class="fas fa-gear icon-maroon"></i><?= tohtml( _("Configure")) ?>
+				<i class="bi bi-gear icon-maroon"></i><?= tohtml( _("Configure")) ?>
 			</a>
 			<a href="/list/rrd/" class="button button-secondary">
-				<i class="fas fa-chart-area icon-blue"></i><?= tohtml( _("Task Monitor")) ?>
+				<i class="bi bi-graph-up icon-blue"></i><?= tohtml( _("Task Monitor")) ?>
 			</a>
 			<a href="/list/updates/" class="button button-secondary">
-				<i class="fas fa-arrows-rotate icon-green"></i><?= tohtml( _("Updates")) ?>
+				<i class="bi bi-arrow-repeat icon-green"></i><?= tohtml( _("Updates")) ?>
 			</a>
 			<?php if (!empty($_SESSION["FIREWALL_SYSTEM"]) && $_SESSION["FIREWALL_SYSTEM"] == "iptables") { ?>
 				<a href="/list/firewall/" class="button button-secondary">
-					<i class="fas fa-shield-halved icon-red"></i><?= tohtml( _("Firewall")) ?>
+					<i class="bi bi-shield-check icon-red"></i><?= tohtml( _("Firewall")) ?>
 				</a>
 			<?php } ?>
 			<a href="/list/log/?<?= tohtml(http_build_query(["user" => 'system', "token" => $_SESSION["token"]])) ?>" class="button button-secondary">
-				<i class="fas fa-binoculars icon-orange"></i><?= tohtml( _("Logs")) ?>
+				<i class="bi bi-binoculars icon-orange"></i><?= tohtml( _("Logs")) ?>
 			</a>
 			<a
 				class="button button-secondary button-danger data-controls js-confirm-action"
@@ -25,7 +25,7 @@
 				data-confirm-title="<?= tohtml( _("Restart")) ?>"
 				data-confirm-message="<?= tohtml( _("Are you sure you want to restart the server?")) ?>"
 			>
-				<i class="fas fa-arrow-rotate-left icon-red"></i><?= tohtml( _("Restart")) ?>
+				<i class="bi bi-arrow-counterclockwise icon-red"></i><?= tohtml( _("Restart")) ?>
 			</a>
 		</div>
 		<div class="toolbar-right">
@@ -38,7 +38,7 @@
 					<option value="restart"><?= tohtml( _("Restart")) ?></option>
 				</select>
 				<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-					<i class="fas fa-arrow-right"></i>
+					<i class="bi bi-arrow-right"></i>
 				</button>
 			</form>
 		</div>
@@ -50,7 +50,7 @@
 
 	<div class="server-summary">
 		<div class="server-summary-icon">
-			<i class="fas fa-server"></i>
+			<i class="bi bi-hdd-network"></i>
 		</div>
 		<div class="server-summary-content">
 			<h1 class="server-summary-title"><?= tohtml($sys["sysinfo"]["HOSTNAME"]) ?></h1>
@@ -59,9 +59,9 @@
 					<span class="server-summary-list-label">Hestia Control Panel</span>
 					<span class="server-summary-list-value">
 						<?php if ($sys["sysinfo"]["RELEASE"] == "release") { ?>
-							<i class="fas fa-cube" title="<?= tohtml( _("Production Release")) ?>"></i>
+							<i class="bi bi-box" title="<?= tohtml( _("Production Release")) ?>"></i>
 						<?php } else { ?>
-							<i class="fas fa-flask icon-red" title="<?= tohtml($sys["sysinfo"]["RELEASE"]) ?>"></i>
+							<i class="bi bi-flask icon-red" title="<?= tohtml($sys["sysinfo"]["RELEASE"]) ?>"></i>
 						<?php } ?>
 						v<?= tohtml($sys["sysinfo"]["HESTIA"]) ?>
 					</span>
@@ -111,16 +111,16 @@
 					$status = 'active';
 					$action = 'stop';
 					$action_text = _('Stop');
-					$spnd_icon = 'fa-stop';
+					$spnd_icon = 'bi-stop-fill';
 					$spnd_icon_class = 'icon-red';
-					$state_icon = 'fa-circle-check icon-green';
+					$state_icon = 'bi-check-circle icon-green';
 				} else {
 					$status = 'suspended';
 					$action = 'start';
 					$action_text = _('Start');
-					$spnd_icon = 'fa-play';
+					$spnd_icon = 'bi-play-fill';
 					$spnd_icon_class = 'icon-green';
-					$state_icon = 'fa-circle-minus icon-red';
+					$state_icon = 'bi-dash-circle icon-red';
 				}
 				if (in_array($key, $phpfpm)){
 					$edit_url="php";
@@ -145,7 +145,7 @@
 				</div>
 				<div class="units-table-cell units-table-heading-cell u-text-bold">
 					<span class="u-hide-desktop"><?= tohtml( _("Service")) ?>:</span>
-					<i class="fas <?= tohtml($state_icon) ?> u-mr5"></i>
+					<i class="bi <?= tohtml($state_icon) ?> u-mr5"></i>
 					<a href="/edit/server/<? echo $edit_url ?>/" title="<?= tohtml( _("Edit")) ?>: <?= tohtml($key) ?>">
 						<?= tohtml($key) ?>
 					</a>
@@ -158,7 +158,7 @@
 								href="/edit/server/<? echo $edit_url ?>/"
 								title="<?= tohtml( _("Edit")) ?>"
 							>
-								<i class="fas fa-pencil icon-orange"></i>
+								<i class="bi bi-pencil icon-orange"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Edit")) ?></span>
 							</a>
 						</li>
@@ -170,7 +170,7 @@
 								data-confirm-title="<?= tohtml( _("Restart")) ?>"
 								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to restart the %s service?"), $key)) ?>"
 							>
-								<i class="fas fa-arrow-rotate-left icon-highlight"></i>
+								<i class="bi bi-arrow-counterclockwise icon-highlight"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Restart")) ?></span>
 							</a>
 						</li>
@@ -182,7 +182,7 @@
 								data-confirm-title="<?= tohtml($action_text) ?>"
 								data-confirm-message="<?php if ($action == 'stop') { echo sprintf(_('Are you sure you want to stop the %s service?'), $key); } else { echo sprintf(_('Are you sure you want to start the %s service?'), $key); }?>"
 							>
-								<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+								<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 								<span class="u-hide-desktop"><?= tohtml($action_text) ?></span>
 							</a>
 						</li>

@@ -3,12 +3,12 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/package/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -39,7 +39,7 @@
 				<div class="u-pos-relative">
 					<input type="text" class="form-control" name="v_disk_quota" id="v_disk_quota" value="<?= tohtml(trim($v_disk_quota, "'")) ?>">
 					<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-						<i class="fas fa-infinity"></i>
+						<i class="bi bi-infinity"></i>
 					</button>
 				</div>
 			</div>
@@ -50,7 +50,7 @@
 				<div class="u-pos-relative">
 					<input type="text" class="form-control" name="v_bandwidth" id="v_bandwidth" value="<?= tohtml(trim($v_bandwidth, "'")) ?>">
 					<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-						<i class="fas fa-infinity"></i>
+						<i class="bi bi-infinity"></i>
 					</button>
 				</div>
 			</div>
@@ -77,7 +77,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_web_domains" id="v_web_domains" value="<?= tohtml(trim($v_web_domains, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -88,7 +88,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_web_aliases" id="v_web_aliases" value="<?= tohtml(trim($v_web_aliases, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -172,7 +172,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_dns_domains" id="v_dns_domains" value="<?= tohtml(trim($v_dns_domains, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -183,7 +183,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_dns_records" id="v_dns_records" value="<?= tohtml(trim($v_dns_records, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -212,7 +212,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_mail_domains" id="v_mail_domains" value="<?= tohtml(trim($v_mail_domains, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -223,7 +223,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_mail_accounts" id="v_mail_accounts" value="<?= tohtml(trim($v_mail_accounts, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -245,7 +245,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_databases" id="v_databases" value="<?= tohtml(trim($v_databases, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -261,7 +261,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_cron_jobs" id="v_cron_jobs" value="<?= tohtml(trim($v_cron_jobs, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 					</div>
@@ -295,7 +295,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_cpu_quota" id="v_cpu_quota" value="<?= tohtml(trim($v_cpu_quota, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 						<small class="form-text text-muted"><?= tohtml( _("CPUQuota=20% ensures that the executed processes will never get more than 20% CPU time on one CPU.")) ?></small>
@@ -308,7 +308,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_cpu_quota_period" id="v_cpu_quota_period" value="<?= tohtml(trim($v_cpu_quota_period, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 						<small class="form-text text-muted"><?= tohtml( _("CPUQuotaPeriodSec=10ms to request that the CPU quota is measured in periods of 10ms.")) ?></small>
@@ -321,7 +321,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_memory_limit" id="v_memory_limit" value="<?= tohtml(trim($v_memory_limit, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 						<small class="form-text text-muted"><?= tohtml( _("Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively")) ?></small>
@@ -334,7 +334,7 @@
 						<div class="u-pos-relative">
 							<input type="text" class="form-control" name="v_swap_limit" id="v_swap_limit" value="<?= tohtml(trim($v_swap_limit, "'")) ?>">
 							<button type="button" class="unlimited-toggle js-unlimited-toggle" title="<?= tohtml( _("Unlimited")) ?>">
-								<i class="fas fa-infinity"></i>
+								<i class="bi bi-infinity"></i>
 							</button>
 						</div>
 						<small class="form-text text-muted"><?= tohtml( _("Takes a swap size in bytes. If the value is suffixed with K, M, G or T, the specified swap size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively")) ?></small>

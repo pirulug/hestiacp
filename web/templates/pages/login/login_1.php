@@ -23,7 +23,7 @@
 		</div>
 		<div class="u-side-by-side">
 			<button type="submit" class="button">
-				<i class="fas fa-right-to-bracket"></i><?= tohtml( _("Login")) ?>
+				<i class="bi bi-box-arrow-in-right"></i><?= tohtml( _("Login")) ?>
 			</button>
 			<a href="/login/?<?= tohtml(http_build_query(["logout" => 'true'])) ?>" class="button button-secondary">
 				<?= tohtml( _("Back")) ?>

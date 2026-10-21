@@ -4,7 +4,7 @@
 		<div class="toolbar-buttons">
 			<?php if ($read_only !== true) { ?>
 				<a href="/add/web/" class="button button-secondary js-button-create">
-					<i class="fas fa-circle-plus icon-green"></i><?= tohtml( _("Add Web Domain")) ?>
+					<i class="bi bi-plus-circle icon-green"></i><?= tohtml( _("Add Web Domain")) ?>
 				</a>
 			<?php } ?>
 		</div>
@@ -14,24 +14,24 @@
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
 							<?php if ($_SESSION['userSortOrder'] === 'name') { $label = _('Name'); } else { $label = _('Date'); } ?>
-						<?= tohtml($label) ?> <i class="fas fa-arrow-down-a-z"></i>
+						<?= tohtml($label) ?> <i class="bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-bandwidth" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Bandwidth")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Bandwidth")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-disk" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Disk")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("Disk")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 					<li data-entity="sort-ip" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("IP Address")) ?> <i class="fas fa-arrow-down-a-z"></i></span><span class="up"><i class="fas fa-arrow-up-a-z"></i></span>
+						<span class="name"><?= tohtml( _("IP Address")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
 					</li>
 				</ul>
 				<?php if ($read_only !== true) { ?>
@@ -50,7 +50,7 @@
 							<option value="delete"><?= tohtml( _("Delete")) ?></option>
 						</select>
 						<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Apply to selected")) ?>">
-							<i class="fas fa-arrow-right"></i>
+							<i class="bi bi-arrow-right"></i>
 						</button>
 					</form>
 				<?php } ?>
@@ -60,7 +60,7 @@
 					<input type="hidden" name="token" value="<?= tohtml($_SESSION["token"]) ?>">
 					<input type="search" class="form-control js-search-input" name="q" value="<?= tohtml($_GET['q'] ?? '') ?>" title="<?= tohtml( _("Search")) ?>">
 					<button type="submit" class="toolbar-input-submit" title="<?= tohtml( _("Search")) ?>">
-						<i class="fas fa-magnifying-glass"></i>
+						<i class="bi bi-search"></i>
 					</button>
 				</form>
 			</div>
@@ -95,14 +95,14 @@
 					$status = 'suspended';
 					$spnd_action = 'unsuspend';
 					$spnd_action_title = _('Unsuspend');
-					$spnd_icon = 'fa-play';
+					$spnd_icon = 'bi-play-fill';
 					$spnd_icon_class = 'icon-green';
 					$spnd_confirmation = _('Are you sure you want to unsuspend domain %s?');
 				} else {
 					$status = 'active';
 					$spnd_action = 'suspend';
 					$spnd_action_title = _('Suspend');
-					$spnd_icon = 'fa-pause';
+					$spnd_icon = 'bi-pause-fill';
 					$spnd_icon_class = 'icon-highlight';
 					$spnd_confirmation = _('Are you sure you want to suspend domain %s?');
 				}
@@ -154,34 +154,34 @@
 				}
 				if ($data[$key]['SUSPENDED'] === 'yes') {
 					if ($data[$key]['SSL'] == 'no') {
-						$icon_ssl = 'fas fa-circle-xmark';
+						$icon_ssl = 'bi-x-circle';
 						$title_ssl = _('Disabled');
 					}
 					if ($data[$key]['SSL'] == 'yes') {
-						$icon_ssl = 'fas fa-circle-check';
+						$icon_ssl = 'bi-check-circle';
 						$title_ssl = _('Enabled');
 					}
 					if ($web_stats == 'no') {
-						$icon_webstats = 'fas fa-circle-xmark';
+						$icon_webstats = 'bi-x-circle';
 						$title_webstats = _('Disabled');
 					} else {
-						$icon_webstats = 'fas fa-circle-check';
+						$icon_webstats = 'bi-check-circle';
 						$title_webstats = _('Enabled');
 					}
 				} else {
 					if ($data[$key]['SSL'] == 'no') {
-						$icon_ssl = 'fas fa-circle-xmark icon-red';
+						$icon_ssl = 'bi-x-circle icon-red';
 						$title_ssl = _('Disabled');
 					}
 					if ($data[$key]['SSL'] == 'yes') {
-						$icon_ssl = 'fas fa-circle-check icon-green';
+						$icon_ssl = 'bi-check-circle icon-green';
 						$title_ssl = _('Enabled');
 					}
 					if ($web_stats == 'no') {
-						$icon_webstats = 'fas fa-circle-xmark icon-red';
+						$icon_webstats = 'bi-x-circle icon-red';
 						$title_webstats = _('Disabled');
 					} else {
-						$icon_webstats = 'fas fa-circle-check icon-green';
+						$icon_webstats = 'bi-check-circle icon-green';
 						$title_webstats = _('Enabled');
 					}
 				}
@@ -235,7 +235,7 @@
 									rel="noopener"
 									title="<?= tohtml( _("Statistics")) ?>"
 								>
-									<i class="fas fa-chart-bar icon-maroon"></i>
+									<i class="bi bi-bar-chart icon-maroon"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Statistics")) ?></span>
 								</a>
 							</li>
@@ -248,7 +248,7 @@
 								rel="noopener"
 								title="<?= tohtml( _("Visit")) ?>"
 							>
-								<i class="fas fa-square-up-right icon-lightblue"></i>
+								<i class="bi bi-box-arrow-up-right icon-lightblue"></i>
 								<span class="u-hide-desktop"><?= tohtml( _("Visit")) ?></span>
 							</a>
 						</li>
@@ -260,7 +260,7 @@
 										href="/edit/web/?<?= tohtml(http_build_query(["domain" => $key, "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Edit Domain")) ?>"
 									>
-										<i class="fas fa-pencil icon-orange"></i>
+										<i class="bi bi-pencil icon-orange"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Edit Domain")) ?></span>
 									</a>
 								</li>
@@ -270,7 +270,7 @@
 										href="/download/site/?<?= tohtml(http_build_query(["site" => $key, "token" => $_SESSION["token"]])) ?>"
 										title="<?= tohtml( _("Download Site")) ?>"
 									>
-										<i class="fas fa-download icon-orange"></i>
+										<i class="bi bi-download icon-orange"></i>
 										<span class="u-hide-desktop"><?= tohtml( _("Download Site")) ?></span>
 									</a>
 								</li>
@@ -291,7 +291,7 @@
 									href="/list/web-log/?<?= tohtml(http_build_query(["domain" => $key, "type" => "access"])) ?>#"
 									title="<?= tohtml( _("View Logs")) ?>"
 								>
-									<i class="fas fa-binoculars icon-purple"></i>
+									<i class="bi bi-binoculars icon-purple"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("View Logs")) ?></span>
 								</a>
 							</li>
@@ -303,7 +303,7 @@
 									data-confirm-title="<?= tohtml($spnd_action_title) ?>"
 									data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
 								>
-									<i class="fas <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+									<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
 									<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
 								</a>
 							</li>
@@ -315,7 +315,7 @@
 									data-confirm-title="<?= tohtml( _("Delete")) ?>"
 									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete domain %s?"), $key)) ?>"
 								>
-									<i class="fas fa-trash icon-red"></i>
+									<i class="bi bi-trash3 icon-red"></i>
 									<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
 								</a>
 							</li>
@@ -346,11 +346,11 @@
 				</div>
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("SSL")) ?>:</span>
-					<i class="fas <?= tohtml($icon_ssl) ?>" title="<?= tohtml($title_ssl) ?>"></i>
+					<i class="bi <?= tohtml($icon_ssl) ?>" title="<?= tohtml($title_ssl) ?>"></i>
 				</div>
 				<div class="units-table-cell u-text-center-desktop">
 					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Statistics")) ?>:</span>
-					<i class="fas <?= tohtml($icon_webstats) ?>" title="<?= tohtml($title_webstats) ?>"></i>
+					<i class="bi <?= tohtml($icon_webstats) ?>" title="<?= tohtml($title_webstats) ?>"></i>
 				</div>
 			</div>
 		<?php } ?>

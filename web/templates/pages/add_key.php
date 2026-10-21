@@ -4,17 +4,17 @@
 		<div class="toolbar-buttons">
 			<?php if ($_SESSION["userContext"] === "admin" && isset($_GET["user"]) && $_GET["user"] !== $_SESSION['ROOT_USER']) { ?>
 				<a class="button button-secondary button-back js-button-back" href="/list/key/?<?= tohtml(http_build_query(["user" => $_GET["user"]])) ?>">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 				</a>
 			<?php } else { ?>
 				<a class="button button-secondary button-back js-button-back" href="/list/key/">
-					<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+					<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 				</a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>

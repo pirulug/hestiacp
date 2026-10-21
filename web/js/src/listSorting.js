@@ -51,9 +51,11 @@ export default function handleListSorting() {
 
 			// Update toggle button text and icon
 			toggleButton.querySelector('span').innerHTML = parentLi.querySelector('.name').innerHTML;
-			const faIcon = toggleButton.querySelector('.fas');
-			faIcon.classList.remove('fa-arrow-up-a-z', 'fa-arrow-down-a-z');
-			faIcon.classList.add(span.classList.contains('up') ? 'fa-arrow-up-a-z' : 'fa-arrow-down-a-z');
+			const sortIcon = toggleButton.querySelector('.bi');
+			if (sortIcon) {
+				sortIcon.classList.remove('bi-sort-alpha-up', 'bi-sort-alpha-down');
+				sortIcon.classList.add(span.classList.contains('up') ? 'bi-sort-alpha-up' : 'bi-sort-alpha-down');
+			}
 
 			// Sort units and reattach them to the DOM
 			const units = Array.from(document.querySelectorAll('.js-unit')).sort((a, b) => {

@@ -3,7 +3,7 @@
 	<div class="toolbar-inner">
 		<div class="toolbar-buttons">
 			<a class="button button-secondary button-back js-button-back" href="/list/user/">
-				<i class="fas fa-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
+				<i class="bi bi-arrow-left icon-blue"></i><?= tohtml( _("Back")) ?>
 			</a>
 			<?php
 				if (($_SESSION['userContext'] === 'admin') && ($_SESSION['look'] === '' ) && ($_SESSION['user'] !== $v_username)) {
@@ -17,24 +17,24 @@
 				}
 			?>
 			<a href="<?= tohtml($ssh_key_url) ?>" class="button button-secondary js-button-create" title="<?= tohtml( _("Manage SSH Keys")) ?>">
-				<i class="fas fa-key icon-orange"></i><?= tohtml( _("Manage SSH Keys")) ?>
+				<i class="bi bi-key icon-orange"></i><?= tohtml( _("Manage SSH Keys")) ?>
 			</a>
 			<?php if ($_SESSION["userContext"] == "admin" || ($_SESSION["userContext"] !== "admin" && $_SESSION["POLICY_USER_VIEW_LOGS"] !== "no")) { ?>
 				<a href="<?= tohtml($log_url) ?>" class="button button-secondary js-button-create" title="<?= tohtml( _("Logs")) ?>">
-					<i class="fas fa-clock-rotate-left icon-maroon"></i><?= tohtml( _("Logs")) ?>
+					<i class="bi bi-clock-rotate-left icon-maroon"></i><?= tohtml( _("Logs")) ?>
 				</a>
 			<?php } ?>
 			<?php
 				$api_status = (!empty($_SESSION['API_SYSTEM']) && is_numeric($_SESSION['API_SYSTEM'])) ? $_SESSION['API_SYSTEM'] : 0;
 				if (($v_username == $_SESSION['ROOT_USER'] && $api_status > 0) || ($v_username != $_SESSION['ROOT_USER'] && $api_status > 1)) { ?>
 				<a href="<?= tohtml($keys_url) ?>" class="button button-secondary js-button-create" title="<?= tohtml( _("Access Keys")) ?>">
-					<i class="fas fa-key icon-purple"></i><?= tohtml( _("Access Keys")) ?>
+					<i class="bi bi-key icon-purple"></i><?= tohtml( _("Access Keys")) ?>
 				</a>
 			<?php } ?>
 		</div>
 		<div class="toolbar-buttons">
 			<button type="submit" class="button" form="main-form">
-				<i class="fas fa-floppy-disk icon-purple"></i><?= tohtml( _("Save")) ?>
+				<i class="bi bi-floppy icon-purple"></i><?= tohtml( _("Save")) ?>
 			</button>
 		</div>
 	</div>
@@ -83,7 +83,7 @@
 				<label for="v_password" class="form-label">
 					<?= tohtml( _("Password")) ?>
 					<button type="button" title="<?= tohtml( _("Generate")) ?>" class="u-unstyled-button u-ml5 js-generate-password">
-						<i class="fas fa-arrows-rotate icon-green"></i>
+						<i class="bi bi-arrow-repeat icon-green"></i>
 					</button>
 				</label>
 				<div class="u-pos-relative u-mb10">
