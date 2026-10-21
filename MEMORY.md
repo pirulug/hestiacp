@@ -39,6 +39,12 @@ Este archivo almacena el contexto persistente, decisiones tecnicas, soluciones a
 * Causa: La URL de redireccion o peticion no incluia el parametro `&user=`, haciendo que el backend tomara `admin` como usuario por defecto y fallara al validar la pertenencia del dominio.
 * Solucion: Conservar e incluir el parametro `&user=` en todos los formularios, enlaces y cabeceras de redireccion `header("Location: ...")`.
 
+### Integracion de HestiaCP 1.10.5 Service Release
+* Version base actualizada de 1.10.4 a 1.10.5.
+* Parches de seguridad incorporados: verificacion de rol/sesion de usuario, correccion en `v-unsuspend-user`, refuerzo de modo lectura/demo y proteccion contra inyeccion en lectura de configuraciones (`HESTIA_RESERVED_CONF_KEYS`).
+* Mejoras funcionales integradas: actualizacion de dependencias (PHP 8.5.10, OpenSSL 3.5.8, PCRE 10.48, Roundcube 1.7.4, File Manager 7.16.2), fin de soporte para Debian 11, mejoras en SSO phpMyAdmin para bases remotas (`%`) y soporte para Ubuntu 26.04 y Debian 13.
+* Preservacion del fork: se mantuvieron intactas las integraciones Git con pipeline de construccion para dominios web, herramientas CLI para PNPM, plantillas de inicio de sesion personalizadas y documentacion interna en `guias/`.
+
 ## Comandos y Flujos Frecuentes
 
 ### Compilacion local autonoma
