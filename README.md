@@ -2,8 +2,6 @@
 
 Fork personalizado de [Hestia Control Panel](https://www.hestiacp.com/) mantenido por **PiruHost / pirulug**, optimizado para compilación autónoma desde código fuente y despliegues independientes en servidores VPS (Debian / Ubuntu).
 
----
-
 ## Documentación y Guías Rápidas
 
 Toda la documentación personalizada, guías de instalación y comandos de mantenimiento se encuentran organizados en la carpeta [`guias/`](guias/README.md):
@@ -15,8 +13,18 @@ Toda la documentación personalizada, guías de instalación y comandos de mante
 | [guias/GUIA_SINCRONIZACION.md](guias/GUIA_SINCRONIZACION.md) | Paso a paso para mantener este fork sincronizado con los últimos cambios del repositorio original (`upstream`). |
 | [guias/OPCIONES.md](guias/OPCIONES.md) | Configuración del Gestor de Archivos (File Manager), SSO en phpMyAdmin y soporte Node.js / PNPM. |
 | [guias/C2.md](guias/C2.md) | Scripts directos para compilar en caliente y solucionar permisos en servidor. |
+| [guias/ERROR.md](guias/ERROR.md) | Registro técnico de causas raíz, trazabilidad de commits y resolución de errores críticos. |
+| [guias/RAMAS.md](guias/RAMAS.md) | Guía de navegación entre ramas (`main`, `upstream-latest`, `upstream-1.10.5`). |
 
----
+## Directrices para Agentes de IA y Desarrolladores
+
+Para asistentes de inteligencia artificial y desarrolladores colaborando en este repositorio:
+
+| Archivo | Propósito |
+| :--- | :--- |
+| [AGENTS.md](AGENTS.md) | Reglas operativas, convenciones de código (comillas dobles, sin emojis), arquitectura y precauciones técnicas. |
+| [MEMORY.md](MEMORY.md) | Memoria persistente del proyecto, soluciones a problemas conocidos y directrices para agentes. |
+| [.agents/rules/](.agents/rules/) | Reglas modulares de espacio de trabajo para estándares de código, arquitectura y flujo Git. |
 
 ## Instalación Rápida en VPS Nuevo
 
@@ -33,7 +41,7 @@ git clone https://github.com/pirulug/hestiacp.git /tmp/hestiacp
 
 # 3. Compilar paquetes .deb locales
 cd /tmp/hestiacp/src
-./hst_autocompile.sh --all --noinstall --keepbuild '~localsrc'
+./hst_autocompile.sh --all --noinstall --keepbuild "~localsrc"
 
 # 4. Ejecutar el instalador usando los paquetes compilados
 cd /tmp/hestiacp/install
@@ -45,8 +53,6 @@ bash hst-install-debian.sh \
   --with-debs /tmp/hestiacp-src/deb \
   --force
 ```
-
----
 
 ## Actualización en Servidores Existentes
 
@@ -66,11 +72,9 @@ git clone https://github.com/pirulug/hestiacp.git /tmp/hestiacp
 chmod +x /tmp/hestiacp/src/*.sh /tmp/hestiacp/bin/* /tmp/hestiacp/install/*.sh
 export BUILD_DIR=/tmp/hestiacp-src
 cd /tmp/hestiacp/src
-./hst_autocompile.sh --hestia --install '~localsrc'
+./hst_autocompile.sh --hestia --install "~localsrc"
 systemctl restart hestia
 ```
-
----
 
 ## Sincronización con el Repositorio Original (Upstream)
 
@@ -84,8 +88,6 @@ git push origin main
 
 Para más detalles sobre resolución de conflictos y flujo de trabajo, consulta [guias/GUIA_SINCRONIZACION.md](guias/GUIA_SINCRONIZACION.md).
 
----
-
 ## Características del Panel
 
 - Servidor web: Apache2 / NGINX con PHP-FPM y soporte multi-versión (PHP 5.6 - 8.5).
@@ -95,8 +97,6 @@ Para más detalles sobre resolución de conflictos y flujo de trabajo, consulta 
 - Gestor de archivos integrado (FileGator) y emulador de terminal web integrado.
 - Certificados SSL automáticos gratuitos vía Let's Encrypt.
 - Cortafuegos integrado (iptables, fail2ban, ipset).
-
----
 
 ## Licencia y Créditos
 
