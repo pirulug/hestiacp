@@ -151,16 +151,22 @@ html {
 
 .file-row.type-dir a.name:not([data-v])::before,
 .file-row.type-file a.name:not([data-v])::before {
-	font-family: "Font Awesome 5 Free" !important;
+	font-family: "bootstrap-icons" !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-variant: normal !important;
+	text-transform: none !important;
+	line-height: 1 !important;
+	-webkit-font-smoothing: antialiased !important;
 }
 
 .file-row.type-dir a.name:not([data-v])::before {
-	content: "\f07b" !important;
+	content: "\f3d1" !important;
 	color: #f9b30f !important;
 }
 
 .file-row.type-file a.name:not([data-v])::before {
-	content: "\f15c" !important;
+	content: "\f38b" !important;
 	color: #363636 !important;
 }
 
@@ -294,8 +300,14 @@ a:not([data-v])::before {
 }
 
 .tree-list a:not([data-v])::before {
-	content: "\f07b" !important;
-	font-family: "Font Awesome 5 Free" !important;
+	content: "\f3d1" !important;
+	font-family: "bootstrap-icons" !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-variant: normal !important;
+	text-transform: none !important;
+	line-height: 1 !important;
+	-webkit-font-smoothing: antialiased !important;
 	color: #f9b30f !important;
 }
 
