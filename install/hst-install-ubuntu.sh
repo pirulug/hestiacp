@@ -31,7 +31,7 @@ HESTIA_COMMON_DIR="$HESTIA/install/common"
 VERBOSE='no'
 
 # Define software versions
-HESTIA_INSTALL_VER='1.10.4'
+HESTIA_INSTALL_VER='1.10.5'
 
 # Build the full Hestia version
 # Split base version (1.10.0) from channel suffix (~alpha / ~beta), if present
@@ -1030,7 +1030,6 @@ if [ "$vsftpd" = 'no' ]; then
 fi
 if [ "$proftpd" = 'no' ]; then
 	software=$(echo "$software" | sed -e "s/proftpd-core//")
-	software=$(echo "$software" | sed -e "s/proftpd-mod-vroot//")
 	software=$(echo "$software" | sed -e "s/proftpd-mod-crypto//")
 fi
 if [ "$named" = 'no' ]; then
@@ -1815,6 +1814,39 @@ if [ "$proftpd" = 'yes' ]; then
 	cp -f $HESTIA_INSTALL_DIR/proftpd/proftpd.conf /etc/proftpd/
 	cp -f $HESTIA_INSTALL_DIR/proftpd/tls.conf /etc/proftpd/
 
+	# In Ubuntu 26.04 we need to:
+	#   1.- Add modules.conf to proftpd.conf so tls mod is loaded.
+	#   2.- Add rules to AppArmor to allow ProFTPD to read the certificates and create the socket.
+	ubuntu_major="${release%%.*}"
+	if [[ "$ubuntu_major" -ge 26 ]]; then
+		# Add modules.conf
+		if [[ -f /etc/proftpd/modules.conf ]] && grep -qF "Include /etc/proftpd/tls.conf" /etc/proftpd/proftpd.conf; then
+			if ! grep -qF "Include /etc/proftpd/modules.conf" /etc/proftpd/proftpd.conf; then
+				sed -i '\|Include /etc/proftpd/tls.conf|i Include /etc/proftpd/modules.conf' /etc/proftpd/proftpd.conf
+			fi
+		fi
+
+		# Add ruleset for AppArmor
+		mkdir -p /etc/apparmor.d/local
+		if [[ ! -f /etc/apparmor.d/local/proftpd ]]; then
+			cat > /etc/apparmor.d/local/proftpd << 'EOF'
+# Configuration added by Hestia
+/usr/local/hestia/ssl/certificate.crt r,
+/usr/local/hestia/ssl/certificate.key r,
+/run/proftpd.sock rw,
+EOF
+			apparmor_parser -r /etc/apparmor.d/proftpd 2> /dev/null
+		elif ! grep -qF "# Configuration added by Hestia" /etc/apparmor.d/local/proftpd; then
+			cat >> /etc/apparmor.d/local/proftpd << 'EOF'
+# Configuration added by Hestia
+/usr/local/hestia/ssl/certificate.crt r,
+/usr/local/hestia/ssl/certificate.key r,
+/run/proftpd.sock rw,
+EOF
+			apparmor_parser -r /etc/apparmor.d/proftpd 2> /dev/null
+		fi
+	fi
+
 	update-rc.d proftpd defaults > /dev/null 2>&1
 	systemctl start proftpd >> $LOG
 	check_result $? "proftpd start failed"
@@ -2455,7 +2487,6 @@ echo "10 05 * * * sudo /usr/local/hestia/bin/v-backup-users" >> /var/spool/cron/
 echo "20 00 * * * sudo /usr/local/hestia/bin/v-update-user-stats" >> /var/spool/cron/crontabs/hestiaweb
 echo "*/5 * * * * sudo /usr/local/hestia/bin/v-update-sys-rrd" >> /var/spool/cron/crontabs/hestiaweb
 echo "$min $hour * * * sudo /usr/local/hestia/bin/v-update-letsencrypt-ssl" >> /var/spool/cron/crontabs/hestiaweb
-
 chmod 600 /var/spool/cron/crontabs/hestiaweb
 chown hestiaweb:hestiaweb /var/spool/cron/crontabs/hestiaweb
 
