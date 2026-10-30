@@ -40,7 +40,6 @@ is_vpn_routed_nets_valid() {
 # Default subnet: 10.66.66.0/24 (server takes .1)
 get_next_vpn_ip() {
 	local subnet_base
-	local used_ips
 	local next_octet=2
 
 	if [ -f "$VPN_SERVER_CONF" ]; then
@@ -51,11 +50,12 @@ get_next_vpn_ip() {
 	subnet_base=$(echo "${SUBNET:-10.66.66.0/24}" | cut -d'.' -f1-3)
 
 	if [ -f "$VPN_PEERS_CONF" ]; then
-		used_ips=$(grep "IP=" "$VPN_PEERS_CONF" | cut -f 4 -d \' | cut -d'.' -f4 | sort -n)
-		for ip in $used_ips; do
-			if [ "$ip" -eq "$next_octet" ]; then
-				((next_octet++))
-			elif [ "$ip" -gt "$next_octet" ]; then
+		local used_octets
+		used_octets=$(grep -o "IP='[0-9.]*'" "$VPN_PEERS_CONF" 2>/dev/null | sed -e "s/IP='//" -e "s/'//" | awk -F'.' '{print $4}' | sort -n)
+		for oct in $used_octets; do
+			if [ "$oct" -eq "$next_octet" ]; then
+				next_octet=$((next_octet + 1))
+			elif [ "$oct" -gt "$next_octet" ]; then
 				break
 			fi
 		done
