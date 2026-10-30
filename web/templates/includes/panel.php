@@ -468,7 +468,7 @@
 				<?php } ?>
 
 				<!-- VPN tab (WireGuard) -->
-				<?php if ($_SESSION["userContext"] === "admin" && isset($_SESSION["VPN_SYSTEM"]) && $_SESSION["VPN_SYSTEM"] === "wireguard") { ?>
+				<?php if ($_SESSION["userContext"] === "admin" && empty($_SESSION["look"]) && isset($_SESSION["VPN_SYSTEM"]) && $_SESSION["VPN_SYSTEM"] === "wireguard") { ?>
 					<li class="main-menu-item">
 						<a class="main-menu-item-link <?php if ($TAB == "VPN") {
        	echo "active";

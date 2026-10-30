@@ -8,7 +8,7 @@ $TAB = "VPN";
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/main.php";
 
 // Check user context
-if ($_SESSION["userContext"] != "admin") {
+if ($_SESSION["userContext"] !== "admin" || !empty($_SESSION["look"])) {
 	header("Location: /list/user/");
 	exit();
 }
