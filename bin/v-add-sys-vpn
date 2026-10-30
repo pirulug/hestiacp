@@ -119,6 +119,9 @@ fi
 # Synchronize and start wireguard
 sync_wireguard_config
 
+if ip link show wg0 > /dev/null 2>&1; then
+	wg-quick down wg0 > /dev/null 2>&1 || ip link delete wg0 > /dev/null 2>&1 || true
+fi
 systemctl enable --now "wg-quick@wg0" > /dev/null 2>&1
 
 # Register service in hestia.conf

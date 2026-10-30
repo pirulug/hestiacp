@@ -189,6 +189,9 @@ if [ "$VPN_SYSTEM" = "wireguard" ] && [ -f "$HESTIA/data/vpn/server.conf" ]; the
 	wan_iface="${WAN_IFACE:-$(ip route show default 2>/dev/null | awk '/default/ {print $5}' | head -n1)}"
 	vpn_subnet="${SUBNET:-10.66.66.0/24}"
 
+	# Allow inbound traffic from VPN interface to the server itself (ping, DNS, services)
+	echo "$iptables -A INPUT -i $wg_iface -j ACCEPT" >> "$tmp"
+
 	# Allow peer-to-peer communication through VPN hub (e.g. Windows PC to Homelab)
 	echo "$iptables -A FORWARD -i $wg_iface -o $wg_iface -j ACCEPT" >> "$tmp"
 
