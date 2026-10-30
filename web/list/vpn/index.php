@@ -1,5 +1,5 @@
 <?php
-$TAB = "SERVER";
+$TAB = "VPN";
 
 // Main include
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/main.php";

@@ -467,6 +467,22 @@
 					<?php } ?>
 				<?php } ?>
 
+				<!-- VPN tab (WireGuard) -->
+				<?php if ($_SESSION["userContext"] === "admin" && isset($_SESSION["VPN_SYSTEM"]) && $_SESSION["VPN_SYSTEM"] === "wireguard") { ?>
+					<li class="main-menu-item">
+						<a class="main-menu-item-link <?php if ($TAB == "VPN") {
+       	echo "active";
+       } ?>" href="/list/vpn/" title="<?= _("WireGuard VPN") ?>">
+							<p class="main-menu-item-label"><?= _("VPN") ?><i class="bi bi-shield-lock"></i></p>
+							<ul class="main-menu-stats">
+								<li>
+									<?= _("Service") ?>: <span class="u-text-bold">WireGuard</span>
+								</li>
+							</ul>
+						</a>
+					</li>
+				<?php } ?>
+
 			</ul>
 		</div>
 	</nav>
