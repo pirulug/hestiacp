@@ -1,0 +1,67 @@
+#!/bin/bash
+# info: delete and disable system WireGuard VPN
+# options: NONE
+#
+# example: v-delete-sys-vpn
+#
+# This function stops and disables WireGuard VPN service.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_hestia_demo_mode
+
+is_system_enabled "$VPN_SYSTEM" "VPN_SYSTEM"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Stop and disable systemd unit
+systemctl stop "wg-quick@wg0" > /dev/null 2>&1
+systemctl disable "wg-quick@wg0" > /dev/null 2>&1
+
+# Delete WireGuard firewall rule if present
+if [ -f "$VPN_SERVER_CONF" ]; then
+	# shellcheck source=/dev/null
+	source_conf "$VPN_SERVER_CONF"
+	if [ -n "$PORT" ] && [ -f "$HESTIA/data/firewall/rules.conf" ]; then
+		rule_id=$(grep "PORT='$PORT'" "$HESTIA/data/firewall/rules.conf" | grep "PROTOCOL='UDP'" | cut -f 2 -d \' | head -n1)
+		if [ -n "$rule_id" ]; then
+			"$BIN/v-delete-firewall-rule" "$rule_id" > /dev/null 2>&1
+		fi
+	fi
+fi
+
+# Remove VPN_SYSTEM from hestia.conf
+"$BIN/v-delete-sys-config-value" "VPN_SYSTEM"
+
+# Update firewall rules to clear NAT / FORWARD rules
+if [ -n "$FIREWALL_SYSTEM" ] && [ "$FIREWALL_SYSTEM" = "iptables" ]; then
+	"$BIN/v-update-firewall"
+fi
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Deleted WireGuard VPN server configuration."
+log_event "$OK" "$ARGUMENTS"
+
+exit
+

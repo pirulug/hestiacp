@@ -182,6 +182,24 @@ done
 # Switching chain policy to DROP
 echo "$iptables -P INPUT DROP" >> "$tmp"
 
+# Checking WireGuard VPN forwarding and NAT rules
+if [ "$VPN_SYSTEM" = "wireguard" ] && [ -f "$HESTIA/data/vpn/server.conf" ]; then
+	source_conf "$HESTIA/data/vpn/server.conf"
+	wg_iface="${INTERFACE:-wg0}"
+	wan_iface="${WAN_IFACE:-$(ip route show default 2>/dev/null | awk '/default/ {print $5}' | head -n1)}"
+	vpn_subnet="${SUBNET:-10.66.66.0/24}"
+
+	# Allow peer-to-peer communication through VPN hub (e.g. Windows PC to Homelab)
+	echo "$iptables -A FORWARD -i $wg_iface -o $wg_iface -j ACCEPT" >> "$tmp"
+
+	# Allow outbound VPN client traffic to WAN and established inbound responses
+	if [ -n "$wan_iface" ]; then
+		echo "$iptables -A FORWARD -i $wg_iface -o $wan_iface -j ACCEPT" >> "$tmp"
+		echo "$iptables -A FORWARD -i $wan_iface -o $wg_iface -m state --state ESTABLISHED,RELATED -j ACCEPT" >> "$tmp"
+		echo "$iptables -t nat -A POSTROUTING -s $vpn_subnet -o $wan_iface -j MASQUERADE" >> "$tmp"
+	fi
+fi
+
 # Adding hestia chain
 echo "$iptables -N hestia" >> "$tmp"
 # Applying rules

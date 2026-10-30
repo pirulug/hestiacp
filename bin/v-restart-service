@@ -52,6 +52,9 @@ else
 fi
 
 for service in $service_list; do
+	if [ "$service" = "wireguard" ] || [ "$service" = "wg-quick@wg0" ]; then
+		service="wg-quick@wg0"
+	fi
 	if [ "$service" = "iptables" ]; then
 		# Run the restart rules for iptables firewall
 		$BIN/v-stop-firewall

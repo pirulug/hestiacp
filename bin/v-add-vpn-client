@@ -1,0 +1,140 @@
+#!/bin/bash
+# info: add a WireGuard VPN client peer
+# options: CLIENT [ROUTED_NETS] [TUNNEL_MODE] [DNS] [COMMENT]
+#
+# example: v-add-vpn-client windows-pc "" "full" "1.1.1.1" "Laptop principal"
+# example: v-add-vpn-client homelab "192.168.1.0/24" "split" "" "Servidor homelab"
+#
+# This function registers a new WireGuard client peer and generates its .conf file.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+client="$1"
+routed_nets="$2"
+tunnel_mode="${3:-split}"
+client_dns="$4"
+comment="$5"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'CLIENT [ROUTED_NETS] [TUNNEL_MODE] [DNS] [COMMENT]'
+is_format_valid 'client'
+is_vpn_client_format_valid "$client"
+
+if [ -n "$routed_nets" ]; then
+	is_vpn_routed_nets_valid "$routed_nets"
+fi
+
+if [ "$tunnel_mode" != "split" ] && [ "$tunnel_mode" != "full" ]; then
+	check_result "$E_INVALID" "invalid tunnel mode :: $tunnel_mode (use 'split' or 'full')"
+fi
+
+if [ ! -f "$VPN_SERVER_CONF" ]; then
+	check_result "$E_NOTEXIST" "VPN server configuration not found. Run v-add-sys-vpn first"
+fi
+
+# shellcheck source=/dev/null
+source_conf "$VPN_SERVER_CONF"
+
+if [ -f "$VPN_PEERS_CONF" ] && grep -q "CLIENT='$client'" "$VPN_PEERS_CONF"; then
+	check_result "$E_EXISTS" "VPN client $client already exists"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Assign next free IP
+client_ip=$(get_next_vpn_ip)
+
+# Default DNS to server DNS if unspecified
+if [ -z "$client_dns" ]; then
+	client_dns="$DNS"
+fi
+
+# Generate keys
+client_privkey=$(wg genkey)
+client_pubkey=$(echo "$client_privkey" | wg pubkey)
+client_psk=$(wg genpsk)
+
+# Save PSK on server
+mkdir -p /etc/wireguard
+echo "$client_psk" > "/etc/wireguard/psk_${client}.key"
+chmod 600 "/etc/wireguard/psk_${client}.key"
+
+# Determine next peer ID
+next_id=1
+if [ -f "$VPN_PEERS_CONF" ] && [ -s "$VPN_PEERS_CONF" ]; then
+	last_id=$(grep "ID=" "$VPN_PEERS_CONF" | cut -f 2 -d \' | sort -n | tail -n1)
+	if [ -n "$last_id" ]; then
+		next_id=$((last_id + 1))
+	fi
+fi
+
+# AllowedIPs definition for the client config file
+if [ "$tunnel_mode" = "full" ]; then
+	client_allowed_ips="0.0.0.0/0, ::/0"
+else
+	# Split tunnel: subred VPN + subredes enrutadas si existen
+	client_allowed_ips="$SUBNET"
+	if [ -n "$routed_nets" ]; then
+		client_allowed_ips="${client_allowed_ips}, ${routed_nets}"
+	fi
+fi
+
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" | cut -f 1 -d \ )
+date=$(echo "$time_n_date" | cut -f 2 -d \ )
+
+# Write client configuration file
+mkdir -p "$VPN_CLIENTS_DIR"
+client_conf_file="$VPN_CLIENTS_DIR/${client}.conf"
+
+cat <<EOF > "$client_conf_file"
+[Interface]
+PrivateKey = ${client_privkey}
+Address = ${client_ip}/32
+DNS = ${client_dns}
+
+[Peer]
+PublicKey = ${PUBLIC_KEY}
+PresharedKey = ${client_psk}
+Endpoint = ${PUBLIC_IP}:${PORT}
+AllowedIPs = ${client_allowed_ips}
+PersistentKeepalive = 25
+EOF
+
+chmod 600 "$client_conf_file"
+
+# Record peer in peers.conf
+peer_record="ID='$next_id' CLIENT='$client' IP='$client_ip' ROUTED_NETS='$routed_nets' TUNNEL_MODE='$tunnel_mode' PUBLIC_KEY='$client_pubkey' DNS='$client_dns' COMMENT='$comment' SUSPENDED='no' TIME='$time' DATE='$date'"
+echo "$peer_record" >> "$VPN_PEERS_CONF"
+chmod 660 "$VPN_PEERS_CONF"
+
+# Synchronize wireguard
+sync_wireguard_config
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Added WireGuard VPN client (Name: $client, IP: $client_ip)."
+log_event "$OK" "$ARGUMENTS"
+
+exit
+

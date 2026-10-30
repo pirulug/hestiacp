@@ -1,0 +1,127 @@
+#!/bin/bash
+# info: list WireGuard VPN client peers
+# options: [FORMAT]
+#
+# example: v-list-vpn-clients json
+#
+# This function lists configured WireGuard clients with live connection statistics.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format="${1:-shell}"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+# JSON output function
+json_list() {
+	echo "{"
+	local first=1
+	if [ -f "$VPN_PEERS_CONF" ]; then
+		while IFS= read -r line; do
+			[ -z "$line" ] && continue
+			parse_object_kv_list "$line"
+
+			# Fetch live status from wg show dump if wg0 is active
+			local latest_handshake="0"
+			local transfer_rx="0"
+			local transfer_tx="0"
+			local endpoint="none"
+
+			if [ -n "$PUBLIC_KEY" ] && which wg > /dev/null 2>&1; then
+				local wg_dump
+				wg_dump=$(wg show wg0 dump 2>/dev/null | grep -F "$PUBLIC_KEY" || true)
+				if [ -n "$wg_dump" ]; then
+					endpoint=$(echo "$wg_dump" | awk '{print $3}')
+					latest_handshake=$(echo "$wg_dump" | awk '{print $5}')
+					transfer_rx=$(echo "$wg_dump" | awk '{print $6}')
+					transfer_tx=$(echo "$wg_dump" | awk '{print $7}')
+				fi
+			fi
+
+			if [ "$first" -eq 0 ]; then
+				echo ","
+			fi
+			first=0
+
+			echo -n "  \"$CLIENT\": {
+    \"ID\": \"$ID\",
+    \"IP\": \"$IP\",
+    \"ROUTED_NETS\": \"$ROUTED_NETS\",
+    \"TUNNEL_MODE\": \"$TUNNEL_MODE\",
+    \"PUBLIC_KEY\": \"$PUBLIC_KEY\",
+    \"DNS\": \"$DNS\",
+    \"COMMENT\": \"$COMMENT\",
+    \"SUSPENDED\": \"$SUSPENDED\",
+    \"TIME\": \"$TIME\",
+    \"DATE\": \"$DATE\",
+    \"ENDPOINT\": \"$endpoint\",
+    \"LATEST_HANDSHAKE\": \"$latest_handshake\",
+    \"TRANSFER_RX\": \"$transfer_rx\",
+    \"TRANSFER_TX\": \"$transfer_tx\"
+  }"
+		done < "$VPN_PEERS_CONF"
+	fi
+	echo ""
+	echo "}"
+}
+
+# Plain output function
+plain_list() {
+	if [ -f "$VPN_PEERS_CONF" ]; then
+		while IFS= read -r line; do
+			[ -z "$line" ] && continue
+			parse_object_kv_list "$line"
+			echo -e "$CLIENT\t$IP\t$ROUTED_NETS\t$TUNNEL_MODE\t$SUSPENDED\t$DATE"
+		done < "$VPN_PEERS_CONF"
+	fi
+}
+
+# CSV output function
+csv_list() {
+	echo "CLIENT,IP,ROUTED_NETS,TUNNEL_MODE,COMMENT,SUSPENDED,DATE"
+	if [ -f "$VPN_PEERS_CONF" ]; then
+		while IFS= read -r line; do
+			[ -z "$line" ] && continue
+			parse_object_kv_list "$line"
+			echo "$CLIENT,$IP,\"$ROUTED_NETS\",$TUNNEL_MODE,\"$COMMENT\",$SUSPENDED,$DATE"
+		done < "$VPN_PEERS_CONF"
+	fi
+}
+
+# Shell output function
+shell_list() {
+	echo "CLIENT IP ROUTED_NETS TUNNEL_MODE SUSPENDED DATE"
+	echo "------ -- ----------- ----------- --------- ----"
+	if [ -f "$VPN_PEERS_CONF" ]; then
+		while IFS= read -r line; do
+			[ -z "$line" ] && continue
+			parse_object_kv_list "$line"
+			echo "$CLIENT $IP ${ROUTED_NETS:--} $TUNNEL_MODE $SUSPENDED $DATE"
+		done < "$VPN_PEERS_CONF"
+	fi
+}
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+case "$format" in
+	json) json_list ;;
+	plain) plain_list ;;
+	csv) csv_list ;;
+	shell) shell_list | column -t ;;
+esac
+
+exit
+

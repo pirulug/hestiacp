@@ -1,0 +1,59 @@
+#!/bin/bash
+# info: suspend a WireGuard VPN client peer
+# options: CLIENT
+#
+# example: v-suspend-vpn-client windows-pc
+#
+# This function temporarily suspends a WireGuard client connection.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+client="$1"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'CLIENT'
+is_vpn_client_format_valid "$client"
+
+if [ ! -f "$VPN_PEERS_CONF" ] || ! grep -q "CLIENT='$client'" "$VPN_PEERS_CONF"; then
+	check_result "$E_NOTEXIST" "VPN client $client does not exist"
+fi
+
+if grep "CLIENT='$client'" "$VPN_PEERS_CONF" | grep -q "SUSPENDED='yes'"; then
+	check_result "$E_SUSPENDED" "VPN client $client is already suspended"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Update status in peers.conf
+sed -i "/CLIENT='$client'/s/SUSPENDED='no'/SUSPENDED='yes'/" "$VPN_PEERS_CONF"
+
+# Synchronize wireguard config
+sync_wireguard_config
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Suspended WireGuard VPN client (Name: $client)."
+log_event "$OK" "$ARGUMENTS"
+
+exit
+

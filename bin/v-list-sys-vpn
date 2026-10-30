@@ -1,0 +1,81 @@
+#!/bin/bash
+# info: get system VPN server status and details
+# options: [FORMAT]
+#
+# example: v-list-sys-vpn json
+#
+# This function outputs the WireGuard server configuration and status.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format="${1:-shell}"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+if [ ! -f "$VPN_SERVER_CONF" ]; then
+	if [ "$format" = "json" ]; then
+		echo "{}"
+	else
+		echo "WireGuard VPN is not configured"
+	fi
+	exit
+fi
+
+# shellcheck source=/dev/null
+source_conf "$VPN_SERVER_CONF"
+
+status="stopped"
+if [ -e "/sys/class/net/$INTERFACE" ] || ip link show "$INTERFACE" > /dev/null 2>&1; then
+	status="running"
+fi
+
+peer_count=0
+if [ -f "$VPN_PEERS_CONF" ]; then
+	peer_count=$(grep -c "CLIENT=" "$VPN_PEERS_CONF" || true)
+fi
+
+case "$format" in
+	json)
+		echo "{"
+		echo "  \"server\": {"
+		echo "    \"INTERFACE\": \"$INTERFACE\","
+		echo "    \"PORT\": \"$PORT\","
+		echo "    \"SUBNET\": \"$SUBNET\","
+		echo "    \"SERVER_IP\": \"$SERVER_IP\","
+		echo "    \"PUBLIC_IP\": \"$PUBLIC_IP\","
+		echo "    \"WAN_IFACE\": \"$WAN_IFACE\","
+		echo "    \"DNS\": \"$DNS\","
+		echo "    \"PUBLIC_KEY\": \"$PUBLIC_KEY\","
+		echo "    \"STATUS\": \"$status\","
+		echo "    \"PEERS\": \"$peer_count\","
+		echo "    \"CREATED_DATE\": \"$CREATED_DATE\""
+		echo "  }"
+		echo "}"
+		;;
+	*)
+		echo "INTERFACE: $INTERFACE"
+		echo "STATUS: $status"
+		echo "PORT: $PORT"
+		echo "SUBNET: $SUBNET"
+		echo "PUBLIC_IP: $PUBLIC_IP"
+		echo "PEERS: $peer_count"
+		;;
+esac
+
+exit
+

@@ -347,6 +347,19 @@ if [ -n "$WEB_TERMINAL" ] && [ "$WEB_TERMINAL" != 'false' ]; then
 	data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime'"
 fi
 
+# Checking VPN WireGuard
+if [ -n "$VPN_SYSTEM" ] && [ "$VPN_SYSTEM" != 'remote' ]; then
+	state="stopped"
+	cpu="0"
+	mem="0"
+	rtime="0"
+	if [ -e "/sys/class/net/wg0" ] || ip link show wg0 > /dev/null 2>&1; then
+		state="running"
+	fi
+	data="$data\nNAME='wireguard' SYSTEM='vpn service'"
+	data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime'"
+fi
+
 # Listing data
 case $format in
 	json) json_list ;;

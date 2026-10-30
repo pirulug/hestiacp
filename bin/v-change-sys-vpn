@@ -1,0 +1,98 @@
+#!/bin/bash
+# info: change system WireGuard VPN server configuration
+# options: [PORT] [DNS] [PUBLIC_IP]
+#
+# example: v-change-sys-vpn 51820 "1.1.1.1,8.8.8.8" "203.0.113.10"
+#
+# This function modifies WireGuard VPN server settings and updates client configs.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+new_port="$1"
+new_dns="$2"
+new_public_ip="$3"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_hestia_demo_mode
+
+if [ ! -f "$VPN_SERVER_CONF" ]; then
+	check_result "$E_NOTEXIST" "VPN server configuration not found"
+fi
+
+# shellcheck source=/dev/null
+source_conf "$VPN_SERVER_CONF"
+
+if [ -n "$new_port" ]; then
+	is_int_format_valid "$new_port" "port"
+else
+	new_port="$PORT"
+fi
+
+if [ -z "$new_dns" ]; then
+	new_dns="$DNS"
+fi
+
+if [ -z "$new_public_ip" ]; then
+	new_public_ip="$PUBLIC_IP"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+old_port="$PORT"
+
+# Update server.conf
+sed -i "s/PORT='.*'/PORT='$new_port'/" "$VPN_SERVER_CONF"
+sed -i "s/DNS='.*'/DNS='$new_dns'/" "$VPN_SERVER_CONF"
+sed -i "s/PUBLIC_IP='.*'/PUBLIC_IP='$new_public_ip'/" "$VPN_SERVER_CONF"
+
+# Update firewall rule if port changed
+if [ "$old_port" != "$new_port" ] && [ -n "$FIREWALL_SYSTEM" ] && [ "$FIREWALL_SYSTEM" = "iptables" ]; then
+	if [ -f "$HESTIA/data/firewall/rules.conf" ]; then
+		rule_id=$(grep "PORT='$old_port'" "$HESTIA/data/firewall/rules.conf" | grep "PROTOCOL='UDP'" | cut -f 2 -d \' | head -n1)
+		if [ -n "$rule_id" ]; then
+			"$BIN/v-delete-firewall-rule" "$rule_id" > /dev/null 2>&1
+		fi
+	fi
+	"$BIN/v-add-firewall-rule" "ACCEPT" "0.0.0.0/0" "$new_port" "UDP" "WIREGUARD"
+	"$BIN/v-update-firewall"
+fi
+
+# Update client conf endpoints if port or public IP changed
+if [ -d "$VPN_CLIENTS_DIR" ]; then
+	for conf in "$VPN_CLIENTS_DIR"/*.conf; do
+		[ -f "$conf" ] || continue
+		sed -i "s/^Endpoint = .*/Endpoint = ${new_public_ip}:${new_port}/" "$conf"
+	done
+fi
+
+# Rebuild server wg0.conf and restart/reload
+sync_wireguard_config
+systemctl restart "wg-quick@wg0" > /dev/null 2>&1
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Updated WireGuard VPN configuration (Port: $new_port, Public IP: $new_public_ip)."
+log_event "$OK" "$ARGUMENTS"
+
+exit
+

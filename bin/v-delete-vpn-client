@@ -1,0 +1,61 @@
+#!/bin/bash
+# info: delete a WireGuard VPN client peer
+# options: CLIENT
+#
+# example: v-delete-vpn-client windows-pc
+#
+# This function deletes a WireGuard client peer and its configuration.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+client="$1"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'CLIENT'
+is_vpn_client_format_valid "$client"
+
+if [ ! -f "$VPN_PEERS_CONF" ] || ! grep -q "CLIENT='$client'" "$VPN_PEERS_CONF"; then
+	check_result "$E_NOTEXIST" "VPN client $client does not exist"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Remove from peers.conf
+sed -i "/CLIENT='$client'/d" "$VPN_PEERS_CONF"
+
+# Remove client conf file
+rm -f "$VPN_CLIENTS_DIR/${client}.conf"
+
+# Remove preshared key
+rm -f "/etc/wireguard/psk_${client}.key"
+
+# Synchronize wireguard config
+sync_wireguard_config
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Deleted WireGuard VPN client (Name: $client)."
+log_event "$OK" "$ARGUMENTS"
+
+exit
+

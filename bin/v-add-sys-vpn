@@ -1,0 +1,143 @@
+#!/bin/bash
+# info: add and initialize system WireGuard VPN
+# options: [PORT] [SUBNET] [DNS] [PUBLIC_IP]
+#
+# example: v-add-sys-vpn
+# example: v-add-sys-vpn 51820 10.66.66.0/24 "1.1.1.1,8.8.8.8"
+#
+# This function installs and configures WireGuard VPN service on the server.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+port="${1:-51820}"
+subnet="${2:-10.66.66.0/24}"
+dns_servers="${3:-1.1.1.1, 8.8.8.8}"
+public_ip="$4"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+# Perform verification if read-only mode is enabled
+check_hestia_demo_mode
+
+is_int_format_valid "$port" "port"
+
+if [ -f "$VPN_SERVER_CONF" ] && [ "$VPN_SYSTEM" = "wireguard" ]; then
+	check_result "$E_EXISTS" "VPN service is already configured"
+fi
+
+# Detect public IP if omitted
+if [ -z "$public_ip" ]; then
+	public_ip=$(curl -s4 --max-time 5 https://icanhazip.com 2>/dev/null || curl -s4 --max-time 5 https://api.ipify.org 2>/dev/null)
+	if [ -z "$public_ip" ]; then
+		public_ip=$(ip route get 8.8.8.8 2>/dev/null | awk '{print $7}' | head -n1)
+	fi
+fi
+
+# Detect default outgoing WAN interface
+wan_iface=$(ip route show default 2>/dev/null | awk '/default/ {print $5}' | head -n1)
+if [ -z "$wan_iface" ]; then
+	wan_iface="eth0"
+fi
+
+# Extract server internal IP from subnet (default .1)
+subnet_base=$(echo "$subnet" | cut -d'.' -f1-3)
+server_ip="${subnet_base}.1"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Install wireguard packages if missing
+if ! which wg > /dev/null 2>&1 || ! which qrencode > /dev/null 2>&1; then
+	if [ -e "/etc/debian_version" ]; then
+		export DEBIAN_FRONTEND=noninteractive
+		apt-get update -qq > /dev/null 2>&1
+		apt-get install -y -qq wireguard wireguard-tools qrencode > /dev/null 2>&1
+	fi
+fi
+
+# Enable IPv4 packet forwarding
+echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/99-hestia-wireguard.conf
+sysctl -p /etc/sysctl.d/99-hestia-wireguard.conf > /dev/null 2>&1
+
+# Setup wireguard keys directory
+mkdir -p /etc/wireguard
+chmod 700 /etc/wireguard
+
+if [ ! -f /etc/wireguard/server.key ]; then
+	wg genkey | tee /etc/wireguard/server.key | wg pubkey > /etc/wireguard/server.pub
+	chmod 600 /etc/wireguard/server.key
+	chmod 644 /etc/wireguard/server.pub
+fi
+
+server_pubkey=$(cat /etc/wireguard/server.pub)
+
+# Setup Hestia data directory
+mkdir -p "$VPN_DATA"
+mkdir -p "$VPN_CLIENTS_DIR"
+chmod 750 "$VPN_DATA"
+chmod 750 "$VPN_CLIENTS_DIR"
+
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" | cut -f 1 -d \ )
+date=$(echo "$time_n_date" | cut -f 2 -d \ )
+
+cat <<EOF > "$VPN_SERVER_CONF"
+INTERFACE='wg0'
+PORT='$port'
+SUBNET='$subnet'
+SERVER_IP='$server_ip'
+PUBLIC_IP='$public_ip'
+WAN_IFACE='$wan_iface'
+DNS='$dns_servers'
+PUBLIC_KEY='$server_pubkey'
+CREATED_TIME='$time'
+CREATED_DATE='$date'
+EOF
+chmod 660 "$VPN_SERVER_CONF"
+
+if [ ! -f "$VPN_PEERS_CONF" ]; then
+	touch "$VPN_PEERS_CONF"
+	chmod 660 "$VPN_PEERS_CONF"
+fi
+
+# Synchronize and start wireguard
+sync_wireguard_config
+
+systemctl enable --now "wg-quick@wg0" > /dev/null 2>&1
+
+# Register service in hestia.conf
+"$BIN/v-change-sys-config-value" "VPN_SYSTEM" "wireguard"
+
+# Add firewall rule for WireGuard UDP port if firewall is active
+if [ -n "$FIREWALL_SYSTEM" ] && [ "$FIREWALL_SYSTEM" = "iptables" ]; then
+	if ! grep -q "PORT='$port'" "$HESTIA/data/firewall/rules.conf" 2>/dev/null; then
+		"$BIN/v-add-firewall-rule" "ACCEPT" "0.0.0.0/0" "$port" "UDP" "WIREGUARD"
+	fi
+	"$BIN/v-update-firewall"
+fi
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Installed WireGuard VPN server (Port: $port, Subnet: $subnet)."
+log_event "$OK" "$ARGUMENTS"
+
+exit
+

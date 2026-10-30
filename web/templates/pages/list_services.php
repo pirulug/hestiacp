@@ -16,6 +16,11 @@
 					<i class="bi bi-shield-check icon-red"></i><?= tohtml( _("Firewall")) ?>
 				</a>
 			<?php } ?>
+			<?php if (!empty($_SESSION["VPN_SYSTEM"]) && $_SESSION["VPN_SYSTEM"] == "wireguard") { ?>
+				<a href="/list/vpn/" class="button button-secondary">
+					<i class="bi bi-shield-lock icon-blue"></i><?= tohtml( _("VPN")) ?>
+				</a>
+			<?php } ?>
 			<a href="/list/log/?<?= tohtml(http_build_query(["user" => 'system', "token" => $_SESSION["token"]])) ?>" class="button button-secondary">
 				<i class="bi bi-binoculars icon-orange"></i><?= tohtml( _("Logs")) ?>
 			</a>

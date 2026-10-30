@@ -1653,6 +1653,7 @@ is_format_valid() {
 				rtype) is_dns_type_format_valid "$arg" ;;
 				rule) is_int_format_valid "$arg" "rule id" ;;
 				service) is_service_format_valid "$arg" "$arg_name" ;;
+				vpn_client) is_vpn_client_format_valid "$arg" ;;
 				secret_access_key) is_secret_access_key_format_valid "$arg" "$arg_name" ;;
 				snapshot) is_object_format_valid "$arg" 'snapshot' ;;
 				soa) is_domain_format_valid "$arg" 'SOA' ;;

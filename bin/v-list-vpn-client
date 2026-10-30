@@ -1,0 +1,85 @@
+#!/bin/bash
+# info: get details and config of a WireGuard VPN client peer
+# options: CLIENT [FORMAT]
+#
+# example: v-list-vpn-client windows-pc json
+#
+# This function returns detailed information and configuration data for a VPN client.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+client="$1"
+format="${2:-shell}"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'CLIENT [FORMAT]'
+is_vpn_client_format_valid "$client"
+
+if [ ! -f "$VPN_PEERS_CONF" ] || ! grep -q "CLIENT='$client'" "$VPN_PEERS_CONF"; then
+	check_result "$E_NOTEXIST" "VPN client $client does not exist"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+line=$(grep "CLIENT='$client'" "$VPN_PEERS_CONF" | head -n1)
+parse_object_kv_list "$line"
+
+conf_content=""
+if [ -f "$VPN_CLIENTS_DIR/${client}.conf" ]; then
+	conf_content=$(cat "$VPN_CLIENTS_DIR/${client}.conf")
+fi
+
+qr_svg=""
+if [ -f "$VPN_CLIENTS_DIR/${client}.conf" ] && which qrencode > /dev/null 2>&1; then
+	qr_svg=$(qrencode -t SVG < "$VPN_CLIENTS_DIR/${client}.conf" | base64 -w 0 2>/dev/null || true)
+fi
+
+case "$format" in
+	json)
+		# JSON output with escaped configuration content
+		json_conf=$(echo "$conf_content" | awk '{printf "%s\\n", $0}' | sed 's/"/\\"/g')
+		echo "{"
+		echo "  \"$CLIENT\": {"
+		echo "    \"ID\": \"$ID\","
+		echo "    \"IP\": \"$IP\","
+		echo "    \"ROUTED_NETS\": \"$ROUTED_NETS\","
+		echo "    \"TUNNEL_MODE\": \"$TUNNEL_MODE\","
+		echo "    \"PUBLIC_KEY\": \"$PUBLIC_KEY\","
+		echo "    \"DNS\": \"$DNS\","
+		echo "    \"COMMENT\": \"$COMMENT\","
+		echo "    \"SUSPENDED\": \"$SUSPENDED\","
+		echo "    \"TIME\": \"$TIME\","
+		echo "    \"DATE\": \"$DATE\","
+		echo "    \"CONFIG\": \"$json_conf\","
+		echo "    \"QR_SVG_BASE64\": \"$qr_svg\""
+		echo "  }"
+		echo "}"
+		;;
+	conf)
+		echo "$conf_content"
+		;;
+	*)
+		echo "$conf_content"
+		;;
+esac
+
+exit
+
