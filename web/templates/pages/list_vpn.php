@@ -96,51 +96,57 @@
 					</div>
 
 					<div class="units-table-cell">
-						<!-- Actions menu -->
-						<div class="units-table-row-actions">
-							
-							<li class="units-table-row-action shortcut-enter">
-								<a href="units-table-row-action-link"></a>
+						<ul class="units-table-row-actions">
+							<li class="units-table-row-action shortcut-d" data-key-action="href">
+								<a
+									class="units-table-row-action-link"
+									href="/download/vpn/?client=<?= urlencode($client) ?>"
+									title="<?= tohtml(_("Download Configuration (.conf)")) ?>"
+								>
+									<i class="bi bi-download icon-teal"></i>
+									<span class="u-hide-desktop"><?= tohtml(_("Download")) ?></span>
+								</a>
 							</li>
-
-							<a
-								class="actions-panel-item"
-								href="/download/vpn/?client=<?= urlencode($client) ?>"
-								title="<?= tohtml(_("Download Configuration (.conf)")) ?>"
-							>
-								<i class="bi bi-download icon-teal"></i>
-								<span class="actions-panel-label"><?= tohtml(_("Download")) ?></span>
-							</a>
 							<?php if (!$is_suspended): ?>
-								<a
-									class="actions-panel-item"
-									href="/suspend/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
-									title="<?= tohtml(_("Suspend")) ?>"
-								>
-									<i class="bi bi-pause icon-yellow"></i>
-									<span class="actions-panel-label"><?= tohtml(_("Suspend")) ?></span>
-								</a>
+								<li class="units-table-row-action shortcut-s" data-key-action="js">
+									<a
+										class="units-table-row-action-link data-controls js-confirm-action"
+										href="/suspend/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
+										title="<?= tohtml(_("Suspend")) ?>"
+										data-confirm-title="<?= tohtml(_("Suspend Client")) ?>"
+										data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to suspend client %s?"), $client)) ?>"
+									>
+										<i class="bi bi-pause-fill icon-yellow"></i>
+										<span class="u-hide-desktop"><?= tohtml(_("Suspend")) ?></span>
+									</a>
+								</li>
 							<?php else: ?>
-								<a
-									class="actions-panel-item"
-									href="/unsuspend/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
-									title="<?= tohtml(_("Unsuspend")) ?>"
-								>
-									<i class="bi bi-play icon-green"></i>
-									<span class="actions-panel-label"><?= tohtml(_("Unsuspend")) ?></span>
-								</a>
+								<li class="units-table-row-action shortcut-s" data-key-action="js">
+									<a
+										class="units-table-row-action-link data-controls js-confirm-action"
+										href="/unsuspend/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
+										title="<?= tohtml(_("Unsuspend")) ?>"
+										data-confirm-title="<?= tohtml(_("Unsuspend Client")) ?>"
+										data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to unsuspend client %s?"), $client)) ?>"
+									>
+										<i class="bi bi-play-fill icon-green"></i>
+										<span class="u-hide-desktop"><?= tohtml(_("Unsuspend")) ?></span>
+									</a>
+								</li>
 							<?php endif; ?>
-							<a
-								class="actions-panel-item actions-panel-item-danger js-confirm-action"
-								href="/delete/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
-								title="<?= tohtml(_("Delete")) ?>"
-								data-confirm-title="<?= tohtml(_("Delete Client")) ?>"
-								data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete client %s?"), $client)) ?>"
-							>
-								<i class="bi bi-trash icon-red"></i>
-								<span class="actions-panel-label"><?= tohtml(_("Delete")) ?></span>
-							</a>
-						</div>
+							<li class="units-table-row-action shortcut-delete" data-key-action="js">
+								<a
+									class="units-table-row-action-link data-controls js-confirm-action"
+									href="/delete/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
+									title="<?= tohtml(_("Delete")) ?>"
+									data-confirm-title="<?= tohtml(_("Delete Client")) ?>"
+									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete client %s?"), $client)) ?>"
+								>
+									<i class="bi bi-trash3 icon-red"></i>
+									<span class="u-hide-desktop"><?= tohtml(_("Delete")) ?></span>
+								</a>
+							</li>
+						</ul>
 					</div>
 
 					<div class="units-table-cell">
