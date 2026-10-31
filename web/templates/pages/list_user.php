@@ -15,24 +15,46 @@
 					<?= tohtml( _("Sort by")) ?>:
 					<span class="u-text-bold">
 						<?php if ($_SESSION['userSortOrder'] === 'name') { $label = _('Name'); } else { $label = _('Date'); } ?>
-						<?= tohtml($label) ?> <i class="bi bi-sort-alpha-down"></i>
+						<?= tohtml($label) ?> <i class = "bi bi-sort-alpha-down"></i>
 					</span>
 				</button>
 				<ul class="toolbar-sorting-menu js-sorting-menu u-hidden">
 					<li data-entity="sort-bandwidth" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Bandwidth")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
+						<span class="name"><?= tohtml( _("Bandwidth")) ?> <i class="bi bi-sort-alpha-down"></i>
+						</span>
+						<span class="up">
+							<i class="bi bi-sort-alpha-up"></i>
+						</span>
 					</li>
 					<li data-entity="sort-date" data-sort-as-int="1">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'date') { echo 'active'; } ?>"><?= tohtml( _("Date")) ?>
+							<i class="bi bi-sort-alpha-down"></i>
+						</span>
+						<span class="up">
+							<i class="bi bi-sort-alpha-up"></i>
+						</span>
 					</li>
 					<li data-entity="sort-disk" data-sort-as-int="1">
-						<span class="name"><?= tohtml( _("Disk")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
+						<span class="name"><?= tohtml( _("Disk")) ?> <i class="bi bi-sort-alpha-down"></i>
+						</span>
+						<span class="up">
+							<i class="bi bi-sort-alpha-up"></i>
+						</span>
 					</li>
 					<li data-entity="sort-package">
-						<span class="name"><?= tohtml( _("Package")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
+						<span class="name"><?= tohtml( _("Package")) ?> <i class="bi bi-sort-alpha-down"></i>
+						</span>
+						<span class="up">
+							<i class="bi bi-sort-alpha-up"></i>
+						</span>
 					</li>
 					<li data-entity="sort-name">
-						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?> <i class="bi bi-sort-alpha-down"></i></span><span class="up"><i class="bi bi-sort-alpha-up"></i></span>
+						<span class="name <?php if ($_SESSION['userSortOrder'] === 'name') { echo 'active'; } ?>"><?= tohtml( _("Name")) ?>
+							<i class="bi bi-sort-alpha-down"></i>
+						</span>
+						<span class="up">
+							<i class="bi bi-sort-alpha-up"></i>
+						</span>
 					</li>
 				</ul>
 				<form x-data x-bind="BulkEdit" action="/bulk/user/" method="post">
@@ -115,212 +137,212 @@
 
 		<!-- Begin user list item loop -->
 		<?php
-			foreach ($data as $key => $value) {
-				++$i;
-				if ($data[$key]['SUSPENDED'] == 'yes') {
-					$status = 'suspended';
-					$spnd_action = 'unsuspend';
-					$spnd_action_title = _('Unsuspend');
-					$spnd_icon = 'bi-play-fill';
-					$spnd_icon_class = 'icon-green';
-					$spnd_confirmation = _('Are you sure you want to unsuspend user %s?');
-				} else {
-					$status = 'active';
-					$spnd_action = 'suspend';
-					$spnd_action_title = _('Suspend');
-					$spnd_icon = 'bi-pause-fill';
-					$spnd_icon_class = 'icon-highlight';
-					$spnd_confirmation = _('Are you sure you want to suspend user %s?');
-				}
+		foreach ($data as $key => $value) {
+			++$i;
+			if ($data[$key]['SUSPENDED'] == 'yes') {
+				$status            = 'suspended';
+				$spnd_action       = 'unsuspend';
+				$spnd_action_title = _('Unsuspend');
+				$spnd_icon         = 'bi-play-fill';
+				$spnd_icon_class   = 'icon-green';
+				$spnd_confirmation = _('Are you sure you want to unsuspend user %s?');
+			} else {
+				$status            = 'active';
+				$spnd_action       = 'suspend';
+				$spnd_action_title = _('Suspend');
+				$spnd_icon         = 'bi-pause-fill';
+				$spnd_icon_class   = 'icon-yellow';
+				$spnd_confirmation = _('Are you sure you want to suspend user %s?');
+			}
 			?>
 			<div class="units-table-row <?php if ($status == 'suspended') echo 'disabled'; ?> js-unit <?php if (($_SESSION['POLICY_SYSTEM_HIDE_ADMIN'] === 'yes') && ($_SESSION['user'] !== $_SESSION['ROOT_USER']) && ($key === $_SESSION['ROOT_USER'])) { echo 'u-hidden'; } ?>"
-				data-sort-date="<?= tohtml(strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])) ?>"
-				data-sort-name="<?= tohtml(strtolower($key)) ?>"
-				data-sort-package="<?= tohtml(strtolower($data[$key]['PACKAGE'])) ?>"
-				data-sort-bandwidth="<?= tohtml($data[$key]["U_BANDWIDTH"]) ?>"
-				data-sort-disk="<?= tohtml($data[$key]["U_DISK"]) ?>">
-				<div class="units-table-cell">
-					<div>
-						<input id="check<?= tohtml($i) ?>" class="js-unit-checkbox" type="checkbox" title="<?= tohtml( _("Select")) ?>" name="user[]" value="<?= tohtml($key) ?>">
-						<label for="check<?= tohtml($i) ?>" class="u-hide-desktop"><?= tohtml( _("Select")) ?></label>
-					</div>
-				</div>
-				<div class="units-table-cell units-table-heading-cell">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Name")) ?>:</span>
-					<?php if ($key == $user_plain) { ?>
-						<a href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Edit User")) ?>">
-							<span class="u-text-bold">
-								<?= tohtml($key) ?>
-							</span>
-							(<?= tohtml($data[$key]["NAME"]) ?>)
-						</a>
-					<?php } else { ?>
-						<a href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?>">
-							<span class="u-text-bold">
-								<?= tohtml($key) ?>
-							</span>
-							(<?= tohtml($data[$key]["NAME"]) ?>)
-						</a>
-					<?php } ?>
-					<p class="u-max-width200 u-text-truncate">
-						<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Email")) ?>:</span>
-						<span title="<?= tohtml($data[$key]["CONTACT"]) ?>"><?= tohtml($data[$key]["CONTACT"]) ?></span>
-					</p>
-				</div>
-				<div class="units-table-cell">
-					<ul class="units-table-row-actions">
-						<?php if ($key == $user_plain) { ?>
-							<li class="units-table-row-action">
-								<i class="bi bi-person-check" title="<?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)"></i>
-								<span class="u-hide-desktop"><?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)</span>
-							</li>
-						<?php } else { ?>
-							<li class="units-table-row-action">
-								<a
-									class="units-table-row-action-link"
-									href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"]])) ?>"
-									title="<?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?>"
-								>
-									<i class="bi bi-box-arrow-in-right icon-green"></i>
-									<span class="u-hide-desktop"><?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?></span>
-								</a>
-							</li>
-						<?php } ?>
-						<?php if (!($_SESSION["userContext"] === "admin" && $key == $_SESSION['ROOT_USER'] && $_SESSION["user"] != $_SESSION['ROOT_USER'])) { ?>
-							<?php if ($key == $user_plain) { ?>
-							<li class="units-table-row-action shortcut-enter" data-key-action="href">
-								<a
-									class="units-table-row-action-link"
-									href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>"
-									title="<?= tohtml( _("Edit User")) ?>"
-								>
-									<i class="bi bi-pencil icon-orange"></i>
-									<span class="u-hide-desktop"><?= tohtml( _("Edit User")) ?></span>
-								</a>
-							</li>
-							<?php } else { ?>
-<li class="units-table-row-action shortcut-enter" data-key-action="href">
-								<a
-									class="units-table-row-action-link"
-									href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"], "edit_link" => "/edit/user/"])) ?>"
-									title="<?= tohtml( _("Edit User")) ?>"
-								>
-									<i class="bi bi-pencil icon-orange"></i>
-									<span class="u-hide-desktop"><?= tohtml( _("Edit User")) ?></span>
-								</a>
-							</li>
-							<?php } ?>
-						<?php } ?>
-						<?php if (!($key == $_SESSION['ROOT_USER'] || $key == $user_plain)) { ?>
-							<li class="units-table-row-action shortcut-s" data-key-action="js">
-								<a
-									class="units-table-row-action-link data-controls js-confirm-action"
-									href="/<?= tohtml($spnd_action) ?>/user/?<?= tohtml(http_build_query(["user" => $key, "token" => $_SESSION["token"]])) ?>"
-									title="<?= tohtml($spnd_action_title) ?>"
-									data-confirm-title="<?= tohtml($spnd_action_title) ?>"
-									data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
-								>
-									<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
-									<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
-								</a>
-							</li>
-							<li class="units-table-row-action shortcut-delete" data-key-action="js">
-								<a
-									class="units-table-row-action-link data-controls js-confirm-action"
-									href="/delete/user/?<?= tohtml(http_build_query(["user" => $key, "token" => $_SESSION["token"]])) ?>"
-									title="<?= tohtml( _("Delete")) ?>"
-									data-confirm-title="<?= tohtml( _("Delete")) ?>"
-									data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete user %s?"), $key)) ?>"
-								>
-									<i class="bi bi-trash3 icon-red"></i>
-									<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
-								</a>
-							</li>
-						<?php } ?>
-					</ul>
-				</div>
-				<div class="units-table-cell u-text-bold u-text-center-desktop">
-					<span class="u-hide-desktop"><?= tohtml( _("Package")) ?>:</span>
-					<?php if ($data[$key]["PACKAGE"] === "system") { ?>
-						<?= tohtml($data[$key]["PACKAGE"]) ?>
-					<?php } else { ?>
-						<a href="/edit/package/?<?= tohtml(http_build_query(["package" => $data[$key]["PACKAGE"], "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Edit Package")) ?>">
-							<?= tohtml($data[$key]["PACKAGE"]) ?>
-						</a>
-					<?php } ?>
-				</div>
-				<div class="units-table-cell u-text-center-desktop">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("IPs")) ?>:</span>
-					<?= tohtml($data[$key]["IP_OWNED"]) ?>
-				</div>
-				<div class="units-table-cell u-text-center-desktop u-text-no-wrap">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Disk")) ?>:</span>
-					<span class="u-text-bold">
-						<?= tohtml(humanize_usage_size($data[$key]["U_DISK"], 1)) ?>
-					</span>
-					<span class="u-text-small">
-						<?= tohtml(humanize_usage_measure($data[$key]["U_DISK"])) ?>
-					</span> /
-					<span class="u-text-bold">
-						<?= tohtml(humanize_usage_size($data[$key]["DISK_QUOTA"], 1)) ?>
-					</span>
-					<span class="u-text-small">
-						<?= tohtml(humanize_usage_measure($data[$key]["DISK_QUOTA"])) ?>
-					</span>
-				</div>
-				<div class="units-table-cell u-text-center-desktop u-text-no-wrap">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Bandwidth")) ?>:</span>
-					<span class="u-text-bold">
-						<?= tohtml(humanize_usage_size($data[$key]["U_BANDWIDTH"], 1)) ?>
-					</span>
-					<span class="u-text-small">
-						<?= tohtml(humanize_usage_measure($data[$key]["U_BANDWIDTH"])) ?>
-					</span> /
-					<span class="u-text-bold">
-						<?= tohtml(humanize_usage_size($data[$key]["BANDWIDTH"], 1)) ?>
-					</span>
-					<span class="u-text-small">
-						<?= tohtml(humanize_usage_measure($data[$key]["BANDWIDTH"])) ?>
-					</span>
-				</div>
-				<div class="units-table-cell compact u-text-center-desktop">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Web Domains")) ?>:</span>
-					<span class="units-table-badge">
-						<?= tohtml($data[$key]["U_WEB_DOMAINS"]) ?>
-					</span>
-				</div>
-				<div class="units-table-cell compact u-text-center-desktop">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("DNS Zones")) ?>:</span>
-					<span class="units-table-badge">
-						<?= tohtml($data[$key]["U_DNS_DOMAINS"]) ?>
-					</span>
-				</div>
-				<div class="units-table-cell compact u-text-center-desktop">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Mail Domains")) ?>:</span>
-					<span class="units-table-badge">
-						<?= tohtml($data[$key]["U_MAIL_DOMAINS"]) ?>
-					</span>
-				</div>
-				<div class="units-table-cell compact u-text-center-desktop">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Databases")) ?>:</span>
-					<span class="units-table-badge">
-						<?= tohtml($data[$key]["U_DATABASES"]) ?>
-					</span>
-				</div>
-				<div class="units-table-cell compact u-text-center-desktop">
-					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Backups")) ?>:</span>
-					<span class="units-table-badge">
-						<?= tohtml($data[$key]["U_BACKUPS"]) ?>
-					</span>
+			data-sort-date="<?= tohtml(strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])) ?>"
+			data-sort-name="<?= tohtml(strtolower($key)) ?>"
+			data-sort-package="<?= tohtml(strtolower($data[$key]['PACKAGE'])) ?>"
+			data-sort-bandwidth="<?= tohtml($data[$key]["U_BANDWIDTH"]) ?>"
+			data-sort-disk="<?= tohtml($data[$key]["U_DISK"]) ?>">
+			<div class="units-table-cell">
+				<div>
+					<input id="check<?= tohtml($i) ?>" class="js-unit-checkbox" type="checkbox" title="<?= tohtml( _("Select")) ?>" name="user[]" value="<?= tohtml($key) ?>">
+					<label for="check<?= tohtml($i) ?>" class="u-hide-desktop"><?= tohtml( _("Select")) ?></label>
 				</div>
 			</div>
+			<div class="units-table-cell units-table-heading-cell">
+				<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Name")) ?>:</span>
+				<?php if ($key == $user_plain) { ?>
+					<a href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Edit User")) ?>">
+						<span class="u-text-bold">
+							<?= tohtml($key) ?>
+						</span>
+						(<?= tohtml($data[$key]["NAME"]) ?>)
+					</a>
+					<?php } else { ?>
+					<a href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?>">
+						<span class="u-text-bold">
+							<?= tohtml($key) ?>
+						</span>
+						(<?= tohtml($data[$key]["NAME"]) ?>)
+					</a>
+					<?php } ?>
+				<p class="u-max-width200 u-text-truncate">
+					<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Email")) ?>:</span>
+					<span title="<?= tohtml($data[$key]["CONTACT"]) ?>"><?= tohtml($data[$key]["CONTACT"]) ?></span>
+				</p>
+			</div>
+			<div class="units-table-cell">
+				<ul class="units-table-row-actions">
+					<?php if ($key == $user_plain) { ?>
+						<li class="units-table-row-action">
+							<i class="bi bi-person-check" title="<?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)"></i>
+							<span class="u-hide-desktop"><?= tohtml($key) ?> (<?= tohtml($data[$key]["NAME"]) ?>)</span>
+						</li>
+						<?php } else { ?>
+						<li class="units-table-row-action">
+							<a
+							class="units-table-row-action-link"
+							href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"]])) ?>"
+							title="<?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?>"
+							>
+							<i class="bi bi-box-arrow-in-right icon-green"></i>
+							<span class="u-hide-desktop"><?= tohtml( _("Log in as")) ?> <?= tohtml($key) ?></span>
+						</a>
+					</li>
+					<?php } ?>
+				<?php if (!($_SESSION["userContext"] === "admin" && $key == $_SESSION['ROOT_USER'] && $_SESSION["user"] != $_SESSION['ROOT_USER'])) { ?>
+					<?php if ($key == $user_plain) { ?>
+						<li class="units-table-row-action shortcut-enter" data-key-action="href">
+							<a
+							class="units-table-row-action-link"
+							href="/edit/user/?<?= tohtml(http_build_query(["token" => $_SESSION["token"]])) ?>"
+							title="<?= tohtml( _("Edit User")) ?>"
+							>
+							<i class="bi bi-pencil icon-orange"></i>
+							<span class="u-hide-desktop"><?= tohtml( _("Edit User")) ?></span>
+						</a>
+					</li>
+					<?php } else { ?>
+					<li class="units-table-row-action shortcut-enter" data-key-action="href">
+						<a
+						class="units-table-row-action-link"
+						href="/login/?<?= tohtml(http_build_query(["loginas" => $key, "token" => $_SESSION["token"], "edit_link" => "/edit/user/"])) ?>"
+						title="<?= tohtml( _("Edit User")) ?>"
+						>
+						<i class="bi bi-pencil icon-orange"></i>
+						<span class="u-hide-desktop"><?= tohtml( _("Edit User")) ?></span>
+					</a>
+				</li>
+				<?php } ?>
+			<?php } ?>
+		<?php if (!($key == $_SESSION['ROOT_USER'] || $key == $user_plain)) { ?>
+			<li class="units-table-row-action shortcut-s" data-key-action="js">
+				<a
+				class="units-table-row-action-link data-controls js-confirm-action"
+				href="/<?= tohtml($spnd_action) ?>/user/?<?= tohtml(http_build_query(["user" => $key, "token" => $_SESSION["token"]])) ?>"
+				title="<?= tohtml($spnd_action_title) ?>"
+				data-confirm-title="<?= tohtml($spnd_action_title) ?>"
+				data-confirm-message="<?= tohtml(sprintf($spnd_confirmation, $key)) ?>"
+				>
+				<i class="bi <?= tohtml($spnd_icon) ?> <?= tohtml($spnd_icon_class) ?>"></i>
+				<span class="u-hide-desktop"><?= tohtml($spnd_action_title) ?></span>
+			</a>
+		</li>
+		<li class="units-table-row-action shortcut-delete" data-key-action="js">
+			<a
+			class="units-table-row-action-link data-controls js-confirm-action"
+			href="/delete/user/?<?= tohtml(http_build_query(["user" => $key, "token" => $_SESSION["token"]])) ?>"
+			title="<?= tohtml( _("Delete")) ?>"
+			data-confirm-title="<?= tohtml( _("Delete")) ?>"
+			data-confirm-message="<?= tohtml(sprintf(_("Are you sure you want to delete user %s?"), $key)) ?>"
+			>
+			<i class="bi bi-trash3 icon-red"></i>
+			<span class="u-hide-desktop"><?= tohtml( _("Delete")) ?></span>
+		</a>
+		</li>
 		<?php } ?>
+	</ul>
 	</div>
+	<div class="units-table-cell u-text-bold u-text-center-desktop">
+		<span class="u-hide-desktop"><?= tohtml( _("Package")) ?>:</span>
+		<?php if ($data[$key]["PACKAGE"] === "system") { ?>
+			<?= tohtml($data[$key]["PACKAGE"]) ?>
+			<?php } else { ?>
+			<a href="/edit/package/?<?= tohtml(http_build_query(["package" => $data[$key]["PACKAGE"], "token" => $_SESSION["token"]])) ?>" title="<?= tohtml( _("Edit Package")) ?>">
+				<?= tohtml($data[$key]["PACKAGE"]) ?>
+			</a>
+			<?php } ?>
+	</div>
+	<div class="units-table-cell u-text-center-desktop">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("IPs")) ?>:</span>
+		<?= tohtml($data[$key]["IP_OWNED"]) ?>
+	</div>
+	<div class="units-table-cell u-text-center-desktop u-text-no-wrap">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Disk")) ?>:</span>
+		<span class="u-text-bold">
+			<?= tohtml(humanize_usage_size($data[$key]["U_DISK"], 1)) ?>
+		</span>
+		<span class="u-text-small">
+			<?= tohtml(humanize_usage_measure($data[$key]["U_DISK"])) ?>
+		</span> /
+		<span class="u-text-bold">
+			<?= tohtml(humanize_usage_size($data[$key]["DISK_QUOTA"], 1)) ?>
+		</span>
+		<span class="u-text-small">
+			<?= tohtml(humanize_usage_measure($data[$key]["DISK_QUOTA"])) ?>
+		</span>
+	</div>
+	<div class="units-table-cell u-text-center-desktop u-text-no-wrap">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Bandwidth")) ?>:</span>
+		<span class="u-text-bold">
+			<?= tohtml(humanize_usage_size($data[$key]["U_BANDWIDTH"], 1)) ?>
+		</span>
+		<span class="u-text-small">
+			<?= tohtml(humanize_usage_measure($data[$key]["U_BANDWIDTH"])) ?>
+		</span> /
+		<span class="u-text-bold">
+			<?= tohtml(humanize_usage_size($data[$key]["BANDWIDTH"], 1)) ?>
+		</span>
+		<span class="u-text-small">
+			<?= tohtml(humanize_usage_measure($data[$key]["BANDWIDTH"])) ?>
+		</span>
+	</div>
+	<div class="units-table-cell compact u-text-center-desktop">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Web Domains")) ?>:</span>
+		<span class="units-table-badge">
+			<?= tohtml($data[$key]["U_WEB_DOMAINS"]) ?>
+		</span>
+	</div>
+	<div class="units-table-cell compact u-text-center-desktop">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("DNS Zones")) ?>:</span>
+		<span class="units-table-badge">
+			<?= tohtml($data[$key]["U_DNS_DOMAINS"]) ?>
+		</span>
+	</div>
+	<div class="units-table-cell compact u-text-center-desktop">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Mail Domains")) ?>:</span>
+		<span class="units-table-badge">
+			<?= tohtml($data[$key]["U_MAIL_DOMAINS"]) ?>
+		</span>
+	</div>
+	<div class="units-table-cell compact u-text-center-desktop">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Databases")) ?>:</span>
+		<span class="units-table-badge">
+			<?= tohtml($data[$key]["U_DATABASES"]) ?>
+		</span>
+	</div>
+	<div class="units-table-cell compact u-text-center-desktop">
+		<span class="u-hide-desktop u-text-bold"><?= tohtml( _("Backups")) ?>:</span>
+		<span class="units-table-badge">
+			<?= tohtml($data[$key]["U_BACKUPS"]) ?>
+		</span>
+	</div>
+	</div>
+	<?php } ?>
+</div>
 
-	<div class="units-table-footer">
-		<p>
-			<?php printf(ngettext("%d user account", "%d user accounts", $i), $i); ?>
-		</p>
-	</div>
+<div class="units-table-footer">
+	<p>
+		<?php printf(ngettext("%d user account", "%d user accounts", $i), $i); ?>
+	</p>
+</div>
 
 </div>

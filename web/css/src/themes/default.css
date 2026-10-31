@@ -35,8 +35,10 @@
 	--icon-color-red: #f33;
 	--icon-color-green: #53ba55;
 	--icon-color-orange: #ffc043;
+	--icon-color-yellow: #f59e0b;
 	--icon-color-blue: #326b9b;
 	--icon-color-lightblue: #6eb6f0;
+	--icon-color-git: #f05032;
 
 	/* Top Bar */
 	--top-bar-background:
@@ -1131,10 +1133,57 @@
 		margin-bottom: 0;
 
 		& .bi,
-	& .fas {
+		& .fas {
 			color: silver;
 			padding: 4px;
 			margin: 0;
+			transition: transform 0.15s ease, filter 0.15s ease;
+		}
+
+		& .icon-teal {
+			color: var(--icon-color-teal);
+		}
+
+		& .icon-purple {
+			color: var(--icon-color-purple);
+		}
+
+		& .icon-maroon {
+			color: var(--icon-color-maroon);
+		}
+
+		& .icon-red {
+			color: var(--icon-color-red);
+		}
+
+		& .icon-green {
+			color: var(--icon-color-green);
+		}
+
+		& .icon-orange {
+			color: var(--icon-color-orange);
+		}
+
+		& .icon-yellow {
+			color: var(--icon-color-yellow);
+		}
+
+		& .icon-blue {
+			color: var(--icon-color-blue);
+		}
+
+		& .icon-lightblue {
+			color: var(--icon-color-lightblue);
+		}
+
+		& .icon-highlight {
+			color: var(--icon-color-yellow);
+		}
+
+		& .icon-git,
+		& .icon-github,
+		& .bi-github {
+			color: var(--icon-color-git);
 		}
 	}
 }
@@ -1151,6 +1200,14 @@
 		background-color: transparent;
 		border: 0;
 		padding-right: 0;
+
+		&:hover {
+			& .bi,
+			& .fas {
+				transform: scale(1.22);
+				filter: brightness(1.25);
+			}
+		}
 	}
 }
 
@@ -2421,6 +2478,14 @@
 	}
 }
 
+.icon-yellow {
+	color: var(--icon-color-yellow);
+
+	&:hover {
+		color: var(--icon-color-yellow);
+	}
+}
+
 .icon-blue {
 	color: var(--icon-color-blue);
 
@@ -2434,6 +2499,15 @@
 
 	&:hover {
 		color: var(--icon-color-lightblue);
+	}
+}
+
+.icon-git,
+.icon-github {
+	color: var(--icon-color-git);
+
+	&:hover {
+		color: var(--icon-color-git);
 	}
 }
 

@@ -103,7 +103,7 @@
   		$spnd_action = "suspend";
   		$spnd_action_title = _("Suspend");
   		$spnd_icon = "bi-pause-fill";
-  		$spnd_icon_class = "icon-highlight";
+  		$spnd_icon_class = "icon-yellow";
   		$spnd_confirmation = _("Are you sure you want to suspend rule #%s?");
   	}
   	?>

@@ -97,13 +97,18 @@
 
 					<div class="units-table-cell">
 						<!-- Actions menu -->
-						<div class="actions-panel">
+						<div class="units-table-row-actions">
+							
+							<li class="units-table-row-action shortcut-enter">
+								<a href="units-table-row-action-link"></a>
+							</li>
+
 							<a
 								class="actions-panel-item"
 								href="/download/vpn/?client=<?= urlencode($client) ?>"
 								title="<?= tohtml(_("Download Configuration (.conf)")) ?>"
 							>
-								<i class="bi bi-download"></i>
+								<i class="bi bi-download icon-teal"></i>
 								<span class="actions-panel-label"><?= tohtml(_("Download")) ?></span>
 							</a>
 							<?php if (!$is_suspended): ?>
@@ -112,7 +117,7 @@
 									href="/suspend/vpn/?client=<?= urlencode($client) ?>&token=<?= tohtml($_SESSION["token"]) ?>"
 									title="<?= tohtml(_("Suspend")) ?>"
 								>
-									<i class="bi bi-pause icon-highlight"></i>
+									<i class="bi bi-pause icon-yellow"></i>
 									<span class="actions-panel-label"><?= tohtml(_("Suspend")) ?></span>
 								</a>
 							<?php else: ?>

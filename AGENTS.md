@@ -67,9 +67,33 @@ Al modificar o crear caracteristicas en el panel, respetar los siguientes preced
    * Utilizar siempre envolturas seguras para argumentos que interactuen con el shell (`quoteshellarg()`).
    * Validar permisos de administrador antes de ejecutar binarios con privilegios de root (`v-*`).
 
+## Estandares de Diseno y Botones de Accion (UI/CSS)
+
+Para mantener una interfaz intuitiva, moderna y visualmente distintiva en las listas y tablas de HestiaCP:
+
+1. Semantica de Colores en Acciones de Tabla (`.units-table-row-actions`):
+   * Cada boton o icono de accion debe disponer de una clase semantica de color explicita:
+     * Visitar o Enlace externo: `icon-lightblue` (azul claro).
+     * Editar elemento: `icon-orange` (naranja).
+     * Descarga de archivos o respaldos: `icon-teal` (turquesa / cyan).
+     * Integracion Git / GitHub: `icon-git` o `icon-github` (coral / naranja Git oficial).
+     * Registros y Logs del sistema: `icon-purple` (morado).
+     * Suspender elemento: `icon-yellow` (amarillo / ambar de pausa).
+     * Reactivar / Desuspender / Restaurar / Iniciar sesion: `icon-green` (verde).
+     * Eliminar o purgar recurso: `icon-red` (rojo).
+     * Estadisticas y metricas: `icon-maroon` (granate / magenta).
+2. Visibilidad e Interaccion:
+   * No anular los colores semanticos con selectores genericos de color monocromatico (como `color: silver`).
+   * Los iconos de accion deben permanecer coloreados tanto en resolucion de escritorio como en movil.
+   * Al pasar el cursor (`:hover`), aplicar escalado suave y realce de brillo (`transform: scale(1.22); filter: brightness(1.25);`) para ofrecer confirmacion tactil interactiva.
+   * Respetar las paletas y contraste en modo claro (`default.css`) y modo oscuro (`dark.css`).
+3. Compilacion Obligatoria de Assets:
+   * Todo cambio en `web/css/src/` o `web/js/src/` debe compilarse ejecutando `node build.js` (o `npm run build`) para generar los archivos minimizados de distribucion en `web/css/themes/` y `web/js/dist/`.
+
 ## Verificacion de Cambios
 
 Antes de dar por concluida una intervencion en el codigo:
 * Validar sintaxis en scripts Bash (`bash -n ruta/al/script.sh`).
 * Validar sintaxis en archivos PHP (`php -l ruta/al/archivo.php`).
+* Recompilar y validar assets con `node build.js` si se modificaron archivos CSS o JavaScript.
 * Confirmar que los permisos de ejecucion se preserven en los archivos de `bin/` y scripts en `src/`.

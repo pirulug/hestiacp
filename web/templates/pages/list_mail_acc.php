@@ -128,7 +128,7 @@ if (!empty($_SESSION["WEBMAIL_ALIAS"])) {
 					$spnd_action = 'suspend';
 					$spnd_action_title = _('Suspend');
 					$spnd_icon = 'bi-pause-fill';
-					$spnd_icon_class = 'icon-highlight';
+					$spnd_icon_class = 'icon-yellow';
 					$spnd_confirmation = _('Are you sure you want to suspend %s?');
 					if ($data[$key]['ALIAS'] == '') {
 						$alias_icon = 'bi-dash-circle';
