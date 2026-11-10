@@ -573,6 +573,21 @@ function syshealth_repair_system_config() {
 	rm -f "$HESTIA/conf/hestia.conf.new"
 
 	source_conf "$HESTIA/conf/hestia.conf"
+
+	# Repair File Manager permissions if installed
+	syshealth_repair_filemanager_permissions
+}
+
+# Repair File Manager Permissions
+function syshealth_repair_filemanager_permissions() {
+	if [ -d "$HESTIA/web/fm" ]; then
+		mkdir -p "$HESTIA/web/fm/private/logs"
+		mkdir -p "$HESTIA/web/fm/repository"
+		chown -R hestiaweb:hestiaweb "$HESTIA/web/fm/private"
+		chown -R hestiaweb:hestiaweb "$HESTIA/web/fm/repository"
+		chmod -R 775 "$HESTIA/web/fm/private"
+		chmod -R 775 "$HESTIA/web/fm/repository"
+	fi
 }
 
 # Repair System Cron Jobs

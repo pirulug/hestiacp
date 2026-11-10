@@ -702,6 +702,14 @@ upgrade_filemanager() {
 
 					# Set environment variable for interface
 					$BIN/v-change-sys-config-value 'FILE_MANAGER' 'true'
+
+					# Ensure correct permissions
+					mkdir -p "$HESTIA/web/fm/private/logs"
+					mkdir -p "$HESTIA/web/fm/repository"
+					chown -R hestiaweb:hestiaweb "$HESTIA/web/fm/private"
+					chown -R hestiaweb:hestiaweb "$HESTIA/web/fm/repository"
+					chmod -R 775 "$HESTIA/web/fm/private"
+					chmod -R 775 "$HESTIA/web/fm/repository"
 				fi
 			fi
 		fi

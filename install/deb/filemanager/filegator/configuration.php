@@ -9,6 +9,10 @@ $lang = $_SESSION["language"] ?? ($_SESSION["LANGUAGE"] ?? "en");
 
 session_write_close();
 
+if (!is_dir(__DIR__ . "/private/logs")) {
+	@mkdir(__DIR__ . "/private/logs", 0775, true);
+}
+
 $dist_config = require __DIR__ . "/configuration_sample.php";
 $dist_config["public_path"] = "/fm/";
 $dist_config["frontend_config"]["app_name"] = "File Manager - Hestia Control Panel";

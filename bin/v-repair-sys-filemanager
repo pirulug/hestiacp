@@ -1,0 +1,81 @@
+#!/bin/bash
+# info: repair File Manager permissions and configuration
+# options: NONE
+#
+# example: v-repair-sys-filemanager
+#
+# This function fixes ownership and permissions for File Manager directories.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+FM_INSTALL_DIR="$HESTIA/web/fm"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+# Checking root permissions
+if [ "x$(id -u)" != "x0" ]; then
+	echo "Error: Script can be executed only by root" >&2
+	exit 10
+fi
+
+# Ensure that $HESTIA is valid
+if [ -z "$HESTIA" ]; then
+	HESTIA="/usr/local/hestia"
+fi
+
+# Check if File Manager directory exists
+if [ ! -d "$FM_INSTALL_DIR" ]; then
+	echo "Error: File Manager is not installed at $FM_INSTALL_DIR" >&2
+	exit 1
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Ensure private and repository directories exist
+mkdir -p "$FM_INSTALL_DIR/private/logs"
+mkdir -p "$FM_INSTALL_DIR/repository"
+
+# Fix ownership
+chown root: -R "$FM_INSTALL_DIR"
+chown -R hestiaweb:hestiaweb "$FM_INSTALL_DIR/private"
+chown -R hestiaweb:hestiaweb "$FM_INSTALL_DIR/repository"
+
+# Fix permissions
+chmod -R 775 "$FM_INSTALL_DIR/private"
+chmod -R 775 "$FM_INSTALL_DIR/repository"
+
+# Restore configuration.php if missing
+if [ ! -f "$FM_INSTALL_DIR/configuration.php" ] && [ -f "$HESTIA_INSTALL_DIR/filemanager/filegator/configuration.php" ]; then
+	cp -f "$HESTIA_INSTALL_DIR/filemanager/filegator/configuration.php" "$FM_INSTALL_DIR/configuration.php"
+	app_name="File Manager - $APP_NAME"
+	sed -i "s|\(\$dist_config\[\"frontend_config\"\]\[\"app_name\"\] = \"File Manager - \).*\";|\1${APP_NAME}\";|" "$FM_INSTALL_DIR/configuration.php"
+fi
+
+# Ensure FILE_MANAGER is set to true in hestia.conf
+if [ "$FILE_MANAGER" = "false" ] || [ -z "$FILE_MANAGER" ]; then
+	"$BIN/v-change-sys-config-value" "FILE_MANAGER" "true"
+fi
+
+echo "File Manager permissions and directories successfully repaired."
+
+#----------------------------------------------------------#
+#                       Logging                            #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Repaired File Manager permissions and configuration."
+log_event "$OK" "$ARGUMENTS"
+
