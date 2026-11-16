@@ -12,3 +12,4 @@ All notable changes to this project will be documented in this file.
 - Add native Git/GitHub/GitLab domain integration with SSH deploy keys, webhook receiver (`web/api/webhook/index.php`), and Composer/PNPM/Node.js build pipeline
 - Add system File Manager installation and repair scripts (`v-add-sys-filemanager`, `v-repair-sys-filemanager`, `v-delete-sys-filemanager`) with custom FileGator theme
 - Add dark theme, responsive UI styles, semantic Bootstrap Icons action colors, and `guias/` documentation
+- Sync `package-lock.json` with `bootstrap-icons` for clean `npm ci` builds
