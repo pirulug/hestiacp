@@ -179,6 +179,20 @@
 						<?= tohtml( _("Use Let's Encrypt to obtain SSL certificate")) ?>
 					</label>
 				</div>
+				<div x-cloak x-show="letsEncryptEnabled" id="v_ssl_key_algo_wrapper" class="u-pl30 u-mb10">
+					<label for="v_ssl_key_algo" class="form-label"><?= tohtml( _("Key Type")) ?></label>
+					<select class="form-select" name="v_ssl_key_algo" id="v_ssl_key_algo">
+						<option value="ecdsa-256" <?php if ($v_ssl_key_algo == "ecdsa-256" || $v_ssl_key_algo == "ecdsa") echo 'selected'; ?>>
+							ECDSA P-256 (<?= tohtml( _("recommended")) ?>)
+						</option>
+						<option value="ecdsa-384" <?php if ($v_ssl_key_algo == "ecdsa-384") echo 'selected'; ?>>
+							ECDSA P-384
+						</option>
+						<option value="rsa" <?php if ($v_ssl_key_algo == "rsa") echo 'selected'; ?>>
+							RSA 4096
+						</option>
+					</select>
+				</div>
 				<div class="form-check u-mb10">
 					<input class="form-check-input" type="checkbox" name="v_ssl_forcessl" id="v_ssl_forcessl" <?php if ($v_ssl_forcessl == 'yes') echo 'checked' ?>>
 					<label for="v_ssl_forcessl">
@@ -424,7 +438,9 @@
 										<i class="bi bi-arrow-repeat icon-green"></i>
 									</button>
 								</label>
-								<input type="text" class="form-control js-ftp-user-psw" name="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" id="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" value="<?= tohtml(trim($v_ftp_password, "'")) ?>">
+								<div class="u-pos-relative">
+									<input type="text" class="form-control js-ftp-user-psw js-password-input" name="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" id="v_ftp_user[<?= tohtml($i) ?>][v_ftp_password]" value="<?= tohtml(trim($v_ftp_password, "'")) ?>">
+								</div>
 							</div>
 							<div class="u-pl30 u-mb10">
 								<label for="v_ftp_user[<?= tohtml($i) ?>][v_ftp_path]" class="form-label"><?= tohtml( _("Path")) ?></label>
@@ -477,7 +493,9 @@
 					<i class="bi bi-arrow-repeat icon-green"></i>
 				</button>
 			</label>
-			<input type="text" class="form-control js-ftp-user-psw" name="v_ftp_user[%INDEX%][v_ftp_password]" id="v_ftp_user[%INDEX%][v_ftp_password]">
+			<div class="u-pos-relative">
+				<input type="text" class="form-control js-ftp-user-psw js-password-input" name="v_ftp_user[%INDEX%][v_ftp_password]" id="v_ftp_user[%INDEX%][v_ftp_password]">
+			</div>
 		</div>
 		<div class="u-pl30 u-mb10">
 			<label for="v_ftp_user[%INDEX%][v_ftp_path]" class="form-label"><?= tohtml( _("Path")) ?></label>

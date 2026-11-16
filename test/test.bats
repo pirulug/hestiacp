@@ -39,6 +39,10 @@ function setup() {
     source $HESTIA/func/ip.sh
 }
 
+function teardown() {
+    rm -rf "${HESTIA:-/usr/local/hestia}/data/keys/apitestkey"*
+}
+
 function validate_web_domain() {
     local user=$1
     local domain=$2
@@ -588,6 +592,34 @@ function check_ip_not_banned(){
   assert_failure $E_PASSWORD
 }
 
+@test "User: Check user password and salt with sha-512 rounds parameter" {
+  orig_shadow=$(awk -v user="$user" -F : 'user == $1 {print $2}' /etc/shadow)
+  rounds_hash=$(perl -e 'print crypt($ARGV[0], $ARGV[1])' "$userpass2" '$6$rounds=24000$g7cdSalt12345678$')
+  [[ "$rounds_hash" == '$6$rounds=24000$g7cdSalt12345678$'* ]]
+  chmod u+w /etc/shadow
+  sed -i "s|^$user:[^:]*:|$user:$rounds_hash:|" /etc/shadow
+  chmod u-w /etc/shadow
+
+  run v-get-user-salt $user 192.168.2.10 json
+  assert_success
+  assert_output --partial '"METHOD": "sha-512"'
+  assert_output --partial '"SALT": "rounds=24000$g7cdSalt12345678"'
+
+  run v-check-user-password $user "$userpass2" 192.168.2.10 'no'
+  assert_success
+
+  run v-check-user-password $user "$userpass1" 192.168.2.10 'no'
+  assert_failure $E_PASSWORD
+
+  hash=$(v-check-user-password $user "$userpass2" 192.168.2.10 'yes')
+  run v-check-user-hash $user "$hash" 192.168.2.10
+  assert_success
+
+  chmod u+w /etc/shadow
+  sed -i "s|^$user:[^:]*:|$user:$orig_shadow:|" /etc/shadow
+  chmod u-w /etc/shadow
+}
+
 #----------------------------------------------------------#
 #                         Cron                             #
 #----------------------------------------------------------#
@@ -811,6 +843,25 @@ function check_ip_not_banned(){
     echo -e "<?php\necho 'Hestia Test:'.(4*3);" > $HOMEDIR/$user/web/$domain/public_html/php-test.php
     validate_web_domain $user $domain 'Hestia Test:12' 'php-test.php'
     rm $HOMEDIR/$user/web/$domain/public_html/php-test.php
+}
+
+@test "WEB: phpMyAdmin with Firefox User-Agent" {
+    # Regression test for https://github.com/hestiacp/hestiacp/issues/5617
+    # The Firefox UA matches the $ar_support_425 regex map. Before the
+    # named-capture fix in phpmyadmin.inc this returned 500 (fastcgi request
+    # length mismatch) instead of the login page.
+    local ip
+    local pma_alias="${DB_PMA_ALIAS:-phpmyadmin}"
+
+    USER_DATA=$HESTIA/data/users/$user
+    ip=$(get_real_ip "$(get_object_value 'web' 'DOMAIN' "$domain" '$IP')")
+
+    run curl --silent --output /dev/null --write-out '%{http_code}' \
+        --resolve "${domain}:80:${ip}" \
+        -A 'Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0' \
+        "http://${domain}/${pma_alias}/"
+    assert_success
+    assert_output "200"
 }
 
 @test "WEB: Add web domain (duplicate)" {
@@ -1221,6 +1272,26 @@ function check_ip_not_banned(){
 	rm $HOMEDIR/$user/web/$multi_domain/public_html/php-test.php
 }
 
+@test "Multiphp: Change backend version - default" {
+	def_phpver=$(multiphp_default_version)
+	multi_domain="multiphp.${domain}"
+
+	run v-change-web-domain-backend-tpl $user $multi_domain 'default' 'yes'
+	assert_success
+	refute_output
+
+	# Changing web backend to default must create the pool config in the default php folder
+	assert_file_exist "/etc/php/${def_phpver}/fpm/pool.d/${multi_domain}.conf"
+
+	# A single php-fpm pool config file must be present
+	num_fpm_config_files="$(find -L /etc/php/ -name "${multi_domain}.conf" | wc -l)"
+	assert_equal "$num_fpm_config_files" '1'
+
+	echo -e "<?php\necho 'hestia-multiphptest:'.PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;" > "$HOMEDIR/$user/web/$multi_domain/public_html/php-test.php"
+	validate_web_domain $user $multi_domain "hestia-multiphptest:$def_phpver" 'php-test.php'
+	rm "$HOMEDIR/$user/web/$multi_domain/public_html/php-test.php"
+}
+
 @test "Multiphp: Cleanup" {
     multi_domain="multiphp.${domain}"
 
@@ -1258,6 +1329,23 @@ function check_ip_not_banned(){
     rm "$HOMEDIR/$user/web/$docroot1_domain/public_html/public/php-test.php"
 }
 
+@test "Docroot: Self Subfolder with parent PHP root and backend rebuild" {
+    docroot1_domain="docroot1.${domain}"
+
+    run v-change-web-domain-docroot $user "$docroot1_domain" "$docroot1_domain" "/public" "yes"
+    assert_success
+    refute_output
+
+    run v-change-web-domain-backend-tpl $user "$docroot1_domain" "default" "yes"
+    assert_success
+    refute_output
+
+    echo "parent-ok" > "$HOMEDIR/$user/web/$docroot1_domain/public_html/parent-test.txt"
+    echo -e '<?php\necho "self-phproot-".$_SERVER["HTTP_HOST"]."-".trim(file_get_contents(__DIR__."/../parent-test.txt"));' > "$HOMEDIR/$user/web/$docroot1_domain/public_html/public/php-test.php"
+    validate_web_domain $user $docroot1_domain "self-phproot-${docroot1_domain}-parent-ok" 'php-test.php'
+    rm "$HOMEDIR/$user/web/$docroot1_domain/public_html/public/php-test.php" "$HOMEDIR/$user/web/$docroot1_domain/public_html/parent-test.txt"
+}
+
 @test "Docroot: Other domain subfolder" {
     docroot1_domain="docroot1.${domain}"
     docroot2_domain="docroot2.${domain}"
@@ -1287,9 +1375,16 @@ function check_ip_not_banned(){
     assert_success
     refute_output
 
-    echo -e '<?php\necho "doc2-root-".$_SERVER["HTTP_HOST"];' > "$HOMEDIR/$user/web/$docroot2_domain/public_html/php-test.php"
-    validate_web_domain $user $docroot1_domain "doc2-root-${docroot1_domain}" 'php-test.php'
-    rm "$HOMEDIR/$user/web/$docroot2_domain/public_html/php-test.php"
+    echo "private-ok" > "$HOMEDIR/$user/web/$docroot2_domain/private/private-test.txt"
+    echo -e '<?php\necho "doc2-root-".$_SERVER["HTTP_HOST"]."-".trim(file_get_contents(__DIR__."/../private/private-test.txt"));' > "$HOMEDIR/$user/web/$docroot2_domain/public_html/php-test.php"
+    validate_web_domain $user $docroot1_domain "doc2-root-${docroot1_domain}-private-ok" 'php-test.php'
+
+    run v-change-web-domain-backend-tpl $user "$docroot1_domain" "default" "yes"
+    assert_success
+    refute_output
+
+    validate_web_domain $user $docroot1_domain "doc2-root-${docroot1_domain}-private-ok" 'php-test.php'
+    rm "$HOMEDIR/$user/web/$docroot2_domain/public_html/php-test.php" "$HOMEDIR/$user/web/$docroot2_domain/private/private-test.txt"
 }
 
 @test "Docroot: Reset" {
@@ -1448,13 +1543,25 @@ function check_ip_not_banned(){
 
 @test "DNS: Add domain record CNAME" {
     run v-delete-dns-record $user $domain 50
-    run v-add-dns-record $user $domain 'mail' CNAME mx.hestiacp.com  '' 50
+    run v-add-dns-record $user $domain 'mail' CNAME mx.hestiacp.com '' 50
+    assert_failure $E_INVALID
+
+    run v-add-dns-record $user $domain 'cname-test' CNAME mx.hestiacp.com '' 50
     assert_success
     refute_output
 
     assert_file_contains "$HOMEDIR/$user/conf/dns/${domain}.db" "mx.hestiacp.com."
 
+    run v-add-dns-record $user $domain 'cname-test' A "$ip"
+    assert_failure $E_INVALID
+
     run v-change-dns-record $user $domain 50 'mail' CNAME mx.hestia.com
+    assert_failure $E_INVALID
+
+    run v-change-dns-record $user $domain 50 'MAIL' cname mx.hestia.com
+    assert_failure $E_INVALID
+
+    run v-change-dns-record $user $domain 50 'cname-test' CNAME mx.hestia.com
     assert_success
     refute_output
 
@@ -1780,6 +1887,24 @@ function check_ip_not_banned(){
     run grep "RECORD='mail._domainkey'" "${HESTIA}/data/users/${user}/dns/${domain}.conf"
     assert_success
     assert_output  --partial "RECORD='mail._domainkey' TYPE='TXT'"
+}
+
+@test "MAIL: Add DKIM with custom selector" {
+    run v-delete-mail-domain-dkim $user $domain
+    assert_success
+    refute_output
+
+    run v-add-mail-domain-dkim $user $domain '' hestia
+    assert_success
+    refute_output
+
+    run grep "RECORD='hestia._domainkey'" "${HESTIA}/data/users/${user}/dns/${domain}.conf"
+    assert_success
+    assert_output --partial "RECORD='hestia._domainkey' TYPE='TXT'"
+
+    run grep "RECORD='mail._domainkey'" "${HESTIA}/data/users/${user}/dns/${domain}.conf"
+    assert_failure
+    refute_output
 }
 
 @test "MAIL: Delete DKIM but preserve custom dkim records" {
@@ -2622,4 +2747,40 @@ EVIL='x'" > /tmp/backup_exclusions_unknownkey
 @test 'assert()' {
   touch '/var/log/test.log'
   assert [ -e '/var/log/test.log' ]
+}
+
+@test "API: v-check-api-key accepts a regular file in the key store" {
+    mkdir -p "$HESTIA/data/keys"
+    touch "$HESTIA/data/keys/apitestkey000000000000000001"
+    run v-check-api-key "$HESTIA/data/keys/apitestkey000000000000000001"
+    assert_success
+    rm -f "$HESTIA/data/keys/apitestkey000000000000000001"
+}
+
+@test "API: v-check-api-key rejects a directory in the key store" {
+    mkdir -p "$HESTIA/data/keys/apitestkey000000000000000002"
+    run v-check-api-key "$HESTIA/data/keys/apitestkey000000000000000002"
+    assert_failure
+    rmdir "$HESTIA/data/keys/apitestkey000000000000000002"
+}
+
+@test "API: v-check-api-key rejects a symlink in the key store" {
+    touch "$HESTIA/data/keys/apitestkey000000000000000003"
+    ln -s "$HESTIA/data/keys/apitestkey000000000000000003" "$HESTIA/data/keys/apitestkey000000000000000004"
+    run v-check-api-key "$HESTIA/data/keys/apitestkey000000000000000004"
+    assert_failure
+    rm -f "$HESTIA/data/keys/apitestkey000000000000000003" "$HESTIA/data/keys/apitestkey000000000000000004"
+}
+
+@test "API: v-check-api-key rejects unsafe and over-long key names" {
+    touch "$HESTIA/data/keys/apitestkey with-space000000000001"
+    run v-check-api-key "$HESTIA/data/keys/apitestkey with-space000000000001"
+    assert_failure
+    rm -f "$HESTIA/data/keys/apitestkey with-space000000000001"
+
+    longkey="apitestkey$(printf 'a%.0s' {1..119})"
+    touch "$HESTIA/data/keys/$longkey"
+    run v-check-api-key "$HESTIA/data/keys/$longkey"
+    assert_failure
+    rm -f "$HESTIA/data/keys/$longkey"
 }

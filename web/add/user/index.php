@@ -9,7 +9,7 @@ include $_SERVER["DOCUMENT_ROOT"] . "/inc/main.php";
 
 // Check user
 if ($_SESSION["userContext"] != "admin") {
-	header("Location: /list/user");
+	header("Location: /list/user/");
 	exit();
 }
 
@@ -88,7 +88,9 @@ if (!empty($_POST["ok"]) && $read_only !== true) {
 		);
 		check_return_code($return_var, $output);
 		unset($output);
-		unlink($v_password);
+		if (file_exists($v_password)) {
+			unlink($v_password);
+		}
 		$v_password = quoteshellarg($_POST["v_password"]);
 	}
 

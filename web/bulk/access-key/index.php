@@ -15,7 +15,15 @@ if ($read_only === true) {
 
 if ($_SESSION["userContext"] === "admin" && !empty($_GET["user"])) {
 	$user = quoteshellarg($_GET["user"]);
-	$user_plain = $_GET["user"];
+	$user_plain = htmlentities($_GET["user"]);
+}
+
+// Prevent other users with admin privileges from managing access keys of the ROOT_USER account,
+// regardless of POLICY_SYSTEM_PROTECTED_ADMIN or impersonation state. An API key with full
+// permissions for ROOT_USER is equivalent to taking over the account.
+if (is_protected_root_target($user_plain)) {
+	header("Location: /list/user/");
+	exit();
 }
 
 // Checks if API access is enabled

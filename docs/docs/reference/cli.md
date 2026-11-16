@@ -517,7 +517,7 @@ This function adds fwd-only flag
 
 add mail domain
 
-**Options**: `USER` `DOMAIN` `[ANTISPAM]` `[ANTIVIRUS]` `[DKIM]` `[DKIM_SIZE]` `[RESTART]` `[REJECT_SPAM]`
+**Options**: `USER` `DOMAIN` `[ANTISPAM]` `[ANTIVIRUS]` `[DKIM]` `[DKIM_SIZE]` `[RESTART]` `[REJECT_SPAM]` `[DKIM_SELECTOR]`
 
 **Examples**:
 
@@ -3743,6 +3743,24 @@ example: v-delete-user-stats admin overall
 
 This function deletes user statistics data.
 
+## v-delete-user-wp-cli
+
+[Source](https://github.com/hestiacp/hestiacp/blob/release/bin/v-delete-user-wp-cli)
+
+delete wp-cli for a user
+
+**Options**: `USER`
+
+**Examples**:
+
+```bash
+v-delete-user-wp-cli user
+```
+
+This function removes wp-cli support from the user account, added earlier
+by `v-add-user-wp-cli`. It removes `~/.wp-cli` and the matching
+`alias wp=...` line(s) from `.bash_aliases` together, atomically.
+
 ## v-delete-web-domain
 
 [Source](https://github.com/hestiacp/hestiacp/blob/release/bin/v-delete-web-domain)
@@ -5523,6 +5541,22 @@ v-list-web-domain-accesslog admin example.com
 ```
 
 This function of obtaining raw access web domain logs.
+
+## v-list-web-domain-backendtpl-all
+
+[Source](https://github.com/hestiacp/hestiacp/blob/release/bin/v-list-web-domain-backendtpl-all)
+
+list all web domains grouped by backend template and owner
+
+**Options**: `[FORMAT]`
+
+**Examples**:
+
+```bash
+v-list-web-domain-backendtpl-all json
+```
+
+This command returns all web domains from all users grouped by the backend template in use and the domain owner.
 
 ## v-list-web-domain-errorlog
 
@@ -7329,7 +7363,7 @@ v-update-sys-hestia hestia-php
 ```
 
 This function runs as apt update trigger. It pulls shell script from hestia
-server and runs it. (hestia, hestia-nginx and hestia-php are valid options)
+server and runs it. (hestia, hestia-nginx, hestia-php and hestia-web-terminal are valid options)
 
 ## v-update-sys-hestia-all
 

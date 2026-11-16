@@ -70,6 +70,8 @@ if (!empty($_POST["ok"]) && $read_only !== true) {
 		$v_dkim = "no";
 	}
 
+	$v_dkim_selector = !empty($_POST["v_dkim_selector"]) ? $_POST["v_dkim_selector"] : "mail";
+
 	// Set domain name to lowercase and remove www prefix
 	$v_domain = preg_replace("/^www./i", "", $_POST["v_domain"]);
 	$v_domain = quoteshellarg($v_domain);
@@ -88,7 +90,9 @@ if (!empty($_POST["ok"]) && $read_only !== true) {
 				" " .
 				$v_antivirus .
 				" " .
-				$v_dkim,
+				$v_dkim .
+				" 2048 '' '' " .
+				quoteshellarg($v_dkim_selector),
 			$output,
 			$return_var,
 		);
@@ -96,7 +100,7 @@ if (!empty($_POST["ok"]) && $read_only !== true) {
 		unset($output);
 	}
 
-	if (!empty($_POST["v_reject"]) && $v_antispam == "yes") {
+	if (empty($_SESSION["error_msg"]) && !empty($_POST["v_reject"]) && $v_antispam == "yes") {
 		exec(
 			HESTIA_CMD . "v-add-mail-domain-reject " . $user . " " . $v_domain . " yes",
 			$output,
@@ -182,6 +186,9 @@ if (!empty($_POST["ok"]) && $read_only !== true) {
 				);
 				check_return_code($return_var, $output);
 				unset($output);
+				if (file_exists($v_smtp_relay_password)) {
+					unlink($v_smtp_relay_password);
+				}
 			}
 		}
 	}
@@ -289,7 +296,9 @@ if (!empty($_POST["ok_acc"]) && $read_only !== true) {
 		);
 		check_return_code($return_var, $output);
 		unset($output);
-		unlink($v_password);
+		if (file_exists($v_password)) {
+			unlink($v_password);
+		}
 		$v_password = quoteshellarg($_POST["v_password"]);
 	}
 

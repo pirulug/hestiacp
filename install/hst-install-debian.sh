@@ -31,7 +31,7 @@ HESTIA_COMMON_DIR="$HESTIA/install/common"
 VERBOSE='no'
 
 # Define software versions
-HESTIA_INSTALL_VER='1.10.5'
+HESTIA_INSTALL_VER='1.10.7'
 
 # Build the full Hestia version
 # Split base version (1.10.0) from channel suffix (~alpha / ~beta), if present
@@ -64,7 +64,7 @@ multiphp_required=("8.1" "8.2" "8.3" "8.4" "8.5")
 # Default PHP version if none supplied
 fpm_v="8.5"
 # MariaDB version
-mariadb_v="11.8"
+mariadb_v="12.3"
 # Node.js version
 node_v="24"
 
@@ -77,7 +77,7 @@ software="acl apache2 apache2-suexec-custom apache2-utils at awstats bc bind9 bs
   php$fpm_v php$fpm_v-apcu php$fpm_v-bz2 php$fpm_v-cgi php$fpm_v-cli php$fpm_v-common php$fpm_v-curl php$fpm_v-gd
   php$fpm_v-imagick php$fpm_v-imap php$fpm_v-intl php$fpm_v-ldap php$fpm_v-mbstring php$fpm_v-mysql
   php$fpm_v-pgsql php$fpm_v-pspell php$fpm_v-readline php$fpm_v-xml php$fpm_v-zip postgresql postgresql-contrib
-  proftpd-core proftpd-mod-crypto quota rrdtool rsyslog spamd sysstat unrar-free unzip util-linux vim-common vsftpd xxd whois zip zstd bubblewrap restic"
+  proftpd-core proftpd-mod-crypto quota rrdtool rsyslog rsync spamd sysstat unrar-free unzip util-linux vim-common vsftpd xxd whois zip zstd bubblewrap restic"
 
 installer_dependencies="apt-transport-https ca-certificates curl dirmngr gnupg openssl wget sudo"
 
@@ -567,7 +567,7 @@ if [ -d /etc/netplan ] && [ -z "$force" ]; then
 fi
 
 # Validate whether installation script matches release version before continuing with install
-if [ -z "$withdebs" ] || [ ! -d "$withdebs" ]; then
+if [ -z "$HESTIA_CHANNEL" ] && [ -z "$withdebs" -o ! -d "$withdebs" ]; then
 	release_branch_ver=$(curl -s https://raw.githubusercontent.com/pirulug/hestiacp/main/src/deb/hestia/control | grep "Version:" | awk '{print $2}')
 	[ -z "$release_branch_ver" ] && release_branch_ver="$HESTIA_INSTALL_VER"
 	if [ "$HESTIA_INSTALL_VER" != "$release_branch_ver" ]; then
@@ -866,10 +866,28 @@ echo "[ * ] NGINX"
 echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/nginx-keyring.gpg] https://nginx.org/packages/mainline/$VERSION/ $codename nginx" > $apt/nginx.list
 curl -s https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-keyring.gpg > /dev/null 2>&1
 
+# Let unattended-upgrades install nginx updates from the repository
+# above; the stock configuration only allows distribution repositories
+cat > /etc/apt/apt.conf.d/60unattended-upgrades-hestia-nginx << 'EOF'
+Unattended-Upgrade::Origins-Pattern {
+	"origin=nginx";
+};
+EOF
+
 # Installing sury PHP repo
 echo "[ * ] PHP"
 echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/sury-keyring.gpg] https://packages.sury.org/php/ $codename main" > $apt/php.list
 curl -s https://packages.sury.org/php/apt.gpg | gpg --dearmor | tee /usr/share/keyrings/sury-keyring.gpg > /dev/null 2>&1
+
+# Let unattended-upgrades install PHP updates from the repository above. The
+# stock configuration only allows distribution repositories, so hosted PHP
+# would otherwise never be patched automatically.
+cat > /etc/apt/apt.conf.d/60unattended-upgrades-hestia-php << 'EOF'
+Unattended-Upgrade::Origins-Pattern {
+	"origin=deb.sury.org";
+	"origin=LP-PPA-ondrej-php";
+};
+EOF
 
 # Installing sury Apache2 repo
 if [ "$apache" = 'yes' ]; then
@@ -883,6 +901,14 @@ if [ "$mysql" = 'yes' ]; then
 	echo "[ * ] MariaDB $mariadb_v"
 	echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/mariadb-keyring.gpg] https://dlm.mariadb.com/repo/mariadb-server/$mariadb_v/repo/$VERSION $codename main" > $apt/mariadb.list
 	curl -s https://mariadb.org/mariadb_release_signing_key.asc | gpg --dearmor | tee /usr/share/keyrings/mariadb-keyring.gpg > /dev/null 2>&1
+
+	# Let unattended-upgrades install MariaDB updates from the repository
+	# above; the stock configuration only allows distribution repositories
+	cat > /etc/apt/apt.conf.d/60unattended-upgrades-hestia-mariadb << 'EOF'
+Unattended-Upgrade::Origins-Pattern {
+	"origin=MariaDB";
+};
+EOF
 fi
 
 # Installing Mysql8 repo
@@ -913,6 +939,14 @@ if [ "$webterminal" = 'yes' ]; then
 	echo "[ * ] Node.js $node_v"
 	echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/nodejs.gpg] https://deb.nodesource.com/node_$node_v.x nodistro main" > $apt/nodejs.list
 	curl -s https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor | tee /usr/share/keyrings/nodejs.gpg > /dev/null 2>&1
+
+	# Let unattended-upgrades install Node.js updates from the repository
+	# above; the stock configuration only allows distribution repositories
+	cat > /etc/apt/apt.conf.d/60unattended-upgrades-hestia-nodejs << 'EOF'
+Unattended-Upgrade::Origins-Pattern {
+	"site=deb.nodesource.com";
+};
+EOF
 	apt-get -y install nodejs >> $LOG
 fi
 
@@ -921,6 +955,14 @@ if [ "$postgresql" = 'yes' ]; then
 	echo "[ * ] PostgreSQL"
 	echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/postgresql-keyring.gpg] https://apt.postgresql.org/pub/repos/apt/ $codename-pgdg main" > $apt/postgresql.list
 	curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/postgresql-keyring.gpg > /dev/null 2>&1
+
+	# Let unattended-upgrades install PostgreSQL updates from the repository
+	# above; the stock configuration only allows distribution repositories
+	cat > /etc/apt/apt.conf.d/60unattended-upgrades-hestia-postgresql << 'EOF'
+Unattended-Upgrade::Origins-Pattern {
+	"origin=apt.postgresql.org";
+};
+EOF
 fi
 
 # Echo for a new line
@@ -1136,6 +1178,7 @@ locale-gen > /dev/null 2>&1
 # Disabling daemon autostart on apt-get install
 echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
+trap 'rm -f /usr/sbin/policy-rc.d' EXIT
 
 # Installing apt packages
 echo "The installer is now downloading and installing all required packages."
@@ -1166,31 +1209,38 @@ echo
 if [ -n "$withdebs" ] && [ -d "$withdebs" ]; then
 	echo "[ * ] Installing local package files..."
 	echo "    - hestia core package"
-	dpkg -i $withdebs/hestia_*.deb > /dev/null 2>&1
+	dpkg -i $withdebs/hestia_*.deb >> $LOG 2>&1
+	check_result $? "Failed to install hestia package from $withdebs. See $LOG for details."
 
 	if [ -z $(ls $withdebs/hestia-php_*.deb 2> /dev/null) ]; then
 		echo "    - hestia-php backend package (from apt)"
-		apt-get -y install hestia-php > /dev/null 2>&1
+		apt-get -y install hestia-php >> $LOG 2>&1
+		check_result $? "Failed to install hestia-php package from apt. See $LOG for details."
 	else
 		echo "    - hestia-php backend package"
-		dpkg -i $withdebs/hestia-php_*.deb > /dev/null 2>&1
+		dpkg -i $withdebs/hestia-php_*.deb >> $LOG 2>&1
+		check_result $? "Failed to install hestia-php package from $withdebs. See $LOG for details."
 	fi
 
 	if [ -z $(ls $withdebs/hestia-nginx_*.deb 2> /dev/null) ]; then
 		echo "    - hestia-nginx backend package (from apt)"
-		apt-get -y install hestia-nginx > /dev/null 2>&1
+		apt-get -y install hestia-nginx >> $LOG 2>&1
+		check_result $? "Failed to install hestia-nginx package from apt. See $LOG for details."
 	else
 		echo "    - hestia-nginx backend package"
-		dpkg -i $withdebs/hestia-nginx_*.deb > /dev/null 2>&1
+		dpkg -i $withdebs/hestia-nginx_*.deb >> $LOG 2>&1
+		check_result $? "Failed to install hestia-nginx package from $withdebs. See $LOG for details."
 	fi
 
 	if [ "$webterminal" = "yes" ]; then
 		if [ -z $(ls $withdebs/hestia-web-terminal_*.deb 2> /dev/null) ]; then
 			echo "    - hestia-web-terminal package (from apt)"
-			apt-get -y install hestia-web-terminal > /dev/null 2>&1
+			apt-get -y install hestia-web-terminal >> $LOG 2>&1
+			check_result $? "Failed to install hestia-web-terminal package from apt. See $LOG for details."
 		else
 			echo "    - hestia-web-terminal"
-			dpkg -i $withdebs/hestia-web-terminal_*.deb > /dev/null 2>&1
+			dpkg -i $withdebs/hestia-web-terminal_*.deb >> $LOG 2>&1
+			check_result $? "Failed to install hestia-web-terminal package from $withdebs. See $LOG for details."
 		fi
 	fi
 fi
@@ -2447,11 +2497,28 @@ $HESTIA/bin/v-change-sys-port $port > /dev/null 2>&1
 $HESTIA/bin/v-update-sys-defaults
 
 # Update remaining packages since repositories have changed
-echo -ne "[ * ] Installing remaining software updates..."
-apt-get -qq update
-apt-get -y upgrade >> $LOG &
-BACK_PID=$!
-echo
+# Skip the final upgrade with --with-debs, otherwise apt would replace the
+# locally installed .deb packages with the ones from apt.hestiacp.com
+if [ -z "$withdebs" ]; then
+	echo -ne "[ * ] Installing remaining software updates... "
+	apt-get -qq update
+	apt-get -y upgrade >> $LOG &
+	BACK_PID=$!
+
+	# Check if package installation is done, print a spinner
+	spin_i=1
+	while kill -0 $BACK_PID > /dev/null 2>&1; do
+		printf "\b${spinner:spin_i++%${#spinner}:1}"
+		sleep 0.5
+	done
+
+	# Do a blank echo to get the \n back
+	echo
+
+	# Check Installation result
+	wait $BACK_PID
+	check_result $? 'apt-get upgrade failed'
+fi
 
 # Starting Hestia service
 update-rc.d hestia defaults
