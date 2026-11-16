@@ -329,14 +329,26 @@
 		var fmt = ((fmtData << 10) | rem) ^ 0x5412;
 
 		for (var i = 0; i < 15; i++) {
+			// i = 0 is LSB (bit 0), i = 14 is MSB (bit 14)
 			var fbit = (fmt >> i) & 1;
-			if (i < 6) m[8][i] = fbit;
-			else if (i < 8) m[8][i + 1] = fbit;
-			else m[8][size - 15 + i] = fbit;
 
-			if (i < 8) m[size - 1 - i][8] = fbit;
-			else if (i < 9) m[15 - i][8] = fbit;
-			else m[14 - i][8] = fbit;
+			// Copy 1 (top-left):
+			// bits 0..5 -> col 8, rows 0..5
+			// bit 6     -> col 8, row 7
+			// bit 7     -> col 8, row 8
+			// bit 8     -> row 8, col 7
+			// bits 9..14 -> row 8, cols 5..0
+			if (i < 6) m[i][8] = fbit;
+			else if (i === 6) m[7][8] = fbit;
+			else if (i === 7) m[8][8] = fbit;
+			else if (i === 8) m[8][7] = fbit;
+			else m[8][14 - i] = fbit;
+
+			// Copy 2 (top-right + bottom-left):
+			// bits 0..7  -> row 8, cols (size-1)..(size-8)
+			// bits 8..14 -> col 8, rows (size-7)..(size-1)
+			if (i < 8) m[8][size - 1 - i] = fbit;
+			else m[size - 15 + i][8] = fbit;
 		}
 		return m;
 	}

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [v2026-11-2] - PiruHost Fork Release
 
 - Sync `package-lock.json` with `bootstrap-icons` for clean `npm ci` builds
+- Fix WireGuard QR code format-information bit ordering in `web/js/vpnQr.js`
 
 ## [v2026-11-1] - PiruHost Fork Release
 
