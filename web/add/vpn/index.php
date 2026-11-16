@@ -17,6 +17,7 @@ $v_client = "";
 $v_routed_nets = "";
 $v_tunnel_mode = "split";
 $v_dns = "";
+$v_mtu = "";
 $v_comment = "";
 
 // Check POST request
@@ -27,6 +28,7 @@ if (!empty($_POST["ok"])) {
 	$v_routed_nets = trim($_POST["v_routed_nets"] ?? "");
 	$v_tunnel_mode = trim($_POST["v_tunnel_mode"] ?? "split");
 	$v_dns = trim($_POST["v_dns"] ?? "");
+	$v_mtu = trim($_POST["v_mtu"] ?? "");
 	$v_comment = trim($_POST["v_comment"] ?? "");
 
 	if (empty($v_client)) {
@@ -39,6 +41,7 @@ if (!empty($_POST["ok"])) {
 		$v_tunnel_mode_arg = quoteshellarg($v_tunnel_mode);
 		$v_dns_arg = quoteshellarg($v_dns);
 		$v_comment_arg = quoteshellarg($v_comment);
+		$v_mtu_arg = quoteshellarg($v_mtu);
 
 		exec(
 			HESTIA_CMD . "v-add-vpn-client " .
@@ -46,7 +49,8 @@ if (!empty($_POST["ok"])) {
 			$v_routed_nets_arg . " " .
 			$v_tunnel_mode_arg . " " .
 			$v_dns_arg . " " .
-			$v_comment_arg,
+			$v_comment_arg . " " .
+			$v_mtu_arg,
 			$output,
 			$return_var
 		);

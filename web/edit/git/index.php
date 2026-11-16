@@ -46,8 +46,62 @@ exec(
 check_return_code_redirect($return_var, $output, "/list/web/");
 unset($output);
 
+/**
+ * Read only the last N lines of a log file (capped at $max_bytes) to keep panel memory/IO low.
+ */
+function hestia_read_log_tail($filepath, $max_lines = 120, $max_bytes = 65536) {
+	if (!file_exists($filepath) || !is_readable($filepath)) {
+		return "";
+	}
+	$size = filesize($filepath);
+	if ($size === false || $size === 0) {
+		return "";
+	}
+	$fp = @fopen($filepath, "rb");
+	if (!$fp) {
+		return "";
+	}
+	$offset = max(0, $size - $max_bytes);
+	if ($offset > 0) {
+		fseek($fp, $offset, SEEK_SET);
+	}
+	$chunk = fread($fp, $max_bytes);
+	fclose($fp);
+	if ($chunk === false || $chunk === "") {
+		return "";
+	}
+	$lines = explode("\n", str_replace("\r\n", "\n", $chunk));
+	if ($offset > 0 && count($lines) > 1) {
+		// Drop potentially partial first line when seeking mid-file
+		array_shift($lines);
+	}
+	if (count($lines) > $max_lines) {
+		$lines = array_slice($lines, -$max_lines);
+	}
+	return ($offset > 0 ? "... (showing last " . $max_lines . " lines)\n" : "") . implode("\n", $lines);
+}
+
 // Handle manual actions
 $action = $_GET["action"] ?? ($_GET["amp;action"] ?? "");
+
+// Lightweight AJAX log refresh endpoint
+if ($action === "fetch_logs") {
+	verify_csrf($_GET);
+	while (ob_get_level() > 0) {
+		ob_end_clean();
+	}
+	header("Content-Type: application/json; charset=utf-8");
+	$owner = !empty($user_plain) ? $user_plain : $_SESSION["user"];
+	$build_log_path = "/home/" . $owner . "/web/" . $v_domain . "/log/git_build.log";
+	$webhook_log_path = "/home/" . $owner . "/web/" . $v_domain . "/log/git_webhook.log";
+	echo json_encode([
+		"status" => "ok",
+		"build_log" => hestia_read_log_tail($build_log_path),
+		"github_log" => hestia_read_log_tail($webhook_log_path),
+		"updated_at" => date("H:i:s"),
+	]);
+	exit();
+}
 
 // Handle manual action: Pull / Deploy
 if ($action === "pull") {
@@ -192,19 +246,14 @@ if (!str_contains($panel_host, ":") && !empty($backend_port) && $backend_port !=
 }
 $v_webhook_url = "https://" . $webhook_host . "/api/webhook/?user=" . urlencode($user_plain) . "&domain=" . urlencode($v_domain) . "&secret=" . urlencode($v_webhook_secret);
 
-// Read build log if available
-$v_build_log = "";
-$log_file = "/home/" . $user_plain . "/web/" . $v_domain . "/log/git_build.log";
-if (file_exists($log_file) && is_readable($log_file)) {
-	$v_build_log = file_get_contents($log_file);
-}
+// Read build log tail if available
+$owner_name = !empty($user_plain) ? $user_plain : $_SESSION["user"];
+$log_file = "/home/" . $owner_name . "/web/" . $v_domain . "/log/git_build.log";
+$v_build_log = hestia_read_log_tail($log_file);
 
-// Read GitHub / Webhook log if available
-$v_github_log = "";
-$webhook_log_file = "/home/" . $user_plain . "/web/" . $v_domain . "/log/git_webhook.log";
-if (file_exists($webhook_log_file) && is_readable($webhook_log_file)) {
-	$v_github_log = file_get_contents($webhook_log_file);
-}
+// Read GitHub / Webhook log tail if available
+$webhook_log_file = "/home/" . $owner_name . "/web/" . $v_domain . "/log/git_webhook.log";
+$v_github_log = hestia_read_log_tail($webhook_log_file);
 
 // Render page
 render_page($user, $TAB, "edit_web_git");

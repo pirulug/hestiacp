@@ -1,0 +1,128 @@
+#!/bin/bash
+# info: rotate WireGuard keys for a VPN client peer
+# options: CLIENT
+#
+# example: v-change-vpn-client-key windows-pc
+#
+# This function regenerates the client private/public keys and preshared key
+# while preserving the assigned IP address and peer configuration.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+client="$1"
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source "$HESTIA/func/main.sh"
+# shellcheck source=/usr/local/hestia/func/vpn.sh
+source "$HESTIA/func/vpn.sh"
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'CLIENT'
+check_hestia_demo_mode
+is_format_valid 'client'
+is_vpn_client_format_valid "$client"
+
+if [ ! -f "$VPN_SERVER_CONF" ]; then
+	check_result "$E_NOTEXIST" "VPN server configuration not found"
+fi
+
+if [ ! -f "$VPN_PEERS_CONF" ] || ! grep -q "CLIENT='$client'" "$VPN_PEERS_CONF"; then
+	check_result "$E_NOTEXIST" "VPN client $client does not exist"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# shellcheck source=/dev/null
+source_conf "$VPN_SERVER_CONF"
+server_mtu="$MTU"
+server_dns="$DNS"
+
+MTU=""
+line=$(grep "CLIENT='$client'" "$VPN_PEERS_CONF" | head -n1)
+parse_object_kv_list "$line"
+
+# Generate new keypair and preshared key
+new_privkey=$(wg genkey)
+new_pubkey=$(echo "$new_privkey" | wg pubkey)
+new_psk=$(wg genpsk)
+
+# Update PSK on server
+mkdir -p /etc/wireguard
+echo "$new_psk" > "/etc/wireguard/psk_${client}.key"
+chmod 600 "/etc/wireguard/psk_${client}.key"
+
+# Build AllowedIPs for client config
+if [ "$TUNNEL_MODE" = "full" ]; then
+	client_allowed_ips="0.0.0.0/0, ::/0"
+else
+	client_allowed_ips="$SUBNET"
+	if [ -n "$ROUTED_NETS" ]; then
+		client_allowed_ips="${client_allowed_ips}, ${ROUTED_NETS}"
+	fi
+fi
+
+effective_mtu="${MTU:-$server_mtu}"
+mtu_line=""
+if [ -n "$effective_mtu" ]; then
+	mtu_line="MTU = ${effective_mtu}"$'\n'
+fi
+
+effective_dns="${DNS:-$server_dns}"
+
+# Rewrite client configuration file preserving IP and settings
+mkdir -p "$VPN_CLIENTS_DIR"
+client_conf_file="$VPN_CLIENTS_DIR/${client}.conf"
+
+cat <<EOF > "$client_conf_file"
+[Interface]
+PrivateKey = ${new_privkey}
+Address = ${IP}/32
+DNS = ${effective_dns}
+${mtu_line}
+[Peer]
+PublicKey = ${PUBLIC_KEY}
+PresharedKey = ${new_psk}
+Endpoint = ${PUBLIC_IP}:${PORT}
+AllowedIPs = ${client_allowed_ips}
+PersistentKeepalive = 25
+EOF
+
+chmod 600 "$client_conf_file"
+
+# Update PUBLIC_KEY in peers.conf while preserving ID, IP, and metadata
+tmp_peers=$(mktemp)
+while IFS= read -r peer_line; do
+	if echo "$peer_line" | grep -q "CLIENT='${client}'"; then
+		echo "ID='$ID' CLIENT='$CLIENT' IP='$IP' ROUTED_NETS='$ROUTED_NETS' TUNNEL_MODE='$TUNNEL_MODE' PUBLIC_KEY='$new_pubkey' DNS='$DNS' MTU='$MTU' COMMENT='$COMMENT' SUSPENDED='$SUSPENDED' TIME='$TIME' DATE='$DATE'" >> "$tmp_peers"
+	else
+		echo "$peer_line" >> "$tmp_peers"
+	fi
+done < "$VPN_PEERS_CONF"
+
+mv -f "$tmp_peers" "$VPN_PEERS_CONF"
+chmod 660 "$VPN_PEERS_CONF"
+
+# Synchronize WireGuard config in-flight
+sync_wireguard_config
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+"$BIN/v-log-action" "system" "Info" "System" "Rotated WireGuard VPN keys for client (Name: $client, IP: $IP)."
+log_event "$OK" "$ARGUMENTS"
+
+exit

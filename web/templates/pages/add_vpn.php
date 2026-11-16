@@ -61,6 +61,14 @@
 			</div>
 
 			<div class="u-mb10">
+				<label for="v_mtu" class="form-label">
+					<?= tohtml(_("Custom MTU")) ?>
+					<span class="hint">(<?= tohtml(_("Optional, 1280-1500. Leave blank to inherit server MTU")) ?>)</span>
+				</label>
+				<input type="number" min="1280" max="1500" class="form-control" name="v_mtu" id="v_mtu" value="<?= tohtml($v_mtu ?? "") ?>" placeholder="1420">
+			</div>
+
+			<div class="u-mb10">
 				<label for="v_comment" class="form-label"><?= tohtml(_("Comment")) ?></label>
 				<input type="text" class="form-control" name="v_comment" id="v_comment" value="<?= tohtml($v_comment ?? "") ?>">
 			</div>

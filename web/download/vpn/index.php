@@ -30,9 +30,11 @@ if ($return_var !== 0 || empty($conf_data)) {
 	exit();
 }
 
-// Send as downloadable file
-header("Content-Type: text/plain");
-header("Content-Disposition: attachment; filename=\"" . basename($client) . ".conf\"");
+// Send as downloadable file or inline text for local QR generation
+header("Content-Type: text/plain; charset=utf-8");
+if (empty($_GET["inline"])) {
+	header("Content-Disposition: attachment; filename=\"" . basename($client) . ".conf\"");
+}
 header("Content-Length: " . strlen($conf_data));
 echo $conf_data;
 exit();

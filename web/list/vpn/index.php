@@ -1,4 +1,7 @@
 <?php
+use function Hestiacp\quoteshellarg\quoteshellarg;
+
+ob_start();
 $TAB = "VPN";
 
 // Main include
@@ -7,6 +10,21 @@ include $_SERVER["DOCUMENT_ROOT"] . "/inc/main.php";
 // Check user context
 if ($_SESSION["userContext"] !== "admin" || !empty($_SESSION["look"])) {
 	header("Location: /list/user/");
+	exit();
+}
+
+// Handle key rotation action
+$action = $_GET["action"] ?? "";
+if ($action === "rotate_key" && !empty($_GET["client"])) {
+	verify_csrf($_GET);
+	$v_client = trim($_GET["client"]);
+	exec(HESTIA_CMD . "v-change-vpn-client-key " . quoteshellarg($v_client), $output, $return_var);
+	check_return_code($return_var, $output);
+	unset($output);
+	if (empty($_SESSION["error_msg"])) {
+		$_SESSION["ok_msg"] = sprintf(_("Keys rotated successfully for VPN client %s. Download or scan the new configuration."), htmlspecialchars($v_client));
+	}
+	header("Location: /list/vpn/");
 	exit();
 }
 
@@ -29,4 +47,8 @@ render_page($user, $TAB, "list_vpn");
 
 // Back uri
 $_SESSION["back"] = $_SERVER["REQUEST_URI"];
+
+// Flush session messages
+unset($_SESSION["error_msg"]);
+unset($_SESSION["ok_msg"]);
 

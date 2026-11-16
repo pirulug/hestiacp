@@ -22,27 +22,30 @@ El servicio permite configurar el servidor HestiaCP (Debian / Ubuntu VPS) como u
 
 ### Administracion del Servidor
 * Inicializar VPN:
-  `v-add-sys-vpn [PUERTO] [SUBRED] [DNS] [IP_PUBLICA]`
-  Ejemplo: `v-add-sys-vpn 51820 10.66.66.0/24 "1.1.1.1, 8.8.8.8"`
+  `v-add-sys-vpn [PUERTO] [SUBRED] [DNS] [IP_PUBLICA] [MTU]`
+  Ejemplo: `v-add-sys-vpn 51820 10.66.66.0/24 "1.1.1.1, 8.8.8.8" "" 1420`
 * Consultar estado del servidor:
   `v-list-sys-vpn [FORMAT]`
 * Modificar configuracion del servidor:
-  `v-change-sys-vpn [PUERTO] [DNS] [IP_PUBLICA]`
+  `v-change-sys-vpn [PUERTO] [DNS] [IP_PUBLICA] [MTU]`
 * Desactivar y eliminar VPN:
   `v-delete-sys-vpn`
 
 ### Administracion de Clientes (Peers)
 * Agregar cliente:
-  `v-add-vpn-client CLIENT [ROUTED_NETS] [TUNNEL_MODE] [DNS] [COMMENT]`
+  `v-add-vpn-client CLIENT [ROUTED_NETS] [TUNNEL_MODE] [DNS] [COMMENT] [MTU]`
   * `CLIENT`: Nombre alfanumerico (ej. `windows-pc`, `homelab`).
   * `ROUTED_NETS`: Subred LAN opcional detras del peer (ej. `192.168.1.0/24`).
   * `TUNNEL_MODE`: `split` (predeterminado, solo enruta subredes VPN/LAN) o `full` (`0.0.0.0/0`).
   * `DNS`: Servidores DNS opcionales.
   * `COMMENT`: Descripcion del peer.
+  * `MTU`: MTU opcional (1280-1500); si se omite hereda el del servidor.
 * Listar clientes:
   `v-list-vpn-clients [FORMAT]`
 * Ver configuracion de un cliente:
   `v-list-vpn-client CLIENT [FORMAT]`
+* Rotar llaves de un cliente (conservando su IP asignada):
+  `v-change-vpn-client-key CLIENT`
 * Suspender / Reactivar cliente:
   `v-suspend-vpn-client CLIENT`
   `v-unsuspend-vpn-client CLIENT`

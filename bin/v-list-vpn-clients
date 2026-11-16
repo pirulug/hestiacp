@@ -25,29 +25,32 @@ source_conf "$HESTIA/conf/hestia.conf"
 
 # JSON output function
 json_list() {
+	declare -A wg_endpoints wg_handshakes wg_rx wg_tx
+	if command -v wg > /dev/null 2>&1; then
+		local wg_line p_key p_psk p_ep p_allowed p_hs p_rx p_tx p_ka
+		while IFS=$'\t' read -r p_key p_psk p_ep p_allowed p_hs p_rx p_tx p_ka; do
+			# Peer dump lines have 8 fields (p_ka non-empty); interface line has 4
+			if [ -n "$p_ka" ] && [ -n "$p_key" ]; then
+				wg_endpoints["$p_key"]="${p_ep:-none}"
+				wg_handshakes["$p_key"]="${p_hs:-0}"
+				wg_rx["$p_key"]="${p_rx:-0}"
+				wg_tx["$p_key"]="${p_tx:-0}"
+			fi
+		done < <(wg show "$WG_IFACE" dump 2>/dev/null || true)
+	fi
+
 	echo "{"
 	local first=1
 	if [ -f "$VPN_PEERS_CONF" ]; then
 		while IFS= read -r line; do
 			[ -z "$line" ] && continue
+			MTU=""
 			parse_object_kv_list "$line"
 
-			# Fetch live status from wg show dump if wg0 is active
-			local latest_handshake="0"
-			local transfer_rx="0"
-			local transfer_tx="0"
-			local endpoint="none"
-
-			if [ -n "$PUBLIC_KEY" ] && which wg > /dev/null 2>&1; then
-				local wg_dump
-				wg_dump=$(wg show wg0 dump 2>/dev/null | grep -F "$PUBLIC_KEY" || true)
-				if [ -n "$wg_dump" ]; then
-					endpoint=$(echo "$wg_dump" | awk '{print $3}')
-					latest_handshake=$(echo "$wg_dump" | awk '{print $5}')
-					transfer_rx=$(echo "$wg_dump" | awk '{print $6}')
-					transfer_tx=$(echo "$wg_dump" | awk '{print $7}')
-				fi
-			fi
+			local latest_handshake="${wg_handshakes[$PUBLIC_KEY]:-0}"
+			local transfer_rx="${wg_rx[$PUBLIC_KEY]:-0}"
+			local transfer_tx="${wg_tx[$PUBLIC_KEY]:-0}"
+			local endpoint="${wg_endpoints[$PUBLIC_KEY]:-none}"
 
 			if [ "$first" -eq 0 ]; then
 				echo ","
@@ -61,6 +64,7 @@ json_list() {
     \"TUNNEL_MODE\": \"$TUNNEL_MODE\",
     \"PUBLIC_KEY\": \"$PUBLIC_KEY\",
     \"DNS\": \"$DNS\",
+    \"MTU\": \"$MTU\",
     \"COMMENT\": \"$COMMENT\",
     \"SUSPENDED\": \"$SUSPENDED\",
     \"TIME\": \"$TIME\",

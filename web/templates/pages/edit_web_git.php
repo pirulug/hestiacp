@@ -243,9 +243,14 @@
 							<span style="font-family: monospace; font-size: 12px; color: #58a6ff;">
 								<i class="bi bi-github u-mr5"></i><?= tohtml( _("Registro de Eventos GitHub / Webhooks (GitHub Log)")) ?>
 							</span>
-							<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleGithubLog()">
-								<span id="toggle_github_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
-							</button>
+							<div style="display: flex; gap: 6px; align-items: center;">
+								<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="refreshGitLogs(this)">
+									<i class="bi bi-arrow-clockwise icon-blue u-mr5"></i><?= tohtml( _("Refrescar")) ?>
+								</button>
+								<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleGithubLog()">
+									<span id="toggle_github_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
+								</button>
+							</div>
 						</div>
 						<pre id="github_log_content" style="margin: 0; padding: 15px; font-family: monospace; font-size: 11px; line-height: 1.4; color: #c9d1d9; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;"><?= tohtml($v_github_log) ?></pre>
 					</div>
@@ -260,9 +265,14 @@
 							<span style="font-family: monospace; font-size: 12px; color: #4ade80;">
 								<i class="bi bi-terminal u-mr5"></i><?= tohtml( _("Último Registro de Construcción (Build Log)")) ?>
 							</span>
-							<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleBuildLog()">
-								<span id="toggle_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
-							</button>
+							<div style="display: flex; gap: 6px; align-items: center;">
+								<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="refreshGitLogs(this)">
+									<i class="bi bi-arrow-clockwise icon-green u-mr5"></i><?= tohtml( _("Refrescar")) ?>
+								</button>
+								<button type="button" class="button button-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="toggleBuildLog()">
+									<span id="toggle_log_btn"><?= tohtml( _("Ocultar / Mostrar")) ?></span>
+								</button>
+							</div>
 						</div>
 						<pre id="build_log_content" style="margin: 0; padding: 15px; font-family: monospace; font-size: 11px; line-height: 1.4; color: #d4d4d4; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;"><?= tohtml($v_build_log) ?></pre>
 					</div>
@@ -405,6 +415,41 @@ function toggleBuildLog() {
 		log.style.display = "none";
 	}
 }
+
+function refreshGitLogs(btn) {
+	var fetchUrl = "/edit/git/?<?= http_build_query(["domain" => $v_domain, "action" => "fetch_logs", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : []))) ?>";
+	if (btn) btn.disabled = true;
+	fetch(fetchUrl, { credentials: "same-origin" })
+		.then(function (res) {
+			if (!res.ok) throw new Error("HTTP " + res.status);
+			return res.json();
+		})
+		.then(function (data) {
+			var ghEl = document.getElementById("github_log_content");
+			var buildEl = document.getElementById("build_log_content");
+			if (ghEl && typeof data.github_log === "string") {
+				ghEl.textContent = data.github_log;
+				ghEl.scrollTop = ghEl.scrollHeight;
+			}
+			if (buildEl && typeof data.build_log === "string") {
+				buildEl.textContent = data.build_log;
+				buildEl.scrollTop = buildEl.scrollHeight;
+			}
+		})
+		.catch(function (err) {
+			console.error("Failed to refresh Git logs:", err);
+		})
+		.finally(function () {
+			if (btn) btn.disabled = false;
+		});
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+	var ghEl = document.getElementById("github_log_content");
+	var buildEl = document.getElementById("build_log_content");
+	if (ghEl) ghEl.scrollTop = ghEl.scrollHeight;
+	if (buildEl) buildEl.scrollTop = buildEl.scrollHeight;
+});
 
 function applyLaravelPreset(type) {
 	var textarea = document.getElementById("v_post_deploy");

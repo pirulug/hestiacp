@@ -22,6 +22,7 @@ $server = $server_data["server"] ?? [];
 $v_port = $server["PORT"] ?? "51820";
 $v_dns = $server["DNS"] ?? "1.1.1.1, 8.8.8.8";
 $v_public_ip = $server["PUBLIC_IP"] ?? "";
+$v_mtu = $server["MTU"] ?? "";
 
 // Check POST request
 if (!empty($_POST["ok"])) {
@@ -30,6 +31,7 @@ if (!empty($_POST["ok"])) {
 	$v_port = trim($_POST["v_port"] ?? "51820");
 	$v_dns = trim($_POST["v_dns"] ?? "");
 	$v_public_ip = trim($_POST["v_public_ip"] ?? "");
+	$v_mtu = trim($_POST["v_mtu"] ?? "");
 
 	if (empty($v_port)) {
 		$_SESSION["error_msg"] = _("Port cannot be blank.");
@@ -39,12 +41,14 @@ if (!empty($_POST["ok"])) {
 		$v_port_arg = quoteshellarg($v_port);
 		$v_dns_arg = quoteshellarg($v_dns);
 		$v_public_ip_arg = quoteshellarg($v_public_ip);
+		$v_mtu_arg = quoteshellarg($v_mtu);
 
 		exec(
 			HESTIA_CMD . "v-change-sys-vpn " .
 			$v_port_arg . " " .
 			$v_dns_arg . " " .
-			$v_public_ip_arg,
+			$v_public_ip_arg . " " .
+			$v_mtu_arg,
 			$output,
 			$return_var
 		);

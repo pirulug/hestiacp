@@ -60,6 +60,7 @@ case "$format" in
 		echo "    \"PUBLIC_IP\": \"$PUBLIC_IP\","
 		echo "    \"WAN_IFACE\": \"$WAN_IFACE\","
 		echo "    \"DNS\": \"$DNS\","
+		echo "    \"MTU\": \"$MTU\","
 		echo "    \"PUBLIC_KEY\": \"$PUBLIC_KEY\","
 		echo "    \"STATUS\": \"$status\","
 		echo "    \"PEERS\": \"$peer_count\","
@@ -73,6 +74,7 @@ case "$format" in
 		echo "PORT: $PORT"
 		echo "SUBNET: $SUBNET"
 		echo "PUBLIC_IP: $PUBLIC_IP"
+		echo "MTU: $MTU"
 		echo "PEERS: $peer_count"
 		;;
 esac

@@ -43,6 +43,14 @@
 				<input type="text" class="form-control" name="v_dns" id="v_dns" value="<?= tohtml($v_dns ?? "1.1.1.1, 8.8.8.8") ?>">
 			</div>
 
+			<div class="u-mb10">
+				<label for="v_mtu" class="form-label">
+					<?= tohtml(_("MTU")) ?>
+					<span class="hint">(<?= tohtml(_("Optional, 1280-1500. Leave blank for WireGuard default; 1420 or 1280 recommended for PPPoE/CGNAT")) ?>)</span>
+				</label>
+				<input type="number" min="1280" max="1500" class="form-control" name="v_mtu" id="v_mtu" value="<?= tohtml($v_mtu ?? "") ?>" placeholder="1420">
+			</div>
+
 		</div>
 	</form>
 

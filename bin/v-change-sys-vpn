@@ -1,8 +1,8 @@
 #!/bin/bash
 # info: change system WireGuard VPN server configuration
-# options: [PORT] [DNS] [PUBLIC_IP]
+# options: [PORT] [DNS] [PUBLIC_IP] [MTU]
 #
-# example: v-change-sys-vpn 51820 "1.1.1.1,8.8.8.8" "203.0.113.10"
+# example: v-change-sys-vpn 51820 "1.1.1.1,8.8.8.8" "203.0.113.10" 1420
 #
 # This function modifies WireGuard VPN server settings and updates client configs.
 
@@ -14,6 +14,14 @@
 new_port="$1"
 new_dns="$2"
 new_public_ip="$3"
+if [ "$#" -ge 4 ]; then
+	new_mtu="$4"
+	if [ "$new_mtu" = "auto" ] || [ "$new_mtu" = "default" ]; then
+		new_mtu=""
+	fi
+else
+	new_mtu="__KEEP__"
+fi
 
 # Includes
 # shellcheck source=/etc/hestiacp/hestia.conf
@@ -52,6 +60,12 @@ if [ -z "$new_public_ip" ]; then
 	new_public_ip="$PUBLIC_IP"
 fi
 
+if [ "$new_mtu" = "__KEEP__" ]; then
+	new_mtu="$MTU"
+else
+	is_vpn_mtu_valid "$new_mtu"
+fi
+
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
@@ -62,6 +76,11 @@ old_port="$PORT"
 sed -i "s/PORT='.*'/PORT='$new_port'/" "$VPN_SERVER_CONF"
 sed -i "s/DNS='.*'/DNS='$new_dns'/" "$VPN_SERVER_CONF"
 sed -i "s/PUBLIC_IP='.*'/PUBLIC_IP='$new_public_ip'/" "$VPN_SERVER_CONF"
+if grep -q "^MTU=" "$VPN_SERVER_CONF"; then
+	sed -i "s/MTU='.*'/MTU='$new_mtu'/" "$VPN_SERVER_CONF"
+else
+	echo "MTU='$new_mtu'" >> "$VPN_SERVER_CONF"
+fi
 
 # Update firewall rule if port changed
 if [ "$old_port" != "$new_port" ] && [ -n "$FIREWALL_SYSTEM" ] && [ "$FIREWALL_SYSTEM" = "iptables" ]; then
@@ -75,11 +94,27 @@ if [ "$old_port" != "$new_port" ] && [ -n "$FIREWALL_SYSTEM" ] && [ "$FIREWALL_S
 	"$BIN/v-update-firewall"
 fi
 
-# Update client conf endpoints if port or public IP changed
+# Update client conf endpoints (and inherited MTU) if changed
 if [ -d "$VPN_CLIENTS_DIR" ]; then
 	for conf in "$VPN_CLIENTS_DIR"/*.conf; do
 		[ -f "$conf" ] || continue
 		sed -i "s/^Endpoint = .*/Endpoint = ${new_public_ip}:${new_port}/" "$conf"
+
+		# Update inherited MTU only if client does not define a custom MTU in peers.conf
+		c_name=$(basename "$conf" .conf)
+		c_custom_mtu=""
+		if [ -f "$VPN_PEERS_CONF" ]; then
+			c_line=$(grep "CLIENT='${c_name}'" "$VPN_PEERS_CONF" | head -n1)
+			if [ -n "$c_line" ]; then
+				c_custom_mtu=$(echo "$c_line" | grep -o "MTU='[^']*'" | sed -e "s/MTU='//" -e "s/'//" || true)
+			fi
+		fi
+		if [ -z "$c_custom_mtu" ]; then
+			sed -i '/^MTU = /d' "$conf"
+			if [ -n "$new_mtu" ]; then
+				sed -i "/^PrivateKey = /a MTU = ${new_mtu}" "$conf"
+			fi
+		fi
 	done
 fi
 

@@ -64,6 +64,7 @@ case "$format" in
 		echo "    \"TUNNEL_MODE\": \"$TUNNEL_MODE\","
 		echo "    \"PUBLIC_KEY\": \"$PUBLIC_KEY\","
 		echo "    \"DNS\": \"$DNS\","
+		echo "    \"MTU\": \"$MTU\","
 		echo "    \"COMMENT\": \"$COMMENT\","
 		echo "    \"SUSPENDED\": \"$SUSPENDED\","
 		echo "    \"TIME\": \"$TIME\","
