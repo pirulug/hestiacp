@@ -2,9 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.10.7] - Service Release
+## [v2026-11-1] - PiruHost Fork Release (Upstream 1.10.6 + 1.10.7)
 
-### Security
+### PiruHost Fork
+
+- Adopt `v{year}-{month}-{change}` versioning scheme (`v2026-11-1` / package `2026-11-1`)
+- Add native WireGuard VPN server and client management (`v-add-sys-vpn`, `v-change-sys-vpn`, `v-list-sys-vpn`, `v-add-vpn-client`, `v-list-vpn-clients`, `v-suspend-vpn-client`, `v-unsuspend-vpn-client`, `v-delete-vpn-client`) and web UI
+- Add native Git/GitHub/GitLab domain integration with SSH deploy keys, webhook receiver (`web/api/webhook/index.php`), and Composer/PNPM/Node.js build pipeline
+- Add system File Manager installation and repair scripts (`v-add-sys-filemanager`, `v-repair-sys-filemanager`, `v-delete-sys-filemanager`) with custom FileGator theme
+- Add dark theme, responsive UI styles, semantic Bootstrap Icons action colors, and `guias/` documentation
+
+### Upstream 1.10.7 - Security
 
 - Harden `v-quick-install` and fix `v-quick-install-app` option parsing and PHP version check #5946 #5747 #5748, (GHSA-chw8-phjg-wmq7)
 - Anchor archive extension checks in `v-extract-fs-archive` #5819
@@ -17,7 +25,7 @@ All notable changes to this project will be documented in this file.
 - Block mutating GET requests in read-only sessions and exit after redirecting logged-in users from password reset
 - Protect `ROOT_USER` SSH keys like access keys and enforce the protected-admin policy in the web terminal (GHSA-p4vq-6v6h-cc74)
 
-### Changes
+### Upstream 1.10.7 - Changes
 
 - Add `.xz`/`.txz` archive support to `v-extract-fs-archive` and fix extraction of single-file archives with URL query strings #5852
 - Add a visibility toggle button to password inputs #5742 #5959
@@ -35,7 +43,7 @@ All notable changes to this project will be documented in this file.
 - Update all non-major dependencies and Biome to 2.6.6 #5945 #5944
 - Add a manual apt release workflow, build all Hestia debs locally for BATS and drop bullseye from the release matrix #5902 #5907
 
-### Bug fixes
+### Upstream 1.10.7 - Bug fixes
 
 - Fix Let's Encrypt dns-01 challenge status polling #5842 #5854
 - Fix the broken redirect URL when impersonating a user from search results #5957
@@ -58,9 +66,7 @@ All notable changes to this project will be documented in this file.
 - Remove `policy-rc.d` on installer exit
 - Fail loudly when the installer's backend package install fails
 
-## [1.10.6] - Service Release
-
-### Security
+### Upstream 1.10.6 - Security
 
 - Harden restore scripts: refuse symlinked user directories, stage restores in a root-owned directory, quote variables and use `chown --no-dereference` #5796
 - Fix path traversal in the File Manager `escapeDots` filter (File Manager 7.16.4) #5732
@@ -75,7 +81,7 @@ All notable changes to this project will be documented in this file.
 - Fix `public_html` directory permissions when adding a web domain and use null-delimited paths in `find` #5730
 - Ensure user tmp directory ownership and permissions during `rebuild_user_conf` #5849
 
-### Changes
+### Upstream 1.10.6 - Changes
 
 - Add ECDSA key algorithm support for Let's Encrypt certificates #5629
 - Add support for a custom DKIM selector #5760
@@ -104,7 +110,7 @@ All notable changes to this project will be documented in this file.
 - Run BATS suite on nginx-only installs and add upgrade migration tests #5865 #5861
 - Update dependencies #5734 #5735 #5765 #5766 #5789 #5790 #5791 #5807 #5832 #5838 #5840 #5847 #5884 #5894 #5895
 
-### Fixes
+### Upstream 1.10.6 - Fixes
 
 - Fix IDN handling in Let's Encrypt SSL certificate generation #5814
 - Fix mail certificate renewal check so expired SMTP/IMAP certificates are renewed #5829
