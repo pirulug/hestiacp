@@ -82,13 +82,18 @@ update_git_conf_record() {
 	local rec_deploy_ts="$4"
 	local rec_status="$5"
 	local rec_duration="$6"
-	local rec_date rec_time tmp_conf
+	local rec_date rec_time record_line tmp_conf
 	rec_date=$(date +'%F')
 	rec_time=$(date +'%T')
-	tmp_conf=$(mktemp)
-	grep -v "DOMAIN='$domain'" "$user_git_conf" > "$tmp_conf" || true
-	echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$rec_commit' LAST_COMMIT_MSG='$rec_msg' LAST_COMMIT_AUTHOR='$rec_author' LAST_DEPLOY='$rec_deploy_ts' LAST_DEPLOY_STATUS='$rec_status' LAST_DEPLOY_DURATION='$rec_duration' ZERO_DOWNTIME='$zero_downtime' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$rec_time' DATE='$rec_date'" >> "$tmp_conf"
-	mv -f "$tmp_conf" "$user_git_conf"
+	record_line="DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$rec_commit' LAST_COMMIT_MSG='$rec_msg' LAST_COMMIT_AUTHOR='$rec_author' LAST_DEPLOY='$rec_deploy_ts' LAST_DEPLOY_STATUS='$rec_status' LAST_DEPLOY_DURATION='$rec_duration' ZERO_DOWNTIME='$zero_downtime' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$rec_time' DATE='$rec_date'"
+	if [ -x "$BIN/hestia-core" ]; then
+		"$BIN/hestia-core" conf-upsert "$user_git_conf" "DOMAIN" "$domain" "$record_line"
+	else
+		tmp_conf=$(mktemp)
+		grep -v "DOMAIN='$domain'" "$user_git_conf" > "$tmp_conf" || true
+		echo "$record_line" >> "$tmp_conf"
+		mv -f "$tmp_conf" "$user_git_conf"
+	fi
 	chown "$user:$user" "$user_git_conf"
 	chmod 660 "$user_git_conf"
 }

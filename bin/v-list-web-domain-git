@@ -35,6 +35,11 @@ is_object_valid 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 
 user_git_conf="$USER_DATA/git.conf"
+
+if [ "$format" = "json" ] && [ -x "$BIN/hestia-core" ]; then
+	"$BIN/hestia-core" git-status-json "$user_git_conf" "$domain" "$HOMEDIR" "$user"
+	exit 0
+fi
 clean_domain=$(echo "$domain" | tr '.' '_')
 ssh_pub_file="$HOMEDIR/$user/.ssh/id_git_${clean_domain}.pub"
 deploy_key_content=""

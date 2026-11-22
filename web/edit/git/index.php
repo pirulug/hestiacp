@@ -51,6 +51,22 @@ unset($output);
  * Rejects symlinks and paths escaping the domain log directory.
  */
 function hestia_read_log_tail($filepath, $expected_dir = "", $max_lines = 120, $max_bytes = 65536) {
+	$core_bin = HESTIA_DIR_BIN . "hestia-core";
+	if (is_executable($core_bin)) {
+		$cmd = quoteshellarg($core_bin) . " log-tail " . quoteshellarg($filepath) .
+			" --lines " . (int) $max_lines .
+			" --max-bytes " . (int) $max_bytes;
+		if (!empty($expected_dir)) {
+			$cmd .= " --expected-dir " . quoteshellarg($expected_dir);
+		}
+		$out = [];
+		$ret = 0;
+		exec($cmd, $out, $ret);
+		if ($ret === 0) {
+			return implode("\n", $out);
+		}
+	}
+
 	$parent = dirname($filepath);
 	if (is_link($parent) || is_link($filepath) || !file_exists($filepath) || !is_readable($filepath)) {
 		return "";

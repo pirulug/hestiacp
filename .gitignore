@@ -50,3 +50,7 @@ web/src/vendor/
 npm-debug.log
 
 INSTALL.md
+
+# Rust build artifacts
+src/rust/*/target/
+bin/hestia-core

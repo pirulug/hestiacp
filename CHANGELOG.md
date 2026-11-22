@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2026-11-6] - PiruHost Fork Release
+
+- Add zero-dependency Rust binary `hestia-core` (`src/rust/hestia-core`) to optimize WireGuard peer JSON listing, Git status/log-tail/atomic `.conf` updates, and VPS `/proc` metrics
+- Integrate `hestia-core` compilation into `src/hst_autocompile.sh` with safe Bash/PHP fallbacks
+
 ## [v2026-11-5] - PiruHost Fork Release
 
 - Harden Git / Webhook integration with per-domain `flock` locking, asynchronous `202 Accepted` webhook dispatch, real build exit-code propagation, and symlink checks

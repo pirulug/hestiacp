@@ -873,6 +873,14 @@ if [ "$HESTIA_B" = true ]; then
 	cd $BUILD_DIR/hestiacp-$branch_dash
 	npm ci --ignore-scripts
 	npm run build
+	if [ -f "src/rust/hestia-core/Cargo.toml" ] && command -v cargo > /dev/null 2>&1; then
+		echo "Building hestia-core Rust binary..."
+		cargo build --release --manifest-path src/rust/hestia-core/Cargo.toml
+		if [ -f "src/rust/hestia-core/target/release/hestia-core" ]; then
+			cp -f src/rust/hestia-core/target/release/hestia-core bin/hestia-core
+			chmod +x bin/hestia-core
+		fi
+	fi
 	for BUILD_ARCH in $arch; do
 		for os in $supported_os; do
 			mkdir -p $BUILD_DIR_HESTIA/usr/local/hestia

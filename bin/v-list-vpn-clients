@@ -25,6 +25,11 @@ source_conf "$HESTIA/conf/hestia.conf"
 
 # JSON output function
 json_list() {
+	if [ -x "$BIN/hestia-core" ]; then
+		"$BIN/hestia-core" wg-clients-json "$VPN_PEERS_CONF" "$WG_IFACE"
+		return
+	fi
+
 	declare -A wg_endpoints wg_handshakes wg_rx wg_tx
 	if command -v wg > /dev/null 2>&1; then
 		local wg_line p_key p_psk p_ep p_allowed p_hs p_rx p_tx p_ka
