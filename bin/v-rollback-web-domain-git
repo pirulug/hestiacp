@@ -1,0 +1,107 @@
+#!/bin/bash
+# info: rollback web domain Git deployment to a previous release
+# options: USER DOMAIN [RELEASE]
+#
+# example: v-rollback-web-domain-git admin example.com
+#
+# This function switches the zero-downtime symlink back to a previous release.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+user=$1
+domain=$2
+target_release=$3
+
+# Includes
+# shellcheck source=/etc/hestiacp/hestia.conf
+source /etc/hestiacp/hestia.conf
+# shellcheck source=/usr/local/hestia/func/main.sh
+source $HESTIA/func/main.sh
+# shellcheck source=/usr/local/hestia/func/domain.sh
+source $HESTIA/func/domain.sh
+# load config file
+source_conf "$HESTIA/conf/hestia.conf"
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [RELEASE]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+check_hestia_demo_mode
+
+user_git_conf="$USER_DATA/git.conf"
+if [ ! -f "$user_git_conf" ] || ! grep -q "DOMAIN='$domain'" "$user_git_conf"; then
+	check_result "$E_NOTEXIST" "Git repository is not configured for domain $domain"
+fi
+
+git_str=$(grep "DOMAIN='$domain'" "$user_git_conf" | head -n1)
+parse_object_kv_list "$git_str"
+
+deploy_dir="${DEPLOY_DIR:-public_html}"
+target_path="$HOMEDIR/$user/web/$domain/$deploy_dir"
+releases_dir="$HOMEDIR/$user/web/$domain/.git_releases"
+
+if [ ! -d "$releases_dir" ]; then
+	check_result "$E_NOTEXIST" "No releases directory found for $domain"
+fi
+
+current_target=""
+if [ -L "$target_path" ]; then
+	current_target=$(basename "$(readlink -f "$target_path")")
+fi
+
+if [ -z "$target_release" ]; then
+	# Pick the most recent release that is not the current one
+	target_release=$(ls -1t "$releases_dir" 2>/dev/null | grep -vxF "$current_target" | head -n1)
+fi
+
+# Validate release name (prevent path traversal)
+if [ -z "$target_release" ] || ! [[ "$target_release" =~ ^[a-zA-Z0-9._-]+$ ]] || [ ! -d "$releases_dir/$target_release" ]; then
+	check_result "$E_NOTEXIST" "Target release $target_release does not exist"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+clean_domain=$(echo "$domain" | tr '.' '_')
+lock_file="/tmp/hestia-git-${user}-${clean_domain}.lock"
+exec 9>"$lock_file"
+if ! flock -w 60 9; then
+	check_result "$E_LIMIT" "Another Git operation is already running for $domain"
+fi
+
+release_path="$releases_dir/$target_release"
+ln -sfn "$release_path" "${target_path}.new"
+mv -Tf "${target_path}.new" "$target_path"
+chown -h "$user:$user" "$target_path"
+
+last_commit_hash=$(user_exec git -c safe.directory=* -C "$release_path" log -1 --format="%h" 2>/dev/null || echo "$LAST_COMMIT")
+last_commit_msg=$(user_exec git -c safe.directory=* -C "$release_path" log -1 --format="%s" 2>/dev/null | tr "'" '"' || echo "$LAST_COMMIT_MSG")
+last_commit_author=$(user_exec git -c safe.directory=* -C "$release_path" log -1 --format="%an" 2>/dev/null | tr "'" '"' || echo "$LAST_COMMIT_AUTHOR")
+last_deploy_time=$(date +%s)
+date_str=$(date +'%F')
+time_str=$(date +'%T')
+
+tmp_conf=$(mktemp)
+grep -v "DOMAIN='$domain'" "$user_git_conf" > "$tmp_conf" || true
+echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$BRANCH' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$AUTH_TYPE' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' LAST_DEPLOY_STATUS='success' LAST_DEPLOY_DURATION='0' ZERO_DOWNTIME='${ZERO_DOWNTIME:-yes}' POST_DEPLOY_B64='$POST_DEPLOY_B64' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$time_str' DATE='$date_str'" >> "$tmp_conf"
+mv -f "$tmp_conf" "$user_git_conf"
+chown "$user:$user" "$user_git_conf"
+chmod 660 "$user_git_conf"
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+$BIN/v-log-action "$user" "Info" "Web" "Rolled back Git release for $domain to $target_release ($last_commit_hash)."
+log_event "$OK" "$ARGUMENTS"
+
+exit 0

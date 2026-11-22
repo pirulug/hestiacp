@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2026-11-5] - PiruHost Fork Release
+
+- Harden Git / Webhook integration with per-domain `flock` locking, asynchronous `202 Accepted` webhook dispatch, real build exit-code propagation, and symlink checks
+- Add webhook secret rotation (`v-change-web-domain-git-secret`), optional Zero-Downtime symlink releases with rollback (`v-rollback-web-domain-git`), Node/Symfony/Composer presets, and active-deploy log polling in UI
+
 ## [v2026-11-4] - PiruHost Fork Release
 
 - Bump `hestia-php` to `8.5.13`

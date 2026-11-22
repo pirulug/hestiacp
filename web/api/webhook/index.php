@@ -15,14 +15,20 @@ try {
 use function Hestiacp\quoteshellarg\quoteshellarg;
 
 function log_webhook_entry($user, $domain, $event_type, $status, $details = []) {
-	if (empty($user) || empty($domain)) {
+	if (empty($user) || empty($domain) || str_contains($domain, "..")) {
 		return;
 	}
 	$log_dir = "/home/" . $user . "/web/" . $domain . "/log";
+	if (is_link($log_dir)) {
+		return;
+	}
 	if (!is_dir($log_dir)) {
 		@mkdir($log_dir, 0755, true);
 	}
 	$log_file = $log_dir . "/git_webhook.log";
+	if (is_link($log_file)) {
+		return;
+	}
 
 	$entry = "================================================================================\n";
 	$entry .= "[" . date("Y-m-d H:i:s") . "] EVENT: " . strtoupper($event_type) . " | STATUS: " . $status . "\n";
@@ -62,9 +68,14 @@ if (empty($user) || empty($domain) || (empty($secret) && empty($_SERVER["HTTP_X_
 	exit();
 }
 
-// Sanitize inputs
+// Strict input validation (reject invalid characters or path traversal)
 $user_safe = preg_replace("/[^a-zA-Z0-9_-]/", "", $user);
 $domain_safe = preg_replace("/[^a-zA-Z0-9.-]/", "", $domain);
+if ($user !== $user_safe || $domain !== $domain_safe || str_contains($domain_safe, "..")) {
+	http_response_code(400);
+	echo json_encode(["status" => "error", "message" => "Invalid user or domain parameter"]);
+	exit();
+}
 
 // Fetch domain git config
 exec(HESTIA_CMD . "v-list-web-domain-git " . quoteshellarg($user_safe) . " " . quoteshellarg($domain_safe) . " json", $output, $return_var);
@@ -182,52 +193,44 @@ if (!empty($payload["ref"])) {
 	}
 }
 
-// Trigger update / deployment
-exec(HESTIA_CMD . "v-update-web-domain-git " . quoteshellarg($user_safe) . " " . quoteshellarg($domain_safe), $deploy_output, $deploy_status);
+// Dispatch update / deployment asynchronously so GitHub/GitLab webhooks do not time out
+$target_branch = $git_data["BRANCH"] ?? "main";
+$async_cmd = "nohup " . HESTIA_CMD . "v-update-web-domain-git " . quoteshellarg($user_safe) . " " . quoteshellarg($domain_safe) . " > /dev/null 2>&1 &";
+exec($async_cmd, $dispatch_out, $dispatch_status);
 
-if ($deploy_status === 0) {
-	// Fetch updated commit info
-	exec(HESTIA_CMD . "v-list-web-domain-git " . quoteshellarg($user_safe) . " " . quoteshellarg($domain_safe) . " json", $info_out, $info_status);
-	$updated_info = json_decode(implode("", $info_out), true);
-
-	$final_commit = $updated_info["LAST_COMMIT"] ?? $commit_id;
-	$final_msg = $updated_info["LAST_COMMIT_MSG"] ?? $commit_msg;
-	$final_author = $updated_info["LAST_COMMIT_AUTHOR"] ?? $commit_author;
-
-	log_webhook_entry($user_safe, $domain_safe, $event_type, "success (HTTP 200)", [
+if ($dispatch_status === 0) {
+	log_webhook_entry($user_safe, $domain_safe, $event_type, "accepted (HTTP 202)", [
 		"Delivery" => $delivery_id,
 		"Sender" => $sender_name,
-		"Branch" => $git_data["BRANCH"] ?? "main",
-		"Commit" => $final_commit . " - " . $final_msg,
-		"Author" => $final_author,
-		"Deploy Status" => "Success (Exit code: 0)",
+		"Branch" => $target_branch,
+		"Commit" => $commit_id . " - " . $commit_msg,
+		"Author" => $commit_author,
+		"Deploy Status" => "Queued asynchronously",
 	]);
 
-	http_response_code(200);
+	http_response_code(202);
 	echo json_encode([
-		"status" => "success",
-		"message" => "Deployment completed successfully",
+		"status" => "accepted",
+		"message" => "Deployment queued asynchronously",
 		"domain" => $domain_safe,
-		"branch" => $git_data["BRANCH"] ?? "main",
-		"commit" => $final_commit,
-		"commit_message" => $final_msg,
-		"commit_author" => $final_author,
-		"deployed_at" => date("Y-m-d H:i:s"),
+		"branch" => $target_branch,
+		"commit" => $commit_id,
+		"queued_at" => date("Y-m-d H:i:s"),
 	]);
 } else {
-	$err_text = implode(" ", $deploy_output);
+	$err_text = implode(" ", $dispatch_out);
 	log_webhook_entry($user_safe, $domain_safe, $event_type, "error (HTTP 500)", [
 		"Delivery" => $delivery_id,
 		"Sender" => $sender_name,
-		"Branch" => $git_data["BRANCH"] ?? "main",
-		"Deploy Status" => "Failed (Exit code: " . $deploy_status . ")",
+		"Branch" => $target_branch,
+		"Deploy Status" => "Failed to dispatch (Exit code: " . $dispatch_status . ")",
 		"Error Details" => $err_text,
 	]);
 
 	http_response_code(500);
 	echo json_encode([
 		"status" => "error",
-		"message" => "Deployment failed: " . $err_text,
+		"message" => "Failed to dispatch deployment: " . $err_text,
 	]);
 }
 

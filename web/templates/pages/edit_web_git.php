@@ -47,16 +47,49 @@
 
 			<?php if ($v_configured) { ?>
 				<!-- Status Panel -->
-				<div class="u-mb20" style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
-					<h3 class="u-mb10" style="display: flex; align-items: center; justify-content: space-between;">
+				<div class="u-mb20" style="background: rgba(128, 128, 128, 0.08); padding: 15px; border-radius: 6px; border: 1px solid rgba(128, 128, 128, 0.25);">
+					<h3 class="u-mb10" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
 						<span><i class="bi bi-check-circle icon-green u-mr10"></i><?= tohtml( _("Repository Connected")) ?></span>
-						<span class="badge" style="font-size: 12px; background: #2f81f7; color: #fff; padding: 3px 8px; border-radius: 4px;"><?= tohtml($v_branch) ?></span>
+						<span style="display: flex; align-items: center; gap: 6px;">
+							<?php
+								$status_badge_color = "#22c55e";
+								$status_label = _("Success");
+								if ($v_last_deploy_status === "failed") {
+									$status_badge_color = "#ef4444";
+									$status_label = _("Failed");
+								} elseif ($v_last_deploy_status === "running") {
+									$status_badge_color = "#f59e0b";
+									$status_label = _("Running");
+								}
+							?>
+							<span id="git_deploy_status_badge" class="badge" style="font-size: 12px; background: <?= $status_badge_color ?>; color: #fff; padding: 3px 8px; border-radius: 4px;">
+								<?= tohtml($status_label) ?><?= (!empty($v_last_deploy_duration) && $v_last_deploy_status !== "running") ? " (" . tohtml($v_last_deploy_duration) . "s)" : "" ?>
+							</span>
+							<span class="badge" style="font-size: 12px; background: #2f81f7; color: #fff; padding: 3px 8px; border-radius: 4px;"><?= tohtml($v_branch) ?></span>
+						</span>
 					</h3>
 					<div style="font-size: 13px; line-height: 1.6;">
 						<div><strong><?= tohtml( _("Repository")) ?>:</strong> <code><?= tohtml($v_repo) ?></code></div>
 						<div><strong><?= tohtml( _("Last Commit")) ?>:</strong> <code><?= tohtml($v_last_commit) ?></code> - <?= tohtml($v_last_commit_msg) ?></div>
 						<div><strong><?= tohtml( _("Author / Date")) ?>:</strong> <?= tohtml($v_last_commit_author) ?> (<?= tohtml($v_last_commit_date) ?>)</div>
+						<?php if ($v_zero_downtime && !empty($v_current_release)) { ?>
+							<div><strong><?= tohtml( _("Active Release")) ?>:</strong> <code><?= tohtml($v_current_release) ?></code></div>
+						<?php } ?>
 					</div>
+					<?php if ($v_zero_downtime && count($v_releases) > 1) { ?>
+						<div class="u-mt10" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+							<label for="rollback_release_select" style="font-size: 12px; font-weight: 600; margin: 0;"><?= tohtml( _("Rollback")) ?>:</label>
+							<select id="rollback_release_select" class="form-select" style="max-width: 240px; font-size: 12px; padding: 4px 8px;">
+								<?php foreach ($v_releases as $rel) { ?>
+									<?php if ($rel === $v_current_release) continue; ?>
+									<option value="<?= tohtml($rel) ?>"><?= tohtml($rel) ?></option>
+								<?php } ?>
+							</select>
+							<button type="button" class="button button-secondary" style="font-size: 12px; padding: 4px 10px;" onclick="executeRollback()">
+								<i class="bi bi-clock-history icon-orange u-mr5"></i><?= tohtml( _("Restaurar Release")) ?>
+							</button>
+						</div>
+					<?php } ?>
 				</div>
 			<?php } ?>
 
@@ -161,19 +194,19 @@
 
 			<?php if ($v_configured && !empty($v_webhook_secret)) { ?>
 				<!-- Webhook Integration -->
-				<div class="u-mb20" style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
+				<div class="u-mb20" style="background: rgba(128, 128, 128, 0.08); padding: 15px; border-radius: 6px; border: 1px solid rgba(128, 128, 128, 0.25);">
 					<h4 class="u-mb10"><i class="bi bi-lightning icon-orange u-mr10"></i><?= tohtml( _("Despliegue Automático con Webhooks (GitHub / GitLab)")) ?></h4>
 					<p class="u-mb10" style="font-size: 13px;">
-						<?= tohtml( _("Configura el Webhook en GitHub para desplegar automáticamente al hacer 'git push':")) ?><br>
+						<?= tohtml( _("Configura el Webhook en GitHub/GitLab para desplegar automáticamente al hacer 'git push':")) ?><br>
 						<strong>GitHub -> Tu Repositorio -> Settings -> Webhooks -> Add webhook</strong>
 					</p>
 
 					<div class="u-mb10">
-						<label class="form-label" style="font-size: 12px;">Payload URL:</label>
+						<label class="form-label" style="font-size: 12px;">Payload URL (<?= tohtml( _("recomendada, sin secreto en la URL")) ?>):</label>
 						<div style="display: flex; gap: 8px;">
-							<input type="text" class="form-control" id="webhook_url_input" value="<?= tohtml($v_webhook_url) ?>" readonly style="font-family: monospace; font-size: 12px;">
-							<button type="button" class="button button-secondary" onclick="copyWebhookUrl()">
-								<i class="bi bi-copy"></i>
+							<input type="text" class="form-control" id="webhook_url_input" value="<?= tohtml($v_webhook_url_clean) ?>" readonly style="font-family: monospace; font-size: 12px;">
+							<button type="button" class="button button-secondary" id="copy_webhook_btn" onclick="copyWebhookUrl()">
+								<i class="bi bi-copy u-mr5"></i><span id="copy_webhook_text"><?= tohtml( _("Copiar")) ?></span>
 							</button>
 						</div>
 					</div>
@@ -183,25 +216,52 @@
 						<code>application/json</code>
 					</div>
 
-					<div>
-						<label class="form-label" style="font-size: 12px;">Secret:</label>
-						<code><?= tohtml($v_webhook_secret) ?></code>
+					<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+						<div>
+							<label class="form-label" style="font-size: 12px;">Secret (X-Hub-Signature-256 / X-Gitlab-Token):</label>
+							<code><?= tohtml($v_webhook_secret) ?></code>
+						</div>
+						<a
+							href="/edit/git/?<?= tohtml(http_build_query(["domain" => $v_domain, "action" => "rotate_secret", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : [])))) ?>"
+							class="button button-secondary js-confirm-action"
+							style="font-size: 11px; padding: 3px 8px;"
+							data-confirm-title="<?= tohtml( _("Rotar Secreto del Webhook")) ?>"
+							data-confirm-message="<?= tohtml( _("¿Regenerar el secreto del webhook? Deberás actualizarlo en GitHub/GitLab.")) ?>"
+						>
+							<i class="bi bi-key icon-orange u-mr5"></i><?= tohtml( _("Rotar Secreto")) ?>
+						</a>
 					</div>
+
+					<details class="u-mt10" style="font-size: 12px; opacity: 0.85;">
+						<summary style="cursor: pointer;"><?= tohtml( _("URL alternativa con secreto en Query String (proveedores sin cabecera HMAC)")) ?></summary>
+						<div class="u-mt5">
+							<code style="word-break: break-all;"><?= tohtml($v_webhook_url) ?></code>
+						</div>
+					</details>
 				</div>
 			<?php } ?>
 
-			<!-- Post deploy script with Laravel presets -->
+			<!-- Post deploy script with framework presets -->
 			<div class="u-mb20">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
 					<label for="v_post_deploy" class="form-label" style="margin-bottom: 0;">
 						<?= tohtml( _("Comandos de Construcción y Despliegue (Build Pipeline)")) ?>
 					</label>
-					<div style="display: flex; gap: 6px;">
+					<div style="display: flex; gap: 6px; flex-wrap: wrap;">
 						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('full')">
-							<i class="bi bi-box u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel Full")) ?>
+							<i class="bi bi-box u-mr5" style="color: #f55247;"></i><?= tohtml( _("Laravel Full")) ?>
 						</button>
 						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('api')">
-							<i class="bi bi-box u-mr5" style="color: #f55247;"></i><?= tohtml( _("Preset Laravel API")) ?>
+							<i class="bi bi-box u-mr5" style="color: #f55247;"></i><?= tohtml( _("Laravel API")) ?>
+						</button>
+						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('node')">
+							<i class="bi bi-filetype-js icon-yellow u-mr5"></i><?= tohtml( _("Node / PNPM")) ?>
+						</button>
+						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('symfony')">
+							<i class="bi bi-box icon-purple u-mr5"></i><?= tohtml( _("Symfony")) ?>
+						</button>
+						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('composer')">
+							<i class="bi bi-terminal icon-blue u-mr5"></i><?= tohtml( _("Composer")) ?>
 						</button>
 						<button type="button" class="button button-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="applyLaravelPreset('clear')">
 							<i class="bi bi-eraser u-mr5"></i><?= tohtml( _("Limpiar")) ?>
@@ -221,8 +281,8 @@
 				</small>
 			</div>
 
-			<!-- Auto deploy toggle -->
-			<div class="form-check u-mb20">
+			<!-- Auto deploy & Zero-Downtime toggles -->
+			<div class="form-check u-mb10">
 				<input
 					type="checkbox"
 					class="form-check-input"
@@ -232,6 +292,19 @@
 				>
 				<label for="v_auto_deploy" class="form-check-label">
 					<?= tohtml( _("Permitir despliegue automático al recibir Webhook")) ?>
+				</label>
+			</div>
+
+			<div class="form-check u-mb20">
+				<input
+					type="checkbox"
+					class="form-check-input"
+					name="v_zero_downtime"
+					id="v_zero_downtime"
+					<?= $v_zero_downtime ? "checked" : "" ?>
+				>
+				<label for="v_zero_downtime" class="form-check-label">
+					<?= tohtml( _("Activar despliegue Zero-Downtime (releases + symlink atómico y rollback)")) ?>
 				</label>
 			</div>
 
@@ -395,7 +468,21 @@ function copyWebhookUrl() {
 	copyUrl.select();
 	copyUrl.setSelectionRange(0, 99999);
 	navigator.clipboard.writeText(copyUrl.value);
-	alert("URL del Webhook copiada al portapapeles");
+	var btnText = document.getElementById("copy_webhook_text");
+	if (btnText) {
+		btnText.innerText = "Copiado!";
+		setTimeout(function() {
+			btnText.innerText = "Copiar";
+		}, 2000);
+	}
+}
+
+function executeRollback() {
+	var sel = document.getElementById("rollback_release_select");
+	if (!sel || !sel.value) return;
+	if (!confirm("¿Restaurar la release " + sel.value + "?")) return;
+	var baseUrl = "/edit/git/?<?= http_build_query(["domain" => $v_domain, "action" => "rollback", "token" => $_SESSION["token"]] + (!empty($user_plain) && isset($_SESSION["user"]) && $user_plain !== $_SESSION["user"] ? ["user" => $user_plain] : (!empty($_GET["user"]) ? ["user" => $_GET["user"]] : []))) ?>";
+	window.location.href = baseUrl + "&release=" + encodeURIComponent(sel.value);
 }
 
 function toggleGithubLog() {
@@ -413,6 +500,23 @@ function toggleBuildLog() {
 		log.style.display = "block";
 	} else {
 		log.style.display = "none";
+	}
+}
+
+var _gitLogPollTimer = null;
+
+function updateDeployStatusBadge(status, duration) {
+	var badge = document.getElementById("git_deploy_status_badge");
+	if (!badge) return;
+	if (status === "failed") {
+		badge.style.background = "#ef4444";
+		badge.textContent = "Failed" + (duration ? " (" + duration + "s)" : "");
+	} else if (status === "running") {
+		badge.style.background = "#f59e0b";
+		badge.textContent = "Running";
+	} else {
+		badge.style.background = "#22c55e";
+		badge.textContent = "Success" + (duration ? " (" + duration + "s)" : "");
 	}
 }
 
@@ -435,6 +539,13 @@ function refreshGitLogs(btn) {
 				buildEl.textContent = data.build_log;
 				buildEl.scrollTop = buildEl.scrollHeight;
 			}
+			if (data.deploy_status) {
+				updateDeployStatusBadge(data.deploy_status, data.deploy_duration);
+				if (data.deploy_status !== "running" && _gitLogPollTimer) {
+					clearInterval(_gitLogPollTimer);
+					_gitLogPollTimer = null;
+				}
+			}
 		})
 		.catch(function (err) {
 			console.error("Failed to refresh Git logs:", err);
@@ -449,6 +560,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	var buildEl = document.getElementById("build_log_content");
 	if (ghEl) ghEl.scrollTop = ghEl.scrollHeight;
 	if (buildEl) buildEl.scrollTop = buildEl.scrollHeight;
+	if (<?= json_encode($v_last_deploy_status === "running") ?>) {
+		_gitLogPollTimer = setInterval(function () {
+			refreshGitLogs();
+		}, 2500);
+	}
 });
 
 function applyLaravelPreset(type) {
@@ -457,6 +573,12 @@ function applyLaravelPreset(type) {
 		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --ignore-platform-req=php\n\n# 2. Compilar assets de frontend con PNPM\nif [ -f package.json ]; then\n    pnpm approve-builds --all 2>/dev/null || true\n    pnpm install\n    pnpm rebuild 2>/dev/null || true\n    pnpm run build\nfi\n\n# 3. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache";
 	} else if (type === "api") {
 		textarea.value = "# 1. Dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --ignore-platform-req=php\n\n# 2. Enlace simbolico y optimizacion de Laravel\nphp artisan storage:link\nphp artisan optimize:clear\nphp artisan config:cache\nphp artisan route:cache";
+	} else if (type === "node") {
+		textarea.value = "# Instalar dependencias y compilar con PNPM\npnpm install --frozen-lockfile\npnpm run build";
+	} else if (type === "symfony") {
+		textarea.value = "# Dependencias y cache de Symfony en produccion\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction\nphp bin/console cache:clear --env=prod\nphp bin/console cache:warmup --env=prod";
+	} else if (type === "composer") {
+		textarea.value = "# Instalar dependencias PHP con Composer\ncomposer install --no-dev --prefer-dist --optimize-autoloader --no-interaction";
 	} else if (type === "clear") {
 		textarea.value = "";
 	}

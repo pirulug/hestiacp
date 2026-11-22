@@ -1,9 +1,9 @@
 #!/bin/bash
 # info: connect Git repository to web domain
-# options: USER DOMAIN REPO_URL [BRANCH] [DEPLOY_DIR] [AUTH_TYPE] [AUTH_TOKEN] [POST_DEPLOY] [AUTO_DEPLOY]
+# options: USER DOMAIN REPO_URL [BRANCH] [DEPLOY_DIR] [AUTH_TYPE] [AUTH_TOKEN] [POST_DEPLOY] [AUTO_DEPLOY] [ZERO_DOWNTIME]
 #
 # example: v-add-web-domain-git admin example.com https://github.com/user/repo.git main public_html none
-# example: v-add-web-domain-git admin example.com git@github.com:user/repo.git main public_html ssh
+# example: v-add-web-domain-git admin example.com git@github.com:user/repo.git main public_html ssh "" "" yes yes
 #
 # This function integrates a Git repository (public or private) with a web domain.
 
@@ -21,6 +21,10 @@ auth_type=${6:-none}
 auth_token=$7
 post_deploy=$8
 auto_deploy=${9:-yes}
+zero_downtime=${10:-no}
+if [ "$zero_downtime" != "yes" ]; then
+	zero_downtime="no"
+fi
 
 # Includes
 # shellcheck source=/etc/hestiacp/hestia.conf
@@ -99,8 +103,16 @@ elif [ "$auth_type" = "token" ] && [ -n "$auth_token" ]; then
 	fi
 fi
 
-# Generate unique webhook secret
-webhook_secret=$(generate_password '32')
+# Reuse existing webhook secret if domain is already configured, otherwise generate a new one
+user_git_conf="$USER_DATA/git.conf"
+webhook_secret=""
+if [ -f "$user_git_conf" ] && grep -q "DOMAIN='$domain'" "$user_git_conf" 2> /dev/null; then
+	existing_line=$(grep "DOMAIN='$domain'" "$user_git_conf" | head -n1)
+	webhook_secret=$(echo "$existing_line" | grep -o "WEBHOOK_SECRET='[^']*'" | sed -e "s/WEBHOOK_SECRET='//" -e "s/'//" || true)
+fi
+if [ -z "$webhook_secret" ]; then
+	webhook_secret=$(generate_password '32')
+fi
 
 # Clone repository or initialize remote
 mkdir -p "$HOMEDIR/$user/tmp"
@@ -154,7 +166,6 @@ date_str=$(date +'%F')
 time_str=$(date +'%T')
 
 # Store Git config for user in $USER_DATA/git.conf
-user_git_conf="$USER_DATA/git.conf"
 touch "$user_git_conf"
 chown "$user:$user" "$user_git_conf"
 chmod 660 "$user_git_conf"
@@ -175,7 +186,7 @@ post_deploy_clean=$(echo "$post_deploy" | tr -d '\r')
 post_deploy_b64=$(echo "$post_deploy_clean" | base64 -w 0 2>/dev/null || echo "$post_deploy_clean" | base64 | tr -d '\n')
 
 # Append new record
-echo "DOMAIN='$domain' REPO='$display_repo_url' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$webhook_secret' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$auto_deploy' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
+echo "DOMAIN='$domain' REPO='$display_repo_url' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$webhook_secret' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' LAST_DEPLOY_STATUS='success' LAST_DEPLOY_DURATION='0' ZERO_DOWNTIME='$zero_downtime' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$auto_deploy' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
 
 # Ensure Composer and PNPM are available for user if needed
 if [ ! -f "$HOMEDIR/$user/.composer/composer" ]; then

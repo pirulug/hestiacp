@@ -57,10 +57,35 @@ fi
 
 # Load current git configuration
 git_str=$(grep "DOMAIN='$domain'" "$user_git_conf")
+LAST_DEPLOY_STATUS=""
+LAST_DEPLOY_DURATION=""
+ZERO_DOWNTIME="no"
 parse_object_kv_list "$git_str"
 
 # Get current commit if repo exists
 target_path="$HOMEDIR/$user/web/$domain/${DEPLOY_DIR:-public_html}"
+releases_dir="$HOMEDIR/$user/web/$domain/.git_releases"
+current_release=""
+releases_json="[]"
+if [ -L "$target_path" ]; then
+	current_release=$(basename "$(readlink -f "$target_path")")
+fi
+if [ -d "$releases_dir" ]; then
+	releases_list=$(ls -1t "$releases_dir" 2>/dev/null | head -n 10)
+	if [ -n "$releases_list" ]; then
+		releases_json="["
+		r_first=1
+		while IFS= read -r rel; do
+			[ -z "$rel" ] && continue
+			if [ "$r_first" -eq 0 ]; then
+				releases_json="${releases_json},"
+			fi
+			r_first=0
+			releases_json="${releases_json}\"${rel}\""
+		done <<< "$releases_list"
+		releases_json="${releases_json}]"
+	fi
+fi
 if [ -d "$target_path/.git" ]; then
 	curr_commit=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
 	curr_msg=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%s" 2> /dev/null | tr '"' "'" || echo "$LAST_COMMIT_MSG")
@@ -87,6 +112,11 @@ if [ "$format" = "json" ]; then
     \"LAST_COMMIT_AUTHOR\": \"$curr_author\",
     \"LAST_COMMIT_DATE\": \"$curr_date\",
     \"LAST_DEPLOY\": \"$LAST_DEPLOY\",
+    \"LAST_DEPLOY_STATUS\": \"${LAST_DEPLOY_STATUS:-success}\",
+    \"LAST_DEPLOY_DURATION\": \"${LAST_DEPLOY_DURATION:-0}\",
+    \"ZERO_DOWNTIME\": \"${ZERO_DOWNTIME:-no}\",
+    \"CURRENT_RELEASE\": \"$current_release\",
+    \"RELEASES\": $releases_json,
     \"POST_DEPLOY_B64\": \"$POST_DEPLOY_B64\",
     \"AUTO_DEPLOY\": \"$AUTO_DEPLOY\",
     \"DEPLOY_KEY\": \"$deploy_key_content\",

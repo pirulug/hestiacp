@@ -48,10 +48,19 @@ unset($output);
 
 /**
  * Read only the last N lines of a log file (capped at $max_bytes) to keep panel memory/IO low.
+ * Rejects symlinks and paths escaping the domain log directory.
  */
-function hestia_read_log_tail($filepath, $max_lines = 120, $max_bytes = 65536) {
-	if (!file_exists($filepath) || !is_readable($filepath)) {
+function hestia_read_log_tail($filepath, $expected_dir = "", $max_lines = 120, $max_bytes = 65536) {
+	$parent = dirname($filepath);
+	if (is_link($parent) || is_link($filepath) || !file_exists($filepath) || !is_readable($filepath)) {
 		return "";
+	}
+	if (!empty($expected_dir)) {
+		$real_dir = realpath($expected_dir);
+		$real_file = realpath($filepath);
+		if ($real_dir === false || $real_file === false || !str_starts_with($real_file, $real_dir . DIRECTORY_SEPARATOR)) {
+			return "";
+		}
 	}
 	$size = filesize($filepath);
 	if ($size === false || $size === 0) {
@@ -92,12 +101,25 @@ if ($action === "fetch_logs") {
 	}
 	header("Content-Type: application/json; charset=utf-8");
 	$owner = !empty($user_plain) ? $user_plain : $_SESSION["user"];
-	$build_log_path = "/home/" . $owner . "/web/" . $v_domain . "/log/git_build.log";
-	$webhook_log_path = "/home/" . $owner . "/web/" . $v_domain . "/log/git_webhook.log";
+	if (!preg_match("/^[a-zA-Z0-9_-]+$/", $owner) || !preg_match("/^[a-zA-Z0-9.-]+$/", $v_domain) || str_contains($v_domain, "..")) {
+		http_response_code(400);
+		echo json_encode(["status" => "error"]);
+		exit();
+	}
+	$log_base = "/home/" . $owner . "/web/" . $v_domain . "/log";
+	$build_log_path = $log_base . "/git_build.log";
+	$webhook_log_path = $log_base . "/git_webhook.log";
+
+	exec(HESTIA_CMD . "v-list-web-domain-git " . $user . " " . quoteshellarg($v_domain) . " json", $st_out, $st_ret);
+	$st_info = ($st_ret === 0) ? (json_decode(implode("", $st_out), true) ?: []) : [];
+	unset($st_out);
+
 	echo json_encode([
 		"status" => "ok",
-		"build_log" => hestia_read_log_tail($build_log_path),
-		"github_log" => hestia_read_log_tail($webhook_log_path),
+		"build_log" => hestia_read_log_tail($build_log_path, $log_base),
+		"github_log" => hestia_read_log_tail($webhook_log_path, $log_base),
+		"deploy_status" => $st_info["LAST_DEPLOY_STATUS"] ?? "success",
+		"deploy_duration" => $st_info["LAST_DEPLOY_DURATION"] ?? "0",
 		"updated_at" => date("H:i:s"),
 	]);
 	exit();
@@ -141,6 +163,43 @@ if ($action === "generate_key") {
 	exit();
 }
 
+// Handle manual action: Rotate Webhook Secret
+if ($action === "rotate_secret") {
+	verify_csrf($_GET);
+	exec(
+		HESTIA_CMD . "v-change-web-domain-git-secret " . $user . " " . quoteshellarg($v_domain),
+		$output,
+		$return_var,
+	);
+	if ($return_var === 0) {
+		$_SESSION["ok_msg"] = _("Webhook secret rotated successfully.");
+	} else {
+		$_SESSION["error_msg"] = _("Failed to rotate webhook secret: ") . implode(" ", $output);
+	}
+	unset($output);
+	header("Location: /edit/git/?domain=" . urlencode($v_domain) . $user_param);
+	exit();
+}
+
+// Handle manual action: Rollback release
+if ($action === "rollback") {
+	verify_csrf($_GET);
+	$rel = trim($_GET["release"] ?? "");
+	$cmd = HESTIA_CMD . "v-rollback-web-domain-git " . $user . " " . quoteshellarg($v_domain);
+	if (!empty($rel)) {
+		$cmd .= " " . quoteshellarg($rel);
+	}
+	exec($cmd, $output, $return_var);
+	if ($return_var === 0) {
+		$_SESSION["ok_msg"] = _("Rolled back Git release successfully.");
+	} else {
+		$_SESSION["error_msg"] = _("Failed to rollback Git release: ") . implode(" ", $output);
+	}
+	unset($output);
+	header("Location: /edit/git/?domain=" . urlencode($v_domain) . $user_param);
+	exit();
+}
+
 // Handle manual action: Delete / Disconnect Git
 if ($action === "delete") {
 	verify_csrf($_GET);
@@ -170,6 +229,7 @@ if (!empty($_POST["save"])) {
 	$v_auth_token = trim($_POST["v_auth_token"] ?? "");
 	$v_post_deploy = trim($_POST["v_post_deploy"] ?? "");
 	$v_auto_deploy = !empty($_POST["v_auto_deploy"]) ? "yes" : "no";
+	$v_zero_downtime = !empty($_POST["v_zero_downtime"]) ? "yes" : "no";
 
 	if (empty($v_repo)) {
 		$_SESSION["error_msg"] = _("Repository URL is required.");
@@ -183,7 +243,8 @@ if (!empty($_POST["save"])) {
 			quoteshellarg($v_auth_type) . " " .
 			quoteshellarg($v_auth_token) . " " .
 			quoteshellarg($v_post_deploy) . " " .
-			quoteshellarg($v_auto_deploy);
+			quoteshellarg($v_auto_deploy) . " " .
+			quoteshellarg($v_zero_downtime);
 
 		exec($cmd, $output, $return_var);
 
@@ -218,6 +279,11 @@ $v_last_commit = $git_info["LAST_COMMIT"] ?? "";
 $v_last_commit_msg = $git_info["LAST_COMMIT_MSG"] ?? "";
 $v_last_commit_author = $git_info["LAST_COMMIT_AUTHOR"] ?? "";
 $v_last_commit_date = $git_info["LAST_COMMIT_DATE"] ?? "";
+$v_last_deploy_status = $git_info["LAST_DEPLOY_STATUS"] ?? "success";
+$v_last_deploy_duration = $git_info["LAST_DEPLOY_DURATION"] ?? "0";
+$v_zero_downtime = ($git_info["ZERO_DOWNTIME"] ?? "no") === "yes";
+$v_current_release = $git_info["CURRENT_RELEASE"] ?? "";
+$v_releases = is_array($git_info["RELEASES"] ?? null) ? $git_info["RELEASES"] : [];
 $v_post_deploy = !empty($git_info["POST_DEPLOY_B64"]) ? base64_decode($git_info["POST_DEPLOY_B64"]) : ($git_info["POST_DEPLOY"] ?? "");
 $v_post_deploy = str_replace("\r", "", $v_post_deploy);
 $v_auto_deploy = ($git_info["AUTO_DEPLOY"] ?? "yes") === "yes";
@@ -244,16 +310,14 @@ if (!str_contains($panel_host, ":") && !empty($backend_port) && $backend_port !=
 } else {
 	$webhook_host = $panel_host;
 }
-$v_webhook_url = "https://" . $webhook_host . "/api/webhook/?user=" . urlencode($user_plain) . "&domain=" . urlencode($v_domain) . "&secret=" . urlencode($v_webhook_secret);
+$v_webhook_url_clean = "https://" . $webhook_host . "/api/webhook/?user=" . urlencode($user_plain) . "&domain=" . urlencode($v_domain);
+$v_webhook_url = $v_webhook_url_clean . "&secret=" . urlencode($v_webhook_secret);
 
-// Read build log tail if available
+// Read build & webhook log tails if available
 $owner_name = !empty($user_plain) ? $user_plain : $_SESSION["user"];
-$log_file = "/home/" . $owner_name . "/web/" . $v_domain . "/log/git_build.log";
-$v_build_log = hestia_read_log_tail($log_file);
-
-// Read GitHub / Webhook log tail if available
-$webhook_log_file = "/home/" . $owner_name . "/web/" . $v_domain . "/log/git_webhook.log";
-$v_github_log = hestia_read_log_tail($webhook_log_file);
+$log_base = "/home/" . $owner_name . "/web/" . $v_domain . "/log";
+$v_build_log = hestia_read_log_tail($log_base . "/git_build.log", $log_base);
+$v_github_log = hestia_read_log_tail($log_base . "/git_webhook.log", $log_base);
 
 // Render page
 render_page($user, $TAB, "edit_web_git");

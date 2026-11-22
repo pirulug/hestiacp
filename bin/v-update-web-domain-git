@@ -48,11 +48,15 @@ fi
 
 # Load current git configuration
 git_str=$(grep "DOMAIN='$domain'" "$user_git_conf")
+ZERO_DOWNTIME="no"
+LAST_DEPLOY_STATUS="success"
+LAST_DEPLOY_DURATION="0"
 parse_object_kv_list "$git_str"
 
 branch="${branch_arg:-$BRANCH}"
 deploy_dir="${DEPLOY_DIR:-public_html}"
 auth_type="${AUTH_TYPE:-none}"
+zero_downtime="${ZERO_DOWNTIME:-no}"
 
 # Extract post_deploy if stored in base64
 if [ -n "$POST_DEPLOY_B64" ]; then
@@ -71,38 +75,106 @@ if [ ! -d "$target_path/.git" ]; then
 	check_result "$E_NOTEXIST" "Target directory $target_path does not contain a Git repository"
 fi
 
+update_git_conf_record() {
+	local rec_commit="$1"
+	local rec_msg="$2"
+	local rec_author="$3"
+	local rec_deploy_ts="$4"
+	local rec_status="$5"
+	local rec_duration="$6"
+	local rec_date rec_time tmp_conf
+	rec_date=$(date +'%F')
+	rec_time=$(date +'%T')
+	tmp_conf=$(mktemp)
+	grep -v "DOMAIN='$domain'" "$user_git_conf" > "$tmp_conf" || true
+	echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$rec_commit' LAST_COMMIT_MSG='$rec_msg' LAST_COMMIT_AUTHOR='$rec_author' LAST_DEPLOY='$rec_deploy_ts' LAST_DEPLOY_STATUS='$rec_status' LAST_DEPLOY_DURATION='$rec_duration' ZERO_DOWNTIME='$zero_downtime' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$rec_time' DATE='$rec_date'" >> "$tmp_conf"
+	mv -f "$tmp_conf" "$user_git_conf"
+	chown "$user:$user" "$user_git_conf"
+	chmod 660 "$user_git_conf"
+}
+
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Acquire per-domain lock to prevent concurrent deploys corrupting git/node_modules
+lock_file="/tmp/hestia-git-${user}-${clean_domain}.lock"
+exec 9>"$lock_file"
+if ! flock -w 120 9; then
+	check_result "$E_LIMIT" "Another Git deployment is already in progress for $domain"
+fi
+
+deploy_start_ts=$(date +%s)
+update_git_conf_record "$LAST_COMMIT" "$LAST_COMMIT_MSG" "$LAST_COMMIT_AUTHOR" "$LAST_DEPLOY" "running" "0"
+
+# Determine working directory (direct or zero-downtime release)
+work_path="$target_path"
+releases_dir="$HOMEDIR/$user/web/$domain/.git_releases"
+shared_dir="$HOMEDIR/$user/web/$domain/.git_shared"
+release_dir=""
+
+if [ "$zero_downtime" = "yes" ]; then
+	mkdir -p "$releases_dir" "$shared_dir"
+	chown "$user:$user" "$releases_dir" "$shared_dir"
+
+	# One-time migration if target_path is currently a regular directory
+	if [ -d "$target_path" ] && [ ! -L "$target_path" ]; then
+		[ -f "$target_path/.env" ] && [ ! -f "$shared_dir/.env" ] && cp -a "$target_path/.env" "$shared_dir/.env"
+		if [ -d "$target_path/storage" ] && [ ! -d "$shared_dir/storage" ]; then
+			cp -a "$target_path/storage" "$shared_dir/storage"
+		fi
+		initial_rel="${releases_dir}/initial_${deploy_start_ts}"
+		mv "$target_path" "$initial_rel"
+		ln -sfn "$initial_rel" "$target_path"
+		chown -h "$user:$user" "$target_path"
+	fi
+
+	current_src=$(readlink -f "$target_path" 2>/dev/null || echo "$target_path")
+	release_dir="${releases_dir}/rel_${deploy_start_ts}"
+	cp -a "$current_src" "$release_dir"
+	chown -R "$user:$user" "$release_dir"
+	work_path="$release_dir"
+fi
+
 # Fetch and pull / reset hard to origin/branch
 if [ "$auth_type" = "ssh" ] && [ -f "$ssh_key_file" ]; then
-	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$target_path" fetch origin "$branch" && \
-	user_exec git -c safe.directory=* -C "$target_path" checkout "$branch" && \
-	user_exec git -c safe.directory=* -C "$target_path" reset --hard origin/"$branch"
+	user_exec env GIT_SSH_COMMAND="ssh -i $ssh_key_file -o StrictHostKeyChecking=accept-new -o BatchMode=yes" git -c safe.directory=* -C "$work_path" fetch origin "$branch" && \
+	user_exec git -c safe.directory=* -C "$work_path" checkout "$branch" && \
+	user_exec git -c safe.directory=* -C "$work_path" reset --hard origin/"$branch"
 else
-	user_exec git -c safe.directory=* -C "$target_path" fetch origin "$branch" && \
-	user_exec git -c safe.directory=* -C "$target_path" checkout "$branch" && \
-	user_exec git -c safe.directory=* -C "$target_path" reset --hard origin/"$branch"
+	user_exec git -c safe.directory=* -C "$work_path" fetch origin "$branch" && \
+	user_exec git -c safe.directory=* -C "$work_path" checkout "$branch" && \
+	user_exec git -c safe.directory=* -C "$work_path" reset --hard origin/"$branch"
 fi
 
 if [ $? -ne 0 ]; then
+	deploy_duration=$(( $(date +%s) - deploy_start_ts ))
+	update_git_conf_record "$LAST_COMMIT" "$LAST_COMMIT_MSG" "$LAST_COMMIT_AUTHOR" "$LAST_DEPLOY" "failed" "$deploy_duration"
+	[ -n "$release_dir" ] && rm -rf "$release_dir"
 	check_result "$E_INVALID" "Failed to pull latest changes from Git repository"
 fi
 
-chown -R "$user:$user" "$target_path"
+# Link shared .env and storage in zero-downtime mode
+if [ "$zero_downtime" = "yes" ]; then
+	if [ -f "$shared_dir/.env" ]; then
+		rm -f "$work_path/.env"
+		ln -sfn "$shared_dir/.env" "$work_path/.env"
+		chown -h "$user:$user" "$work_path/.env"
+	fi
+	if [ -d "$shared_dir/storage" ]; then
+		rm -rf "$work_path/storage"
+		ln -sfn "$shared_dir/storage" "$work_path/storage"
+		chown -h "$user:$user" "$work_path/storage"
+	fi
+fi
+
+chown -R "$user:$user" "$work_path"
 
 # Retrieve latest commit info
-last_commit_hash=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
-last_commit_msg=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%s" 2> /dev/null | tr "'" '"' || echo "$LAST_COMMIT_MSG")
-last_commit_author=$(user_exec git -c safe.directory=* -C "$target_path" log -1 --format="%an" 2> /dev/null | tr "'" '"' || echo "$LAST_COMMIT_AUTHOR")
+last_commit_hash=$(user_exec git -c safe.directory=* -C "$work_path" log -1 --format="%h" 2> /dev/null || echo "$LAST_COMMIT")
+last_commit_msg=$(user_exec git -c safe.directory=* -C "$work_path" log -1 --format="%s" 2> /dev/null | tr "'" '"' || echo "$LAST_COMMIT_MSG")
+last_commit_author=$(user_exec git -c safe.directory=* -C "$work_path" log -1 --format="%an" 2> /dev/null | tr "'" '"' || echo "$LAST_COMMIT_AUTHOR")
 last_deploy_time=$(date +%s)
-date_str=$(date +'%F')
-time_str=$(date +'%T')
-
-# Update git.conf record
-sed -i "/DOMAIN='$domain'/d" "$user_git_conf"
-echo "DOMAIN='$domain' REPO='$REPO' BRANCH='$branch' DEPLOY_DIR='$deploy_dir' AUTH_TYPE='$auth_type' WEBHOOK_SECRET='$WEBHOOK_SECRET' LAST_COMMIT='$last_commit_hash' LAST_COMMIT_MSG='$last_commit_msg' LAST_COMMIT_AUTHOR='$last_commit_author' LAST_DEPLOY='$last_deploy_time' POST_DEPLOY_B64='$post_deploy_b64' AUTO_DEPLOY='$AUTO_DEPLOY' TIME='$time_str' DATE='$date_str'" >> "$user_git_conf"
 
 # Ensure Composer and PNPM are available for user if needed
 if [ ! -f "$HOMEDIR/$user/.composer/composer" ]; then
@@ -132,16 +204,17 @@ if [ -n "$domain_backend" ] && [ "$domain_backend" != "default" ]; then
 fi
 
 # Check and prepare Laravel directories and permissions if Laravel detected
-if [ -f "$target_path/artisan" ]; then
-	mkdir -p "$target_path/storage/framework/sessions" \
-		"$target_path/storage/framework/views" \
-		"$target_path/storage/framework/cache" \
-		"$target_path/storage/logs" \
-		"$target_path/bootstrap/cache"
-	chown -R "$user:$user" "$target_path/storage" "$target_path/bootstrap/cache"
-	chmod -R 775 "$target_path/storage" "$target_path/bootstrap/cache"
+if [ -f "$work_path/artisan" ]; then
+	mkdir -p "$work_path/storage/framework/sessions" \
+		"$work_path/storage/framework/views" \
+		"$work_path/storage/framework/cache" \
+		"$work_path/storage/logs" \
+		"$work_path/bootstrap/cache"
+	chown -R "$user:$user" "$work_path/storage" "$work_path/bootstrap/cache"
+	chmod -R 775 "$work_path/storage" "$work_path/bootstrap/cache"
 fi
 
+build_status=0
 if [ -n "$post_deploy_clean" ]; then
 	if [ "$run_build" = "no" ] || [ "$run_build" = "0" ] || [ "$run_build" = "false" ] || [ "$run_build" = "skip" ]; then
 		echo "=== Git Pull completed: $(date) ===" > "$build_log"
@@ -175,7 +248,7 @@ composer() {
 }
 export -f composer 2>/dev/null || true
 
-cd "$target_path" || exit 1
+cd "$work_path" || exit 1
 $post_deploy_clean
 EOF
 
@@ -193,15 +266,37 @@ EOF
 fi
 
 # Ensure domain files ownership
-chown -R "$user:$user" "$target_path"
+chown -R "$user:$user" "$work_path"
 [ -f "$build_log" ] && chown "$user:$user" "$build_log"
+
+deploy_duration=$(( $(date +%s) - deploy_start_ts ))
+
+if [ "$build_status" -ne 0 ]; then
+	update_git_conf_record "$LAST_COMMIT" "$LAST_COMMIT_MSG" "$LAST_COMMIT_AUTHOR" "$LAST_DEPLOY" "failed" "$deploy_duration"
+	[ -n "$release_dir" ] && rm -rf "$release_dir"
+	$BIN/v-log-action "$user" "Error" "Web" "Git build pipeline failed for $domain ($branch, exit code $build_status)."
+	check_result "$E_INVALID" "Build pipeline failed with exit code $build_status"
+fi
+
+# Atomically switch symlink in zero-downtime mode and prune old releases (keep last 5)
+if [ "$zero_downtime" = "yes" ] && [ -n "$release_dir" ]; then
+	ln -sfn "$release_dir" "${target_path}.new"
+	mv -Tf "${target_path}.new" "$target_path"
+	chown -h "$user:$user" "$target_path"
+	current_real=$(basename "$release_dir")
+	ls -1t "$releases_dir" 2>/dev/null | tail -n +6 | while IFS= read -r old_rel; do
+		[ -n "$old_rel" ] && [ "$old_rel" != "$current_real" ] && rm -rf "${releases_dir}/${old_rel}"
+	done
+fi
+
+update_git_conf_record "$last_commit_hash" "$last_commit_msg" "$last_commit_author" "$last_deploy_time" "success" "$deploy_duration"
 
 #----------------------------------------------------------#
 #                       Hestia                             #
 #----------------------------------------------------------#
 
 # Logging
-$BIN/v-log-action "$user" "Info" "Web" "Deployed Git update for $domain ($branch - $last_commit_hash)."
+$BIN/v-log-action "$user" "Info" "Web" "Deployed Git update for $domain ($branch - $last_commit_hash) in ${deploy_duration}s."
 log_event "$OK" "$ARGUMENTS"
 
 exit 0
