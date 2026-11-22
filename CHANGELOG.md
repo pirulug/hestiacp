@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2026-11-3] - PiruHost Fork Release
+
+- Sync with upstream HestiaCP `1.10.8` (local 2FA QR generation, Fail2Ban Dovecot filter, Nginx `1.30.7`, SnappyMail `3.1.3`, and security fixes)
+
 ## [v2026-11-2] - PiruHost Fork Release
 
 - Sync `package-lock.json` with `bootstrap-icons` for clean `npm ci` builds
