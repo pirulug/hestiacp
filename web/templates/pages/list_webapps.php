@@ -12,6 +12,7 @@ $webapp_catalog_meta = [
 	"Nextcloud"    => ["cat" => "wiki",       "label" => _("Cloud & Docs"),       "desc" => _("Self-hosted cloud storage and suite")],
 	"Castopod"     => ["cat" => "wiki",       "label" => _("Cloud & Docs"),       "desc" => _("Open-source podcast hosting platform")],
 	"Dolibarr"     => ["cat" => "wiki",       "label" => _("Cloud & Docs"),       "desc" => _("Modern ERP and CRM for businesses")],
+	"Moodle"       => ["cat" => "wiki",       "label" => _("Cloud & Docs"),       "desc" => _("Open-source e-learning LMS platform")],
 	"PrestaShop"   => ["cat" => "ecommerce",  "label" => _("E-Commerce"),         "desc" => _("Full-featured online store platform")],
 	"OpenCart"     => ["cat" => "ecommerce",  "label" => _("E-Commerce"),         "desc" => _("Lightweight open-source shopping cart")],
 	"Shopware"     => ["cat" => "ecommerce",  "label" => _("E-Commerce"),         "desc" => _("Modular e-commerce platform")],
@@ -20,6 +21,7 @@ $webapp_catalog_meta = [
 	"Laravel"      => ["cat" => "frameworks", "label" => _("Frameworks"),         "desc" => _("Modern PHP web application framework")],
 	"Symfony"      => ["cat" => "frameworks", "label" => _("Frameworks"),         "desc" => _("High-performance PHP framework")],
 	"Flarum"       => ["cat" => "community",  "label" => _("Community"),          "desc" => _("Modern and fast discussion forum")],
+	"phpBB"        => ["cat" => "community",  "label" => _("Community"),          "desc" => _("Classic open-source bulletin board forum")],
 	"NamelessMC"   => ["cat" => "community",  "label" => _("Community"),          "desc" => _("Community website for gaming servers")],
 	"osTicket"     => ["cat" => "community",  "label" => _("Community"),          "desc" => _("Support ticket management system")],
 ];

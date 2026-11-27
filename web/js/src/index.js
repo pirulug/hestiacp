@@ -21,7 +21,6 @@ import handleListUnitSelect from './listUnitSelect';
 import handleNameServerInput from './nameServerInput';
 import handlePasswordInput from './passwordInput';
 import initRrdCharts from './rrdCharts';
-import handleShortcuts from './shortcuts';
 import handleStickyToolbar from './stickyToolbar';
 import handleSyncEmailValues from './syncEmailValues';
 import handleTabPanels from './tabPanels';
@@ -63,6 +62,5 @@ document.addEventListener('alpine:init', () => {
 	handleErrorMessage();
 	handleFtpAccountHints();
 	handleIpListDataSource();
-	handleShortcuts();
 	handleUnlimitedInput();
 });

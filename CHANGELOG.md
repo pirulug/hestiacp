@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2026-11-7] - PiruHost Fork Release
+
+- Improve Quick Install App catalog (`list_webapps.php`) with live search, category filters, descriptions, and PHP compatibility status
+- Add Moodle (`4.5-latest`) and phpBB (`3.3.16`) Quick Installers
+- Remove keyboard shortcuts modal, floating button, and global shortcut listeners
+
 ## [v2026-11-6] - PiruHost Fork Release
 
 - Add zero-dependency Rust binary `hestia-core` (`src/rust/hestia-core`) to optimize WireGuard peer JSON listing, Git status/log-tail/atomic `.conf` updates, and VPS `/proc` metrics
