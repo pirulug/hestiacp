@@ -32,7 +32,7 @@ class phpBBSetup extends BaseSetup {
 		],
 		"server" => [
 			"nginx" => [
-				"template" => "default",
+				"template" => "phpbb",
 			],
 			"php" => [
 				"supported" => ["8.2", "8.3", "8.4"],

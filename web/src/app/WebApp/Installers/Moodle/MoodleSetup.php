@@ -33,7 +33,7 @@ class MoodleSetup extends BaseSetup {
 		],
 		"server" => [
 			"nginx" => [
-				"template" => "default",
+				"template" => "moodle",
 			],
 			"php" => [
 				"supported" => ["8.2", "8.3", "8.4"],
